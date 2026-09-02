@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FocusPaw</title>
+  <script>
+    // GitHub Pages SPA fallback: intercept 404s and hand the path to the router.
+    history.replaceState(null, null, location.pathname);
+    window.addEventListener('popstate', function () {
+      history.replaceState(null, null, location.pathname);
+    });
+    window.onload = function () {
+      // Navigate to the requested path so React Router can render the page.
+      window.location.replace(location.pathname);
+    };
+  </script>
+</head>
+<body></body>
+</html>
