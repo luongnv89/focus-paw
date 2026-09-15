@@ -1,6 +1,8 @@
 /**
  * Countdown toast notification styles
- * Brand-aligned with FocusPaw design system
+ * Always-dark Obsidian card injected into arbitrary web pages — hardcoded
+ * values (theme.css variables are not reachable here) and hardened against
+ * host-page CSS via `all: unset` + explicit re-declaration.
  */
 
 #focuspaw-toast-container {
@@ -12,32 +14,43 @@
   flex-direction: column;
   gap: 10px;
   pointer-events: none;
-  font-family:
-    'Inter',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
 }
 
 .focuspaw-toast {
+  all: unset;
   display: flex;
+  box-sizing: border-box;
   align-items: center;
   gap: 12px;
-  padding: 14px 18px;
-  background: #111111;
-  border-radius: 8px;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.35),
-    0 0 1px rgba(0, 0, 0, 0.35);
+  padding: 12px 14px;
   min-width: 280px;
   max-width: 360px;
+  background: #0d0d0d;
+  color: #f2f2f2;
+  border: 1px solid #2a2a2a;
+  border-left: 3px solid #1bff6e;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', Roboto, Ubuntu,
+    'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  font-variant: normal;
+  line-height: 1.4;
+  text-align: left;
+  text-transform: none;
+  text-decoration: none;
+  text-shadow: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  white-space: normal;
+  direction: ltr;
   opacity: 0;
   transform: translateX(400px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: auto;
-  border-left: 4px solid #1bff6e;
 }
 
 .focuspaw-toast-visible {
@@ -45,45 +58,75 @@
   transform: translateX(0);
 }
 
+/* Children reset to inherit the toast's clean computed values */
+.focuspaw-toast-icon,
+.focuspaw-toast-content,
+.focuspaw-toast-message,
+.focuspaw-toast-content strong {
+  all: unset;
+}
+
 .focuspaw-toast-icon {
-  font-size: 24px;
-  line-height: 1;
   flex-shrink: 0;
+  font-size: 20px;
+  line-height: 0;
+  color: #f2f2f2;
+}
+
+.focuspaw-toast-icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
 }
 
 .focuspaw-toast-content {
   flex: 1;
-  font-size: 14px;
-  line-height: 1.4;
-  color: #1a1a1a;
+  color: #f2f2f2;
 }
 
 .focuspaw-toast-content strong {
   font-weight: 600;
-  color: #0f9f46;
+  color: #f2f2f2;
 }
 
-/* Severity variants */
+.focuspaw-toast-message {
+  color: #a3a3a3;
+  font-size: 13px;
+}
+
+/* Severity variants — same card, severity-colored border/icon/domain */
 .focuspaw-toast-info {
   border-left-color: #1bff6e;
 }
 
+.focuspaw-toast-info .focuspaw-toast-icon {
+  color: #1bff6e;
+}
+
 .focuspaw-toast-warning {
-  border-left-color: #5f5f5f;
-  background: #1a1a1a;
+  border-left-color: #f5b942;
+}
+
+.focuspaw-toast-warning .focuspaw-toast-icon {
+  color: #f5b942;
 }
 
 .focuspaw-toast-warning .focuspaw-toast-content strong {
-  color: #3a3a3a;
+  color: #f5b942;
 }
 
 .focuspaw-toast-danger {
-  border-left-color: #2a2a2a;
-  background: #141414;
+  border-left-color: #ff5c5c;
+}
+
+.focuspaw-toast-danger .focuspaw-toast-icon {
+  color: #ff5c5c;
 }
 
 .focuspaw-toast-danger .focuspaw-toast-content strong {
-  color: #2a2a2a;
+  color: #ff5c5c;
 }
 
 /* Accessibility: Reduce motion */
