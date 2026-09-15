@@ -35,6 +35,19 @@ describe('Smoke: popup load', () => {
     document.documentElement.innerHTML = html;
     expect(document.body).not.toBeNull();
     expect(document.body.textContent.length).toBeGreaterThan(0);
+    expect(document.getElementById('viz-tablist')).not.toBeNull();
+    expect(document.getElementById('map-container')).not.toBeNull();
+    expect(document.getElementById('map-geo-overlay')).not.toBeNull();
+    expect(document.getElementById('map-clear-cache')).not.toBeNull();
+    expect(document.getElementById('geo-lookup-toggle')).not.toBeNull();
+  });
+
+  test('popup.html stays radial-graph only (no Map tab)', () => {
+    const htmlPath = path.join(repoRoot, 'src', 'popup', 'popup.html');
+    const html = fs.readFileSync(htmlPath, 'utf8');
+    expect(html).not.toMatch(/id="map-container"/);
+    expect(html).not.toMatch(/id="viz-tablist"/);
+    expect(html).not.toMatch(/ipwho\.is/);
   });
 });
 

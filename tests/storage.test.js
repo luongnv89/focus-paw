@@ -21,10 +21,17 @@ import {
   updateSettings,
   clearAllData,
   getVisitsInRange,
+  pruneGeoCacheEntries,
+  putGeoLookupEntries,
+  getGeoLookupCache,
+  clearGeoLookupCache,
+  resetGeoCacheQueueForTests,
+  GEO_CACHE_TTL_MS,
 } from '../src/background/storage.js';
 
 // Mock chrome.storage.local
 global.chrome = {
+  runtime: { lastError: undefined },
   storage: {
     local: {
       data: {},
@@ -66,6 +73,8 @@ describe('Storage Module', () => {
   beforeEach(() => {
     // Clear storage before each test
     chrome.storage.local.data = {};
+    if (chrome.runtime) chrome.runtime.lastError = undefined;
+    resetGeoCacheQueueForTests();
   });
 
   describe('getTodayKey', () => {
@@ -517,6 +526,7 @@ describe('Storage Module', () => {
     test('returns default settings when none exist', async () => {
       const settings = await getSettings();
       expect(settings.onboardingComplete).toBe(false);
+      expect(settings.geoLookupEnabled).toBe(false);
     });
 
     test('migrates legacy colorBlindMode to highContrastMode once', async () => {
@@ -637,6 +647,31 @@ describe('Storage Module', () => {
 
       const visits = await getVisitsInRange(today, today);
       expect(visits[todayKey]).toBeDefined();
+    });
+  });
+
+  describe('geo lookup cache', () => {
+    test('put/get/clear round-trip', async () => {
+      await putGeoLookupEntries({
+        'news.example': { lat: 40.7, lon: -74, fetchedAt: Date.now(), ok: true },
+      });
+      const cache = await getGeoLookupCache();
+      expect(cache['news.example'].lat).toBe(40.7);
+      await clearGeoLookupCache();
+      expect(await getGeoLookupCache()).toEqual({});
+    });
+
+    test('pruneGeoCacheEntries removes expired coordinates', () => {
+      const now = Date.now();
+      const pruned = pruneGeoCacheEntries(
+        {
+          'keep.com': { lat: 1, lon: 1, fetchedAt: now, ok: true },
+          'drop.com': { lat: 2, lon: 2, fetchedAt: now - GEO_CACHE_TTL_MS - 1000, ok: true },
+        },
+        now,
+      );
+      expect(pruned['keep.com']).toBeDefined();
+      expect(pruned['drop.com']).toBeUndefined();
     });
   });
 });

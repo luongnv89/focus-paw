@@ -143,4 +143,12 @@ describe('visualization-page setup', () => {
     expect(settingsView.hidden).toBe(true);
     expect(document.activeElement).toBe(settingsBtn);
   });
+
+  test('does not require Map DOM on the popup path', async () => {
+    makeChrome({}, {});
+    await setupVisualizationPage({ defaultRange: 'today', fullPage: false });
+    expect(document.getElementById('viz-tablist')).toBeNull();
+    expect(document.getElementById('map-container')).toBeNull();
+    expect(document.getElementById('loading').style.display).toBe('none');
+  });
 });
