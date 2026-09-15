@@ -85,8 +85,8 @@ Block Page
   - `index.html` - Dashboard page structure
   - `dashboard.js` - Dashboard logic and interactions
   - `dashboard.css` - Dashboard styles
-  - `blocking.html/js` - Blocking rules management page
-  - `domain.html/js` - Domain detail view
+  - `blocking.html/js/css` - Blocking rules management page
+  - `domain.html/js/css` - Domain detail view
 - **`popup/`** - Popup UI (compact view)
   - `popup.html` - Popup structure
   - `popup.js` - Popup initialization
@@ -106,6 +106,9 @@ Block Page
 - **`common/`** - Shared utilities
   - `feature-flags.js` - Feature flag management
   - `visualization-page.js` - Shared visualization helpers
+  - `theme.css` - Design tokens (Obsidian palette, type scale, buttons, pills, inputs)
+  - `shell.css` - Shared app header, `.page` scaffold, KPI tiles
+  - `icons.js` - `svgIcon()` helper for the `assets/icons.svg` symbol sprite
 
 ## Development Guidelines
 
@@ -237,20 +240,7 @@ chrome.storage.local.get(null, (data) => console.log(data))
 
 ## Brand & Design System
 
-**Primary Colors:**
-- Bear Blue: `#0E75B6` (primary actions, focus)
-- Focus Purple: `#6C5CE7` (secondary, creativity)
-- Alert Red: `#D63031` (limit exceeded)
-- Warning Orange: `#FF9F43` (nearing limit)
-- Success Green: `#55EFC4` (achievements)
-
-**Typography:**
-- Font: Inter (primary), Roboto (fallback)
-- Popup sizes: H1=20px, H2=16px, Body=13-14px
-
-**UI Components:** Buttons, toasts, pills/tags, graph nodes, toggles, inputs
-- Use Material Icons + custom SVGs for consistency
-- Include bear mascot illustrations where appropriate
+The extension UI uses the "Obsidian instrument panel" design system. Design tokens live in `src/common/theme.css` (surfaces, ink, signal colors, type scale, buttons, pills); shared header/page/KPI styles in `src/common/shell.css`; icons via the `assets/icons.svg` stroke sprite + `src/common/icons.js`. See `phase-1-requirements/brand_kit.md` for the full kit and `phase-1-requirements/ui-refresh-spec.md` for the spec.
 
 **Personality:** Playful, honest, supportive, clever, minimalist - no guilt-tripping, only encouragement
 

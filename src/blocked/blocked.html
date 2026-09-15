@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FocusPaw - Limit Reached</title>
+    <link rel="stylesheet" href="../common/theme.css" />
     <link rel="stylesheet" href="blocked.css" />
   </head>
   <body>
@@ -19,22 +20,22 @@
       <div class="stats" role="region" aria-label="Visit statistics">
         <div class="stat-item">
           <span class="stat-label">Visits today:</span>
-          <span class="stat-value" id="visit-count" aria-label="Visit count">--</span>
+          <span class="stat-value tnum" id="visit-count" aria-label="Visit count">--</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">Limit:</span>
-          <span class="stat-value" id="limit-value" aria-label="Limit value">--</span>
+          <span class="stat-value tnum" id="limit-value" aria-label="Limit value">--</span>
         </div>
       </div>
 
       <div class="countdown" role="region" aria-label="Time until limit reset" aria-live="polite">
         <p class="countdown-label">Time until you can access this site:</p>
         <div class="countdown-timer" id="countdown-timer">
-          <span id="countdown-hours" class="countdown-unit">00</span>
+          <span id="countdown-hours" class="countdown-unit tnum">00</span>
           <span class="countdown-separator">:</span>
-          <span id="countdown-minutes" class="countdown-unit">00</span>
+          <span id="countdown-minutes" class="countdown-unit tnum">00</span>
           <span class="countdown-separator">:</span>
-          <span id="countdown-seconds" class="countdown-unit">00</span>
+          <span id="countdown-seconds" class="countdown-unit tnum">00</span>
         </div>
         <p class="countdown-sublabel" id="countdown-sublabel">until midnight</p>
       </div>
@@ -52,7 +53,7 @@
         </button>
       </div>
 
-      <p class="footer" id="reset-footer">Reset happens at midnight. You got this! 💪</p>
+      <p class="footer" id="reset-footer">Reset happens at midnight. You got this!</p>
     </main>
 
     <script type="module" src="blocked.js"></script>

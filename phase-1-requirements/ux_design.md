@@ -80,10 +80,12 @@
 ---
 
 ### Dashboard Layout Considerations
-- Use generous gutters (24–48px) on desktop to create a “website” feel while keeping the existing card hierarchy.
-- Keep primary content centered with a max width of ~1200px and retain responsive behavior down to 400px for popup parity/testing.
-- Reuse the same components, typography, and color tokens between the popup and dashboard for maintainability.
-- Ensure the radial graph can expand to at least 900×600 within the dashboard to prevent node overlap.
+- **App header (56px, sticky, `bg-1` hairline):** brand left (28px logo disc + “FocusPaw” + page crumb), Blocks / Help / Settings ghost icon buttons right. The blocking rules, domain detail, and help pages share the same header shell (`src/common/shell.css`), each with its own crumb and a “Dashboard” back action.
+- **Toolbar row:** segmented Today / Week / Month filter + Compare toggle; wraps under 480px.
+- **KPI strip:** four tiles (visits, unique sites, focus score, streak) across the top of the content.
+- **Split view:** topology graph panel + domain table side by side (stacks vertically at ≤1200px; table keeps its own scroll region).
+- **Graph stage:** legend top-left, zoom bar bottom-right, summary strip beneath the stage, compact weekly-insights cards row; the SVG scales via `viewBox` so no re-render is needed on resize.
+- Keep primary content centered (~1200px) and responsive down to 375–400px for popup parity/testing.
 
 ---
 
@@ -92,8 +94,8 @@
 
 ### Screen 1: **Popup – Home / Radial Graph View**
 - **Description:**
-  - Header: FocusBear logo + Settings (gear icon)
-  - Sub-header: Time-filter dropdown (“Today / 24h / Week / Month”)
+  - Header: FocusPaw logo + ghost icon buttons (Blocks, Help, Settings)
+  - Sub-header: Time-filter dropdown (“Today / 24h / Week / Month”) + Refresh ghost button
   - Main Area: Interactive radial graph
     - User node at center
     - Domains orbit at radius level 1
@@ -133,10 +135,11 @@
 
 ### Screen 4: **Block Page (“You’re Over the Limit”)**
 - **Description:**
-  - Large bear illustration (playful or stern depending on streak)
-  - Message example: “You’ve had enough today. Be strong, human.”
-  - Button: “Return to Work”
-  - Random rotating meme: panda, cat typing, “tap to escape” mini-game
+  - Centered card (`bg-1`, hairline border, max-width 480px) on a `bg-0` page
+  - Bear mascot illustration (single settle animation on load; no looping motion)
+  - Rotating supportive heading + message with limit type and domain
+  - Two stat tiles (today’s visits, limit) + countdown timer to reset
+  - Buttons: “Back to work” (primary) + “Adjust limits” (secondary)
 
 - **Purpose:**
   Enforce limits while adding humor and motivation.
@@ -192,32 +195,20 @@
 ## Visual Design
 
 ### Color Scheme
-- **Primary Colors:**
-  - Bear Blue: `#0e75b6`
-  - Calm White: `#ffffff`
-  - Focus Purple: `#6c5ce7`
-
-- **Secondary Colors:**
-  - Alert Yellow: `#ffdd57`
-  - Success Green: `#55efc4`
-  - Warning Orange: `#ff9f43`
-
-- **State Colors:**
-  - Limit nearing: `#ff9f43`
-  - Limit exceeded: `#d63031`
+- **Surfaces:** layered near-black (`--bg-0` page → `--bg-3` hover) with `--line-1/2` hairline borders; light mode inverts to warm whites (`body.light-mode`)
+- **Text:** `--ink-1` primary / `--ink-2` secondary / `--ink-3` muted
+- **Signal colors:** green `--accent`/`--ok` `#1bff6e` (actions, on-track), `--warn` amber (nearing limit), `--bad` red (limit exceeded), `--info` blue — each with a soft background variant
+- Full token list: `src/common/theme.css`; spec: `phase-1-requirements/ui-refresh-spec.md`
 
 ### Typography
-- **Primary Font:** Inter (lightweight, readable)
-- **Backup:** Roboto / system fonts
-- **Sizes:**
-  - H1: 20px
-  - H2: 16px
-  - Body: 13–14px
+- **Font:** system stack only (`-apple-system`, Segoe UI, Roboto…); `ui-monospace` for numbers
+- **Scale:** 11 / 12 / 13 / 14 / 15 / 18 / 22 / 26 / 32px (`--fs-*` tokens)
+- KPI values, timers, and counts use tabular numerals
 
 ### Icons & Imagery
-- Bear mascot: playful, friendly
-- Graph nodes: soft-round shapes
-- Icons: Material Icons / custom SVGs
+- Bear mascot: playful, friendly (blocked page + popup empty state only)
+- Graph nodes: soft-round shapes, muted category palette
+- Icons: `assets/icons.svg` stroke sprite (24px viewBox, 1.75 stroke, `currentColor`) — no emoji in UI chrome
 
 ### Design System Components
 - Buttons (primary, secondary, ghost)

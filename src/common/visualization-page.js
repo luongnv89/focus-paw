@@ -205,12 +205,12 @@ function generateInsightsSummary(aggregatedData, limits, range, previousData = n
   // Limit status
   if (overLimitCount > 0) {
     const domainLabel = overLimitCount === 1 ? 'domain' : 'domains';
-    parts.push(`⚠️ You exceeded limits on ${overLimitCount} ${domainLabel}`);
+    parts.push(`You exceeded limits on ${overLimitCount} ${domainLabel}`);
   } else if (nearLimitCount > 0) {
     const domainLabel = nearLimitCount === 1 ? 'domain' : 'domains';
     parts.push(`You're approaching limits on ${nearLimitCount} ${domainLabel}`);
   } else if (Object.keys(limits).length > 0) {
-    parts.push('✓ All limits under control');
+    parts.push('All limits under control');
   }
 
   // Total domains
@@ -232,13 +232,13 @@ function generateInsightsSummary(aggregatedData, limits, range, previousData = n
     if (visitChange > 0) {
       const prefix = changePercent > 0 ? '+' : '';
       const warningText = [
-        `📈 ${visitChange} more visits (${prefix}${changePercent}%)`,
+        `${visitChange} more visits (${prefix}${changePercent}%)`,
         'than previous period',
       ].join(' ');
       parts.push(warningText);
     } else if (visitChange < 0) {
       const successText = [
-        `📉 ${Math.abs(visitChange)} fewer visits (${changePercent}%)`,
+        `${Math.abs(visitChange)} fewer visits (${changePercent}%)`,
         'than previous period',
       ].join(' ');
       parts.push(successText);
@@ -275,7 +275,7 @@ export function generateWeeklyInsights(weekData, limits) {
   const mostVisitedText = `You visited ${topDomain.domain} the most this week with ${topDomain.count} visits.`;
   insights.push({
     type: 'info',
-    title: '🎯 Most Visited',
+    title: 'Most Visited',
     text: mostVisitedText,
   });
 
@@ -295,13 +295,13 @@ export function generateWeeklyInsights(weekData, limits) {
     ].join(' ');
     insights.push({
       type: 'warning',
-      title: '⚠️ Limits Exceeded',
+      title: 'Limits Exceeded',
       text: limitTextParts,
     });
   } else if (Object.keys(limits).length > 0) {
     insights.push({
       type: 'success',
-      title: '✅ Great Self-Control',
+      title: 'Great Self-Control',
       text: 'You stayed within all your limits this week. Keep up the good work!',
     });
   }
@@ -312,7 +312,7 @@ export function generateWeeklyInsights(weekData, limits) {
   const activityText = `You switched focus ${totalVisits} times this week, averaging ${avgPerDay} switches/day.`;
   insights.push({
     type: 'info',
-    title: '📊 Activity Summary',
+    title: 'Activity Summary',
     text: activityText,
   });
 
@@ -328,7 +328,7 @@ export function generateWeeklyInsights(weekData, limits) {
       ].join(' ');
       insights.push({
         type: 'warning',
-        title: '💡 Recommendation',
+        title: 'Recommendation',
         text: recommendationText,
       });
     }
@@ -525,11 +525,21 @@ function wireVisualizationRender(ctx) {
         if (domainListEl) domainListEl.style.display = 'none';
         const badges = await calculateFocusHeroBadges();
         const limits = await getLimits();
+        // Measure the container now that #content is displayed; the SVG uses a
+        // viewBox so it stays responsive afterwards — these dimensions only set
+        // the initial aspect ratio and the force-layout bounds.
+        const containerRect = graphContainer.getBoundingClientRect();
+        const graphWidth = containerRect.width > 0 ? containerRect.width : ctx.graphWidth;
+        const graphHeight = containerRect.height > 0 ? containerRect.height : ctx.graphHeight;
         ctx.cleanupGraph = renderRadialGraph(graphContainer, aggregatedVisits, {
-          width: ctx.graphWidth,
-          height: ctx.graphHeight,
+          width: graphWidth,
+          height: graphHeight,
           badges,
           limits,
+          onZoomChange: (k) => {
+            const el = document.getElementById('zoom-level');
+            if (el) el.textContent = `${Math.round(k * 100)}%`;
+          },
         });
         const summaryElement = document.getElementById('summary-content');
         if (summaryElement) {
@@ -626,14 +636,14 @@ function wireVisualizationSettings(ctx) {
       const limitSpan = document.createElement('span');
       if (!normalized.enabled) {
         limitSpan.textContent = 'Disabled';
-        limitSpan.style.color = '#999';
+        limitSpan.classList.add('is-muted');
       } else {
         const parts = [];
         if (normalized.fiveHour.enabled) parts.push(`${normalized.fiveHour.limit} per 5h`);
         if (normalized.daily.enabled) parts.push(`${normalized.daily.limit} per day`);
         if (parts.length === 0) {
           limitSpan.textContent = 'No limits active';
-          limitSpan.style.color = '#999';
+          limitSpan.classList.add('is-muted');
         } else {
           limitSpan.textContent = parts.join(', ');
         }
@@ -687,7 +697,8 @@ function wireVisualizationSettings(ctx) {
     if (!dom.settingsView || !dom.mainView) return;
     dom.settingsView.hidden = true;
     dom.settingsView.setAttribute('aria-hidden', 'true');
-    dom.mainView.style.display = 'block';
+    // '' restores the stylesheet display (dashboard main view is flex, not block)
+    dom.mainView.style.display = '';
   };
 
   // Settings/main view navigation
@@ -1063,6 +1074,20 @@ async function wireVisualizationActions(ctx, _options) {
 }
 
 /**
+ * Bind the graph zoom controls (#zoom-in/#zoom-out/#zoom-reset) once during
+ * setup. The buttons are optional — pages without a zoom bar skip silently.
+ * @param {Object} ctx - shared visualization context
+ */
+function bindZoomControls(ctx) {
+  const zoomInBtn = document.getElementById('zoom-in');
+  const zoomOutBtn = document.getElementById('zoom-out');
+  const zoomResetBtn = document.getElementById('zoom-reset');
+  if (zoomInBtn) zoomInBtn.addEventListener('click', () => ctx.cleanupGraph?.zoomIn());
+  if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => ctx.cleanupGraph?.zoomOut());
+  if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => ctx.cleanupGraph?.resetZoom());
+}
+
+/**
  * Wire up the visualization UI by composing the three single-purpose wirers.
  * Public entry point — external callers (dashboard, popup) keep using it.
  * @param {Object} options
@@ -1084,5 +1109,6 @@ export async function setupVisualizationPage(options = {}) {
   // then actions which consumes both and runs the initial render.
   wireVisualizationRender(ctx);
   wireVisualizationSettings(ctx);
+  bindZoomControls(ctx);
   await wireVisualizationActions(ctx, options);
 }

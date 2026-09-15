@@ -10,6 +10,15 @@
 - **All product surface updated** — manifest (name/description/author/default_title), extension pages (popup, dashboard, blocking, domain, blocked, help), source JS/CSS, scripts, landing page, README, docs, AGENTS.md, CLAUDE.md.
 - **Compatibility** — No storage-key or permission changes; existing installs upgrade in place. GitHub links still point to `luongnv89/focus-bear` (repo unchanged). Archived planning/spec docs (`phase-1-requirements/`, `specs/`) retain the legacy name for historical accuracy.
 
+### UI Refresh
+- **Obsidian design tokens** — New token system in `src/common/theme.css`: layered near-black surfaces (`--bg-0..3`), hairline borders (`--line-1/2`), ink text ramp, green accent as signal-only color, soft variants for ok/warn/bad/info, plus a `body.light-mode` set. Shared shell in `src/common/shell.css`.
+- **SVG icon sprite** — `assets/icons.svg` (24px viewBox, 1.75 stroke, `currentColor`) + `src/common/icons.js` `svgIcon()` replace all emoji in UI chrome; bear mascot kept on the blocked page and popup empty state.
+- **Dashboard** — KPI strip (visits / unique sites / focus score / streak), segmented Today/Week/Month + Compare toolbar, zoom controls, `viewBox`-responsive graph with top-left legend, bottom-right zoom bar, summary strip, and compact weekly-insights cards.
+- **Shared header** — 56px `.app-header` with logo disc, page crumb, and ghost icon actions across dashboard, blocking rules, domain detail, and help pages.
+- **Blocked page & popup** — Restyled to tokenized cards/pills; block page uses a centered card with a single settle animation; popup gets ghost icon buttons and sprite icons.
+- **Accessibility** — Visible `:focus-visible` ring, `prefers-reduced-motion` support throughout, no infinite animations, tabular numerals for stats, WCAG AA contrast targets.
+- **Muted category palette** — Graph node colors muted to sit on dark surfaces; node labels truncated with a paint-order stroke for legibility.
+
 ## v1.0.0 — 2026-09-01
 
 > First official release of the extension (pre-rebrand). This version marks the completion of all P0–P4 development phases, including the core extension, landing page, and comprehensive security hardening.

@@ -1,33 +1,5 @@
 /* FocusPaw Monochrome + Bright Green Theme */
-:root {
-  /* Accent */
-  --color-primary: #1bff6e;
-  --color-primary-light: #2a2a2a;
-  --color-primary-lighter: #0f0f0f;
-  --color-primary-dark: #141414;
-
-  /* Neutral support */
-  --color-secondary: #3a3a3a;
-  --color-secondary-light: #6a6a6a;
-  --color-secondary-dark: #1f1f1f;
-
-  /* Status mapped to monochrome/green */
-  --color-warning: #7a7a7a;
-  --color-success: #1bff6e;
-  --color-error: #2a2a2a;
-  --color-info: #a0a0a0;
-
-  /* Text and surfaces */
-  --color-text-dark: #f8f8f8;
-  --color-text-muted: #9a9a9a;
-
-  /* Surfaces */
-  --color-border: #1e1e1e;
-  --color-border-light: #2c2c2c;
-  --color-card: #111111;
-  --color-surface: #060606;
-  --color-background: var(--color-surface);
-}
+/* Design tokens moved to src/common/theme.css (loaded before this file). */
 
 * {
   margin: 0;
@@ -122,27 +94,22 @@ h1 {
   color: var(--color-text-muted);
 }
 
-#settings-btn {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  font-size: 20px;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 8px;
-  transition:
-    background 0.2s,
-    transform 0.2s;
-  color: var(--color-text-dark);
+/* Header action buttons are .btn.btn-ghost from theme.css; the 400px popup
+   header has room for icons only — names live in title/aria-label. */
+.popup-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
-#settings-btn:hover {
-  background: var(--color-border-light);
-  transform: translateY(-1px);
+.popup-actions .btn {
+  height: 32px;
+  padding: 0 8px;
 }
 
-#settings-btn:focus {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
+.popup-actions .icon-label {
+  display: none;
 }
 
 main {
@@ -285,26 +252,7 @@ main {
 }
 
 #refresh-btn {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  font-size: 16px;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 999px;
-  transition:
-    background 0.2s,
-    transform 0.2s;
-  color: var(--color-text-dark);
-}
-
-#refresh-btn:hover {
-  background: var(--color-border-light);
-  transform: rotate(90deg);
-}
-
-#refresh-btn:focus {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
+  flex-shrink: 0;
 }
 
 .domain-list {
@@ -569,6 +517,23 @@ main {
 .muted-copy {
   color: var(--color-text-muted);
   font-size: 13px;
+}
+
+.privacy-note {
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.privacy-note .icon {
+  width: 12px;
+  height: 12px;
+  vertical-align: -1px;
+  margin-right: 4px;
+}
+
+/* Dimmed status line under a limit item (rendered by visualization-page.js) */
+.limit-item-info .is-muted {
+  color: var(--ink-3);
 }
 
 .limit-list-wrapper {
@@ -845,14 +810,6 @@ main {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-
-  #refresh-btn:hover {
-    transform: none;
-  }
-
-  #settings-btn:hover {
-    transform: none;
   }
 
   .pill-button-primary:hover {

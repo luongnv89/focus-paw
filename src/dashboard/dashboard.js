@@ -13,6 +13,7 @@ import {
 import { getTodayFocusScore } from '../background/focus-score.js';
 import { categorizeDomain } from '../common/categories.js';
 import { getTodayKey, FIVE_HOUR_MS } from '../common/date-utils.js';
+import { svgIcon } from '../common/icons.js';
 
 let currentTableData = [];
 let currentLimits = {};
@@ -24,14 +25,14 @@ let currentAggregatedData = {};
 let todayAggregatedData = {}; // Separate storage for today's data for status badge
 
 /**
- * Get color based on percentage (for limit progress bars)
+ * Get status class based on percentage (for limit progress bars)
  * @param {number} percent - Percentage value (0-100+)
- * @returns {string} CSS color variable
+ * @returns {string} CSS modifier class
  */
-function getStatusColor(percent) {
-  if (percent >= 100) return 'var(--color-error)';
-  if (percent > 80) return 'var(--color-warning)';
-  return 'var(--color-success)';
+function getStatusClass(percent) {
+  if (percent >= 100) return 'is-bad';
+  if (percent > 80) return 'is-warn';
+  return 'is-ok';
 }
 // "Near limit" threshold: 80% of a configured limit triggers the near-limit warning.
 const NEAR_LIMIT_THRESHOLD = 0.8;
@@ -233,7 +234,7 @@ function resetDashboardView() {
   if (settingsView && mainView) {
     settingsView.hidden = true;
     settingsView.setAttribute('aria-hidden', 'true');
-    mainView.style.display = 'block';
+    mainView.style.display = '';
   }
 
   // Reset table header/content state from any drilldown
@@ -430,23 +431,14 @@ function renderTable() {
       categoryTr.className = 'category-header-row';
 
       const categoryTd = document.createElement('td');
-      categoryTd.colSpan = 5; // Span all columns
-      categoryTd.style.padding = '16px 8px 8px';
-      categoryTd.style.fontWeight = '600';
-      categoryTd.style.color = 'var(--color-text-primary)';
-      categoryTd.style.borderBottom = '1px solid var(--color-border)';
-      categoryTd.style.backgroundColor = 'var(--color-bg-subtle)'; // Subtle background
+      categoryTd.colSpan = 6; // Span all columns
 
       const categoryContent = document.createElement('div');
-      categoryContent.style.display = 'flex';
-      categoryContent.style.alignItems = 'center';
-      categoryContent.style.gap = '8px';
+      categoryContent.className = 'category-header-content';
 
       const colorDot = document.createElement('span');
-      colorDot.style.width = '8px';
-      colorDot.style.height = '8px';
-      colorDot.style.borderRadius = '50%';
-      colorDot.style.backgroundColor = row.categoryColor || 'var(--color-text-muted)';
+      colorDot.className = 'category-dot';
+      colorDot.style.backgroundColor = row.categoryColor || 'var(--ink-3)';
 
       const categoryName = document.createElement('span');
       categoryName.textContent = row.category;
@@ -467,9 +459,7 @@ function renderTable() {
     domainTd.className = 'domain-cell';
 
     const domainContent = document.createElement('div');
-    domainContent.style.display = 'flex';
-    domainContent.style.alignItems = 'center';
-    domainContent.style.gap = '12px';
+    domainContent.className = 'domain-content';
 
     // Favicon column removed for privacy — no third-party favicon fetches
     // (see PRIVACY.md "Third-Party Services" and issue #53 / F-SEC-001).
@@ -481,10 +471,8 @@ function renderTable() {
     domainContent.appendChild(domainBtn);
 
     if (row.badge) {
-      const badge = document.createElement('span');
-      badge.className = 'badge-icon-table';
-      badge.textContent = '🏆';
-      badge.title = `Focus Hero (${row.badge.streak} days!)`;
+      const badge = svgIcon('trophy', { size: 14, className: 'icon badge-icon-table' });
+      badge.setAttribute('title', `Focus Hero (${row.badge.streak} days!)`);
       domainContent.appendChild(badge);
     }
 
@@ -513,7 +501,6 @@ function renderTable() {
 
     // Limit cell - Show both daily and 5-hour limits
     const limitTd = document.createElement('td');
-    limitTd.style.fontSize = '11px';
 
     if (row.limit && row.limit.enabled) {
       const dailyLimit = row.limit.daily?.limit;
@@ -526,86 +513,38 @@ function renderTable() {
 
       if (hasDaily || hasFiveHour) {
         const container = document.createElement('div');
-        container.style.display = 'flex';
-        container.style.flexDirection = 'column';
-        container.style.gap = '6px';
+        container.className = 'limit-meter';
 
         // 5-hour limit (show first if exists, as it's more restrictive)
         if (hasFiveHour) {
-          const fiveHourRemaining = Math.max(0, fiveHourLimit - fiveHourCount);
-          const fiveHourPercent = Math.min(100, (fiveHourCount / fiveHourLimit) * 100);
-          const isBlocked = fiveHourCount >= fiveHourLimit;
-
-          const fiveHourDiv = document.createElement('div');
-
-          const fiveHourText = document.createElement('div');
-          fiveHourText.style.fontSize = '11px';
-          fiveHourText.style.color = isBlocked ? 'var(--color-error)' : 'var(--color-text-muted)';
-          fiveHourText.style.fontWeight = isBlocked ? '600' : '400';
-          fiveHourText.textContent = isBlocked ? '🚫 5h: Blocked' : `5h: ${fiveHourRemaining} left`;
-          fiveHourText.title = `5-hour limit: ${fiveHourCount}/${fiveHourLimit} opens`;
-
-          const fiveHourBar = document.createElement('div');
-          fiveHourBar.style.width = '100px';
-          fiveHourBar.style.height = '4px';
-          fiveHourBar.style.background = 'rgba(255,255,255,0.1)';
-          fiveHourBar.style.borderRadius = '2px';
-          fiveHourBar.style.overflow = 'hidden';
-          fiveHourBar.style.marginTop = '2px';
-
-          const fiveHourFill = document.createElement('div');
-          fiveHourFill.style.width = `${fiveHourPercent}%`;
-          fiveHourFill.style.height = '100%';
-          fiveHourFill.style.background = getStatusColor(fiveHourPercent);
-          fiveHourBar.appendChild(fiveHourFill);
-
-          fiveHourDiv.appendChild(fiveHourText);
-          fiveHourDiv.appendChild(fiveHourBar);
-          container.appendChild(fiveHourDiv);
+          container.appendChild(
+            buildLimitMeter({
+              prefix: '5h',
+              used: fiveHourCount,
+              limit: fiveHourLimit,
+              title: `5-hour limit: ${fiveHourCount}/${fiveHourLimit} opens`,
+            }),
+          );
         }
 
         // Daily limit
         if (hasDaily) {
-          const dailyRemaining = Math.max(0, dailyLimit - todayCount);
-          const dailyPercent = Math.min(100, (todayCount / dailyLimit) * 100);
-          const isBlocked = todayCount >= dailyLimit;
-
-          const dailyDiv = document.createElement('div');
-
-          const dailyText = document.createElement('div');
-          dailyText.style.fontSize = '11px';
-          dailyText.style.color = isBlocked ? 'var(--color-error)' : 'var(--color-text-muted)';
-          dailyText.style.fontWeight = isBlocked ? '600' : '400';
-          dailyText.textContent = isBlocked ? '🚫 Daily: Blocked' : `Daily: ${dailyRemaining} left`;
-          dailyText.title = `Daily limit: ${todayCount}/${dailyLimit} opens`;
-
-          const dailyBar = document.createElement('div');
-          dailyBar.style.width = '100px';
-          dailyBar.style.height = '4px';
-          dailyBar.style.background = 'rgba(255,255,255,0.1)';
-          dailyBar.style.borderRadius = '2px';
-          dailyBar.style.overflow = 'hidden';
-          dailyBar.style.marginTop = '2px';
-
-          const dailyFill = document.createElement('div');
-          dailyFill.style.width = `${dailyPercent}%`;
-          dailyFill.style.height = '100%';
-          dailyFill.style.background = getStatusColor(dailyPercent);
-          dailyBar.appendChild(dailyFill);
-
-          dailyDiv.appendChild(dailyText);
-          dailyDiv.appendChild(dailyBar);
-          container.appendChild(dailyDiv);
+          container.appendChild(
+            buildLimitMeter({
+              prefix: 'Daily',
+              used: todayCount,
+              limit: dailyLimit,
+              title: `Daily limit: ${todayCount}/${dailyLimit} opens`,
+            }),
+          );
         }
 
         limitTd.appendChild(container);
       } else {
-        limitTd.textContent = 'Unlimited';
-        limitTd.style.color = 'var(--color-text-muted)';
+        limitTd.appendChild(buildNoLimitLabel());
       }
     } else {
-      limitTd.textContent = 'Unlimited';
-      limitTd.style.color = 'var(--color-text-muted)';
+      limitTd.appendChild(buildNoLimitLabel());
     }
     tr.appendChild(limitTd);
 
@@ -658,6 +597,45 @@ function renderTable() {
 
   // Update pagination info
   updatePaginationInfo(startIndex + 1, endIndex, totalItems);
+}
+
+/**
+ * Build one limit meter row (label + progress bar) for the table Limit cell.
+ * Width stays a dynamic inline style; colour comes from is-ok/is-warn/is-bad classes.
+ */
+function buildLimitMeter(opts) {
+  const isBlocked = opts.used >= opts.limit;
+  const percent = Math.min(100, (opts.used / opts.limit) * 100);
+
+  const meter = document.createElement('div');
+
+  const label = document.createElement('div');
+  label.className = `limit-meter-label${isBlocked ? ' is-blocked' : ''}`;
+  if (isBlocked) {
+    label.appendChild(svgIcon('ban', { size: 12 }));
+    label.appendChild(document.createTextNode(`${opts.prefix}: Blocked`));
+  } else {
+    label.textContent = `${opts.prefix}: ${Math.max(0, opts.limit - opts.used)} left`;
+  }
+  label.title = opts.title;
+
+  const bar = document.createElement('div');
+  bar.className = 'limit-meter-bar';
+  const fill = document.createElement('div');
+  fill.className = `limit-meter-fill ${getStatusClass(percent)}`;
+  fill.style.width = `${percent}%`;
+  bar.appendChild(fill);
+
+  meter.append(label, bar);
+  return meter;
+}
+
+function buildNoLimitLabel() {
+  const noLimit = document.createElement('span');
+  noLimit.className = 'limit-none';
+  noLimit.textContent = '—';
+  noLimit.title = 'No limit set';
+  return noLimit;
 }
 
 function formatRelativeTime(date) {
@@ -762,22 +740,20 @@ function updateVisitsHeaderLabel() {
   const active = document.querySelector('.time-filter-btn.active');
   const range = active ? active.dataset.range : 'today';
   const labels = {
-    today: 'Times Opened (Today)',
-    week: 'Times Opened (Week)',
-    month: 'Times Opened (Month)',
+    today: 'Visits (Today)',
+    week: 'Visits (Week)',
+    month: 'Visits (Month)',
   };
   const th = document.querySelector('.data-table th[data-sort="count"]');
   if (!th) return;
   const indicator = th.querySelector('.sort-indicator');
-  const label = labels[range] || 'Times Opened';
+  const label = labels[range] || 'Visits';
   // Preserve sort indicator
   th.textContent = `${label} `;
   if (indicator) {
     th.appendChild(indicator);
   } else {
-    const span = document.createElement('span');
-    span.className = 'sort-indicator';
-    th.appendChild(span);
+    th.appendChild(svgIcon('chevron-down', { size: 12, className: 'icon sort-indicator' }));
   }
   th.title = label;
 }
@@ -919,12 +895,17 @@ function handleDrilldownExit() {
   panelHeader.innerHTML = `
     <h3>Website Activity</h3>
     <div class="table-controls">
-      <input
-        type="search"
-        id="table-search"
-        placeholder="Search websites..."
-        aria-label="Search websites"
-      />
+      <div class="input-with-icon">
+        <svg class="icon" aria-hidden="true">
+          <use href="../../assets/icons.svg#i-search"></use>
+        </svg>
+        <input
+          type="search"
+          id="table-search"
+          placeholder="Search websites..."
+          aria-label="Search websites"
+        />
+      </div>
       <select id="table-sort" aria-label="Sort by">
         <option value="count-desc">Most opened first</option>
         <option value="count-asc">Least opened first</option>
@@ -935,31 +916,41 @@ function handleDrilldownExit() {
     </div>
   `;
 
-  // Restore original table column headers
+  // Restore original table column headers (matches index.html markup)
   const thead = document.querySelector('.data-table thead');
   if (thead) {
     thead.innerHTML = `
       <tr>
         <th class="sortable" data-sort="domain">
-          Domain
-          <span class="sort-indicator"></span>
+          Website
+          <svg class="icon sort-indicator" aria-hidden="true">
+            <use href="../../assets/icons.svg#i-chevron-down"></use>
+          </svg>
         </th>
         <th class="sortable" data-sort="count">
           Visits
-          <span class="sort-indicator"></span>
+          <svg class="icon sort-indicator" aria-hidden="true">
+            <use href="../../assets/icons.svg#i-chevron-down"></use>
+          </svg>
         </th>
-        <th class="sortable" data-sort="subpaths">
-          Subpaths
-          <span class="sort-indicator"></span>
-        </th>
+        <th class="comparison-column" style="display: none">Change</th>
         <th class="sortable" data-sort="lastVisit">
-          Last Visit
-          <span class="sort-indicator"></span>
+          Last visit
+          <svg class="icon sort-indicator" aria-hidden="true">
+            <use href="../../assets/icons.svg#i-chevron-down"></use>
+          </svg>
         </th>
         <th>Limit</th>
         <th>Status</th>
       </tr>
     `;
+
+    // Keep the restored comparison column in sync with the toggle state
+    const comparisonToggle = document.getElementById('comparison-toggle-input');
+    const comparisonTh = thead.querySelector('.comparison-column');
+    if (comparisonTh && comparisonToggle) {
+      comparisonTh.style.display = comparisonToggle.checked ? '' : 'none';
+    }
   }
 
   // Re-setup table controls
@@ -1086,45 +1077,21 @@ async function updateFocusScoreDisplay() {
     const focusScoreStat = document.getElementById('focus-score-stat');
     if (focusScoreStat) {
       let rating = 'Good';
-      let icon = '';
 
       // Reset classes
       focusScoreStat.classList.remove('score-excellent', 'score-good', 'score-fair', 'score-poor');
 
       if (todayScore >= 80) {
         rating = 'Excellent';
-        icon = ' 🔥';
         focusScoreStat.classList.add('score-excellent');
 
-        // Add celebration effect if not already present
+        // Brief accent ring pulse on the tile (styled via #score-celebration in dashboard.css)
         if (!document.getElementById('score-celebration')) {
           const celebration = document.createElement('div');
           celebration.id = 'score-celebration';
-          celebration.innerHTML = "🎉 You're on fire!";
-          celebration.style.position = 'absolute';
-          celebration.style.top = '100%';
-          celebration.style.left = '50%';
-          celebration.style.transform = 'translateX(-50%)';
-          celebration.style.background = 'var(--color-primary)';
-          celebration.style.color = 'white';
-          celebration.style.padding = '4px 8px';
-          celebration.style.borderRadius = '4px';
-          celebration.style.fontSize = '12px';
-          celebration.style.whiteSpace = 'nowrap';
-          celebration.style.zIndex = '100';
-          celebration.style.marginTop = '8px';
-          celebration.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
-          celebration.style.animation = 'fadeInUp 0.3s ease-out';
-
-          focusScoreStat.style.position = 'relative';
+          celebration.setAttribute('aria-hidden', 'true');
           focusScoreStat.appendChild(celebration);
-
-          // Remove after 5 seconds
-          setTimeout(() => {
-            celebration.style.opacity = '0';
-            celebration.style.transition = 'opacity 0.5s';
-            setTimeout(() => celebration.remove(), 500);
-          }, 5000);
+          setTimeout(() => celebration.remove(), 700);
         }
       } else if (todayScore >= 60) {
         rating = 'Good';
@@ -1138,11 +1105,6 @@ async function updateFocusScoreDisplay() {
       }
 
       focusScoreStat.title = `Today's Focus Score: ${todayScore}/100 (${rating})`;
-
-      // Append icon if high score
-      if (todayScore >= 80 && !focusScoreElement.textContent.includes('🔥')) {
-        focusScoreElement.textContent += icon;
-      }
     }
   } catch (error) {
     console.error('Error updating focus score:', error);

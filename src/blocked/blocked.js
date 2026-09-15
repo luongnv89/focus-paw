@@ -12,23 +12,23 @@ const messages = [
     subtext: "Maybe it's time for a breather? Your focus bear thinks so.",
   },
   {
-    heading: 'Hold up! 🐾',
+    heading: 'Hold up!',
     subtext: 'Your brain deserves a break from this rabbit hole. How about a walk?',
   },
   {
-    heading: 'Limit reached! 🎯',
+    heading: 'Limit reached!',
     subtext: "You set this limit for a reason. Future you says 'thank you!'",
   },
   {
-    heading: 'Nope, not today! 🚫',
+    heading: 'Nope, not today!',
     subtext: 'This site has had enough of your time today. Go do something awesome!',
   },
   {
-    heading: 'Bear wall activated! 🐻',
+    heading: 'Bear wall activated!',
     subtext: "Time to redirect that focus energy elsewhere. You've got this!",
   },
   {
-    heading: 'Your limit, your rules! 📏',
+    heading: 'Your limit, your rules!',
     subtext: "You decided this boundary. Stick with it—you'll thank yourself later.",
   },
 ];
@@ -204,9 +204,9 @@ function updateCountdownTimer() {
   const footerEl = document.getElementById('reset-footer');
   if (footerEl) {
     if (limitType === 'fiveHour') {
-      footerEl.textContent = `Resets at ${resetTimeStr} — 5 hours after your oldest visit. You got this! 💪`;
+      footerEl.textContent = `Resets at ${resetTimeStr} — 5 hours after your oldest visit. You got this!`;
     } else {
-      footerEl.textContent = `Resets at midnight (${resetTimeStr}). You got this! 💪`;
+      footerEl.textContent = `Resets at midnight (${resetTimeStr}). You got this!`;
     }
   }
 }
@@ -233,7 +233,7 @@ helpTitle.textContent = 'To adjust limits:';
 const instructionsList = document.createElement('ol');
 [
   'Click the FocusPaw icon in your toolbar',
-  'Click the ⚙️ settings button',
+  'Click the settings button',
   'Configure your limits',
 ].forEach((instruction) => {
   const listItem = document.createElement('li');

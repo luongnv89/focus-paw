@@ -46,7 +46,7 @@
   - Keep internal documentation up to date:
     - Briefly document any new module, major function, or architectural decision in code comments or a short markdown note.
     - When adding/removing features, update `tasks.md` status and ensure behavior stays aligned with `prd.md`.
-    - Keep `docs/dev-setup.md`, `CLAUDE.md`, and `AGENTS.md` in sync on the recorded commands, storage-writer contract, and module layout (`background/popup/dashboard/shared`).
+    - Keep `docs/dev-setup.md`, `CLAUDE.md`, and `AGENTS.md` in sync on the recorded commands, storage-writer contract, and module layout (`background/popup/dashboard/blocked/help/content/common` — shared UI shell: `common/theme.css`, `common/shell.css`, `common/icons.js` + `assets/icons.svg`).
 
 - **Security Considerations**
   - Respect FocusPaw's **local-only, privacy-first** design:
