@@ -71,10 +71,11 @@
               </svg>
             </span>
             <div>
-              <strong>No External Servers</strong>
+              <strong>No External Servers by Default</strong>
               <p>
-                FocusPaw never connects to external servers. There are no analytics, no tracking,
-                and no cloud sync.
+                Visit counts stay on your device. The Map view draws a bundled world atlas with no
+                street tiles. Optional website-location lookup (off by default) sends hostnames to
+                ipwho.is over HTTPS and caches results locally.
               </p>
             </div>
           </div>
@@ -360,6 +361,30 @@
                 <li>Contribute to development</li>
                 <li>Fork and customize for your needs</li>
               </ul>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question" aria-expanded="false" aria-controls="faq-8">
+              <span>Does the Map view send data off this device?</span>
+              <svg class="faq-toggle icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-chevron-down"></use>
+              </svg>
+            </button>
+            <div class="faq-answer" id="faq-8" hidden>
+              <p>
+                The Map tab is dashboard-only. The world outline is a GeoJSON atlas shipped with the
+                extension, so the default view needs no network. OpenStreetMap and other street
+                tiles are never loaded. Device GPS is not used.
+              </p>
+              <p>
+                Website pins appear only if you turn on
+                <strong>Look up website locations</strong> in Settings. That option is off by
+                default. When on, FocusPaw sends tracked hostnames to
+                <strong>https://ipwho.is</strong> (HTTPS JSON) to estimate where a site is hosted,
+                then stores coordinates in local storage for about seven days. Use
+                <strong>Clear location cache</strong> on the Map view to delete those results.
+              </p>
             </div>
           </div>
         </div>

@@ -1,4 +1,11 @@
-import { Shield, BarChart3, Timer, TrendingUp } from 'lucide-react';
+import {
+  Shield,
+  BarChart3,
+  Timer,
+  TrendingUp,
+  Globe,
+  Lock,
+} from 'lucide-react';
 import { featuresContent } from '../data/features';
 
 // Map icon names to components
@@ -7,6 +14,8 @@ const iconMap = {
   BarChart3,
   Timer,
   TrendingUp,
+  Globe,
+  Lock,
 };
 
 function FeatureCard({ feature }) {

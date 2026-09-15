@@ -1,13 +1,13 @@
 export const privacyPolicyContent = {
   title: 'Privacy Policy',
-  lastUpdated: 'November 29, 2024',
+  lastUpdated: 'September 16, 2026',
   sections: [
     {
       id: 'overview',
       title: 'Overview',
       content: `FocusPaw is a privacy-first Chrome extension designed to help you track and improve your browsing focus habits. We are committed to protecting your privacy and being transparent about our data practices.
 
-**The short version: All your data stays on your device. We don't collect, transmit, or store any of your personal information.**`,
+**The short version: Visit tracking stays on your device. We don't collect accounts or analytics. Optional Map location lookup is off by default and is disclosed below.**`,
     },
     {
       id: 'what-we-collect',
@@ -34,10 +34,11 @@ export const privacyPolicyContent = {
       title: 'Data Storage',
       content: `All data is stored **locally** using Chrome's built-in \`chrome.storage.local\` API. This means:
 
-- Your data never leaves your device
-- No data is transmitted to external servers
+- Visit counts and settings never leave your device
 - No cloud sync or backup services are used
-- No third-party analytics or tracking`,
+- No third-party analytics or tracking
+- The Map view's world atlas is bundled with the extension (no tile servers)
+- Optional hostname geolocation (off by default) is described under Third-Party Services`,
     },
     {
       id: 'data-usage',
@@ -81,7 +82,9 @@ export const privacyPolicyContent = {
     {
       id: 'third-party',
       title: 'Third-Party Services',
-      content: `FocusPaw does not use any third-party services, analytics, or tracking. The extension operates entirely offline once installed.`,
+      content: `FocusPaw does not use analytics or advertising networks. The Map view draws a bundled Natural Earth–style GeoJSON atlas and does **not** load OpenStreetMap, Carto, MapLibre, or other street tiles.
+
+**Optional location lookup (off by default):** if you enable "Look up website locations" in Settings, the extension may request optional host access and send tracked hostnames to \`https://ipwho.is/{hostname}\` over HTTPS to estimate where a site is hosted. Responses are cached locally for about 7 days, with a size cap. You can clear that cache from the Map view. Device GPS / the Chrome \`geolocation\` permission are not used.`,
     },
     {
       id: 'children',
@@ -113,7 +116,10 @@ export const privacyPolicyContent = {
     title: 'Summary',
     items: [
       { question: 'Do you collect personal data?', answer: 'No' },
-      { question: 'Do you send data to servers?', answer: 'No' },
+      {
+        question: 'Do you send data to servers?',
+        answer: 'Only if you opt in to Map location lookup (ipwho.is, HTTPS)',
+      },
       { question: 'Do you use analytics?', answer: 'No' },
       { question: 'Do you sell data?', answer: 'No' },
       { question: 'Can I delete my data?', answer: 'Yes, anytime' },
