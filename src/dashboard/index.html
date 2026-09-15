@@ -299,7 +299,12 @@
                       <use href="../../assets/icons.svg#i-zoom-out"></use>
                     </svg>
                   </button>
-                  <button id="zoom-reset" class="btn btn-ghost" title="Reset zoom">
+                  <button
+                    id="zoom-reset"
+                    class="btn btn-ghost"
+                    title="Reset zoom"
+                    aria-label="Reset zoom"
+                  >
                     <span id="zoom-level" class="tnum">100%</span>
                   </button>
                   <button id="zoom-in" class="btn btn-ghost btn-icon-only" aria-label="Zoom in">
@@ -384,24 +389,30 @@
                 <table class="data-table" id="data-table">
                   <thead>
                     <tr>
-                      <th class="sortable" data-sort="domain">
-                        Website
-                        <svg class="icon sort-indicator" aria-hidden="true">
-                          <use href="../../assets/icons.svg#i-chevron-down"></use>
-                        </svg>
+                      <th class="sortable" data-sort="domain" aria-sort="none">
+                        <button type="button" class="sort-btn">
+                          Website
+                          <svg class="icon sort-indicator" aria-hidden="true">
+                            <use href="../../assets/icons.svg#i-chevron-down"></use>
+                          </svg>
+                        </button>
                       </th>
-                      <th class="sortable" data-sort="count">
-                        Visits
-                        <svg class="icon sort-indicator" aria-hidden="true">
-                          <use href="../../assets/icons.svg#i-chevron-down"></use>
-                        </svg>
+                      <th class="sortable" data-sort="count" aria-sort="none">
+                        <button type="button" class="sort-btn">
+                          Visits
+                          <svg class="icon sort-indicator" aria-hidden="true">
+                            <use href="../../assets/icons.svg#i-chevron-down"></use>
+                          </svg>
+                        </button>
                       </th>
                       <th class="comparison-column" style="display: none">Change</th>
-                      <th class="sortable" data-sort="lastVisit">
-                        Last visit
-                        <svg class="icon sort-indicator" aria-hidden="true">
-                          <use href="../../assets/icons.svg#i-chevron-down"></use>
-                        </svg>
+                      <th class="sortable" data-sort="lastVisit" aria-sort="none">
+                        <button type="button" class="sort-btn">
+                          Last visit
+                          <svg class="icon sort-indicator" aria-hidden="true">
+                            <use href="../../assets/icons.svg#i-chevron-down"></use>
+                          </svg>
+                        </button>
                       </th>
                       <th>Limit</th>
                       <th>Status</th>

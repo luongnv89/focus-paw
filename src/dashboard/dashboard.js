@@ -674,10 +674,11 @@ function setupTableControls() {
     });
   }
 
-  // Setup sortable table headers
+  // Setup sortable table headers (button inside th for keyboard + aria-sort)
   const headers = document.querySelectorAll('.data-table th.sortable');
   headers.forEach((header) => {
-    header.addEventListener('click', () => {
+    const trigger = header.querySelector('.sort-btn') || header;
+    trigger.addEventListener('click', () => {
       const field = header.dataset.sort;
       const isAscending = tableFilters.sortField === field && tableFilters.sortOrder === 'asc';
       const currentOrder = isAscending ? 'desc' : 'asc';
@@ -732,6 +733,9 @@ function updateSortHeaderState(field, order) {
     header.classList.remove('sorted-asc', 'sorted-desc');
     if (header.dataset.sort === field) {
       header.classList.add(order === 'asc' ? 'sorted-asc' : 'sorted-desc');
+      header.setAttribute('aria-sort', order === 'asc' ? 'ascending' : 'descending');
+    } else {
+      header.setAttribute('aria-sort', 'none');
     }
   });
 }
@@ -746,16 +750,17 @@ function updateVisitsHeaderLabel() {
   };
   const th = document.querySelector('.data-table th[data-sort="count"]');
   if (!th) return;
-  const indicator = th.querySelector('.sort-indicator');
+  const trigger = th.querySelector('.sort-btn') || th;
+  const indicator = trigger.querySelector('.sort-indicator');
   const label = labels[range] || 'Visits';
-  // Preserve sort indicator
-  th.textContent = `${label} `;
+  trigger.replaceChildren(document.createTextNode(`${label} `));
   if (indicator) {
-    th.appendChild(indicator);
+    trigger.appendChild(indicator);
   } else {
-    th.appendChild(svgIcon('chevron-down', { size: 12, className: 'icon sort-indicator' }));
+    trigger.appendChild(svgIcon('chevron-down', { size: 12, className: 'icon sort-indicator' }));
   }
-  th.title = label;
+  trigger.title = label;
+  trigger.setAttribute('aria-label', `Sort by ${label}`);
 }
 
 function setupPagination() {
@@ -921,24 +926,30 @@ function handleDrilldownExit() {
   if (thead) {
     thead.innerHTML = `
       <tr>
-        <th class="sortable" data-sort="domain">
-          Website
-          <svg class="icon sort-indicator" aria-hidden="true">
-            <use href="../../assets/icons.svg#i-chevron-down"></use>
-          </svg>
+        <th class="sortable" data-sort="domain" aria-sort="none">
+          <button type="button" class="sort-btn">
+            Website
+            <svg class="icon sort-indicator" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-chevron-down"></use>
+            </svg>
+          </button>
         </th>
-        <th class="sortable" data-sort="count">
-          Visits
-          <svg class="icon sort-indicator" aria-hidden="true">
-            <use href="../../assets/icons.svg#i-chevron-down"></use>
-          </svg>
+        <th class="sortable" data-sort="count" aria-sort="none">
+          <button type="button" class="sort-btn">
+            Visits
+            <svg class="icon sort-indicator" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-chevron-down"></use>
+            </svg>
+          </button>
         </th>
         <th class="comparison-column" style="display: none">Change</th>
-        <th class="sortable" data-sort="lastVisit">
-          Last visit
-          <svg class="icon sort-indicator" aria-hidden="true">
-            <use href="../../assets/icons.svg#i-chevron-down"></use>
-          </svg>
+        <th class="sortable" data-sort="lastVisit" aria-sort="none">
+          <button type="button" class="sort-btn">
+            Last visit
+            <svg class="icon sort-indicator" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-chevron-down"></use>
+            </svg>
+          </button>
         </th>
         <th>Limit</th>
         <th>Status</th>

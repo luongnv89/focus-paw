@@ -368,8 +368,8 @@ main {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
-.time-filter-btn:focus {
-  outline: 2px solid var(--color-secondary);
+.time-filter-btn:focus-visible {
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 

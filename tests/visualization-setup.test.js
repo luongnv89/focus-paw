@@ -52,16 +52,16 @@ describe('visualization-page setup', () => {
       <div id="settings-toast"></div>
       <button id="reset-data-btn">Reset</button>
       <div id="graph-container"></div>
-      <div id="domain-list"></div>
-      <div id="empty-state" style="display:none"></div>
-      <div id="content" style="display:none"></div>
+      <div id="domain-list" hidden></div>
+      <div id="empty-state" hidden></div>
+      <div id="content" hidden></div>
       <div id="stats-title"></div>
       <div id="summary-content"></div>
       <input type="checkbox" id="comparison-toggle-input" />
       <button class="time-filter-btn" data-range="today"></button>
       <button class="time-filter-btn" data-range="week"></button>
       <button id="refresh-btn"></button>
-      <div id="quick-limits-panel" style="display:none"><ul id="quick-limits-list"></ul></div>
+      <div id="quick-limits-panel" hidden><ul id="quick-limits-list"></ul></div>
       <button id="export-json-btn"></button>
       <button id="export-csv-btn"></button>
     `;
@@ -85,6 +85,17 @@ describe('visualization-page setup', () => {
     expect(loading.style.display).toBe('none');
   });
 
+  test('clears hidden on empty-state so Chromium [hidden] display:none !important does not win', async () => {
+    makeChrome({}, {});
+    await setupVisualizationPage({ defaultRange: 'today', fullPage: false });
+    const emptyState = document.getElementById('empty-state');
+    const content = document.getElementById('content');
+    expect(emptyState.hidden).toBe(false);
+    expect(emptyState.style.display).toBe('block');
+    expect(content.hidden).toBe(true);
+    expect(content.style.display).toBe('none');
+  });
+
   test('setupVisualizationPage handles visits data', async () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -93,5 +104,11 @@ describe('visualization-page setup', () => {
     await setupVisualizationPage({ defaultRange: 'today' });
     // Should have rendered content or empty-state correctly without throwing
     expect(document.getElementById('loading').style.display).toBe('none');
+    const emptyState = document.getElementById('empty-state');
+    const content = document.getElementById('content');
+    expect(content.hidden).toBe(false);
+    expect(content.style.display).toBe('block');
+    expect(emptyState.hidden).toBe(true);
+    expect(emptyState.style.display).toBe('none');
   });
 });

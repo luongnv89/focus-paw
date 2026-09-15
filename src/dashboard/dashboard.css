@@ -837,9 +837,30 @@ body.dashboard-view .dashboard-main {
 .data-table th.sortable {
   cursor: pointer;
   user-select: none;
+  padding: 0;
 }
 
-.data-table th.sortable:hover {
+.data-table th.sortable .sort-btn {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+}
+
+.data-table th.sortable:hover,
+.data-table th.sortable .sort-btn:hover {
   color: var(--ink-1);
 }
 

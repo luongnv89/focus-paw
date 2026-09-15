@@ -71,6 +71,21 @@ function getTitleForRange(range) {
 }
 
 /**
+ * Show or hide a node. Chromium maps [hidden] to `display: none !important`,
+ * so toggling only `style.display` cannot reveal elements that use the
+ * HTML `hidden` attribute (popup empty-state/content/list/quick-limits).
+ * Keep `style.display` in sync for dashboard nodes that start as inline none.
+ * @param {HTMLElement|null} el
+ * @param {boolean} shown
+ * @param {string} [displayWhenShown='block']
+ */
+function setShown(el, shown, displayWhenShown = 'block') {
+  if (!el) return;
+  el.hidden = !shown;
+  el.style.display = shown ? displayWhenShown : 'none';
+}
+
+/**
  * Load previous period data for comparison
  * @param {string} range - Current time range
  * @returns {Promise<Object>} - Previous period aggregated data
@@ -423,10 +438,10 @@ function wireVisualizationRender(ctx) {
       .slice(0, 5)
       .map(([d]) => d);
     if (topDomains.length === 0) {
-      panel.style.display = 'none';
+      setShown(panel, false);
       return;
     }
-    panel.style.display = 'block';
+    setShown(panel, true);
     list.innerHTML = '';
     const limits = await getLimits();
     const defaultConfig = createDefaultLimitConfig();
@@ -505,13 +520,13 @@ function wireVisualizationRender(ctx) {
       const aggregatedVisits = await loadAggregatedStats(range);
       const domains = Object.keys(aggregatedVisits);
       if (domains.length === 0) {
-        if (emptyState) emptyState.style.display = 'block';
-        if (content) content.style.display = 'none';
+        setShown(emptyState, true);
+        setShown(content, false);
         if (ctx.onDataLoaded) ctx.onDataLoaded({});
         return;
       }
-      if (emptyState) emptyState.style.display = 'none';
-      if (content) content.style.display = 'block';
+      setShown(emptyState, false);
+      setShown(content, true);
       if (ctx.onDataLoaded) ctx.onDataLoaded(aggregatedVisits);
       await renderQuickLimits(aggregatedVisits);
 
@@ -521,8 +536,8 @@ function wireVisualizationRender(ctx) {
       }
 
       if (isFeatureEnabled('RADIAL_GRAPH')) {
-        if (graphContainer) graphContainer.style.display = 'block';
-        if (domainListEl) domainListEl.style.display = 'none';
+        setShown(graphContainer, true);
+        setShown(domainListEl, false);
         const badges = await calculateFocusHeroBadges();
         const limits = await getLimits();
         // Measure the container now that #content is displayed; the SVG uses a
@@ -559,8 +574,8 @@ function wireVisualizationRender(ctx) {
           setTimeout(() => summaryElement.classList.remove('updating'), 300);
         }
       } else if (graphContainer && domainListEl) {
-        graphContainer.style.display = 'none';
-        domainListEl.style.display = 'block';
+        setShown(graphContainer, false);
+        setShown(domainListEl, true);
         renderSimpleList(aggregatedVisits, domainListEl);
       }
     } catch (error) {
