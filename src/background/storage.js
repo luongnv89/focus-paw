@@ -36,7 +36,11 @@
  *     }
  *   },
  *   settings: {
- *     onboardingComplete: false
+ *     onboardingComplete: false,
+ *     geoLookupEnabled: false
+ *   },
+ *   geoLookupCache: {
+ *     "example.com": { lat: 1.2, lon: 3.4, country: "SG", fetchedAt: 1700000000000, ok: true }
  *   }
  * }
  */
@@ -50,7 +54,52 @@ import {
 
 const defaultSettings = {
   onboardingComplete: false,
+  geoLookupEnabled: false,
 };
+
+export const GEO_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+export const GEO_CACHE_MAX_ENTRIES = 200;
+export const GEO_CACHE_STORAGE_KEY = 'geoLookupCache';
+
+let geoCacheQueue = Promise.resolve();
+
+/**
+ * Reset geo-cache write queue (test-only)
+ */
+export function resetGeoCacheQueueForTests() {
+  geoCacheQueue = Promise.resolve();
+}
+
+/**
+ * Drop expired geo cache entries, then oldest when over the size cap.
+ * @param {Object} cache
+ * @param {number} [now]
+ * @param {number} [ttlMs]
+ * @param {number} [maxEntries]
+ * @returns {Object}
+ */
+export function pruneGeoCacheEntries(
+  cache,
+  now = Date.now(),
+  ttlMs = GEO_CACHE_TTL_MS,
+  maxEntries = GEO_CACHE_MAX_ENTRIES,
+) {
+  const next = {};
+  Object.entries(cache || {}).forEach(([domain, entry]) => {
+    if (!entry || typeof entry.fetchedAt !== 'number') return;
+    if (now - entry.fetchedAt > ttlMs) return;
+    next[domain] = entry;
+  });
+  const keys = Object.keys(next);
+  if (keys.length <= maxEntries) return next;
+  keys
+    .sort((a, b) => next[a].fetchedAt - next[b].fetchedAt)
+    .slice(0, keys.length - maxEntries)
+    .forEach((key) => {
+      delete next[key];
+    });
+  return next;
+}
 
 const limitDefaults = {
   enabled: true,
@@ -417,6 +466,73 @@ export async function updateSettings(newSettings) {
     chrome.storage.local.get(['settings'], (data) => {
       const settings = { ...(data.settings || {}), ...newSettings };
       chrome.storage.local.set({ settings }, resolve);
+    });
+  });
+}
+
+/**
+ * Read the domain→lat/lon lookup cache (pruned).
+ * @returns {Promise<Object>}
+ */
+export async function getGeoLookupCache() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get([GEO_CACHE_STORAGE_KEY], (data) => {
+      if (chrome.runtime?.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+      resolve(pruneGeoCacheEntries(data[GEO_CACHE_STORAGE_KEY] || {}));
+    });
+  });
+}
+
+async function putGeoLookupEntriesInternal(entries) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get([GEO_CACHE_STORAGE_KEY], (data) => {
+      if (chrome.runtime?.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+      const merged = {
+        ...pruneGeoCacheEntries(data[GEO_CACHE_STORAGE_KEY] || {}),
+        ...(entries || {}),
+      };
+      const next = pruneGeoCacheEntries(merged);
+      chrome.storage.local.set({ [GEO_CACHE_STORAGE_KEY]: next }, () => {
+        if (chrome.runtime?.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+          return;
+        }
+        resolve(next);
+      });
+    });
+  });
+}
+
+/**
+ * Merge entries into the geo lookup cache (serialized, lastError, TTL + size bound).
+ * @param {Object} entries
+ * @returns {Promise<Object>}
+ */
+export function putGeoLookupEntries(entries) {
+  const task = () => putGeoLookupEntriesInternal(entries);
+  const result = geoCacheQueue.then(task, task);
+  geoCacheQueue = result.catch(() => {});
+  return result;
+}
+
+/**
+ * Remove all cached hostname coordinates.
+ * @returns {Promise<void>}
+ */
+export async function clearGeoLookupCache() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set({ [GEO_CACHE_STORAGE_KEY]: {} }, () => {
+      if (chrome.runtime?.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+      resolve();
     });
   });
 }
