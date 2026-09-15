@@ -710,10 +710,12 @@ function wireVisualizationSettings(ctx) {
 
   const showMainView = () => {
     if (!dom.settingsView || !dom.mainView) return;
+    if (dom.settingsView.hidden) return;
     dom.settingsView.hidden = true;
     dom.settingsView.setAttribute('aria-hidden', 'true');
     // '' restores the stylesheet display (dashboard main view is flex, not block)
     dom.mainView.style.display = '';
+    dom.settingsBtn?.focus();
   };
 
   // Settings/main view navigation
@@ -723,6 +725,14 @@ function wireVisualizationSettings(ctx) {
   if (dom.settingsBackBtn) {
     dom.settingsBackBtn.addEventListener('click', showMainView);
   }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (!dom.settingsView || dom.settingsView.hidden) return;
+    event.preventDefault();
+    event.stopPropagation();
+    showMainView();
+  });
 
   // Limit list interactions (toggle / remove / edit)
   if (dom.limitList) {
@@ -922,10 +932,10 @@ async function wireVisualizationActions(ctx, _options) {
       ctx.currentRange = range;
       document.querySelectorAll('.time-filter-btn').forEach((b) => {
         b.classList.remove('active');
-        b.setAttribute('aria-selected', 'false');
+        b.setAttribute('aria-pressed', 'false');
       });
       btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
+      btn.setAttribute('aria-pressed', 'true');
       await ctx.renderVisualization(range);
     });
   });

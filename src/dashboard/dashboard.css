@@ -1605,7 +1605,7 @@ body.dashboard-view .dashboard-main {
    Accessibility modes
    ======================================== */
 
-body.color-blind-mode {
+body.high-contrast {
   --accent: #00d4ff;
   --accent-soft: rgba(0, 212, 255, 0.14);
   --ok: #00ff88;
@@ -1616,30 +1616,30 @@ body.color-blind-mode {
   --bad-soft: rgba(255, 51, 102, 0.14);
 }
 
-body.color-blind-mode .status-badge.over-limit {
+body.high-contrast .status-badge.over-limit {
   background: var(--bad);
   color: #ffffff;
 }
 
-body.color-blind-mode .status-badge.over-limit::before {
+body.high-contrast .status-badge.over-limit::before {
   background: #ffffff;
 }
 
-body.color-blind-mode .status-badge.near-limit {
+body.high-contrast .status-badge.near-limit {
   background: var(--warn);
   color: #000000;
 }
 
-body.color-blind-mode .status-badge.near-limit::before {
+body.high-contrast .status-badge.near-limit::before {
   background: #000000;
 }
 
-body.color-blind-mode .status-badge.under-limit {
+body.high-contrast .status-badge.under-limit {
   background: var(--ok);
   color: #000000;
 }
 
-body.color-blind-mode .status-badge.under-limit::before {
+body.high-contrast .status-badge.under-limit::before {
   background: #000000;
 }
 

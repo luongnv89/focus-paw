@@ -9,6 +9,7 @@ import {
   normalizeLimitConfig,
   calculateOverallStreak,
   getSettings,
+  updateSettings,
 } from '../background/storage.js';
 import { getTodayFocusScore } from '../background/focus-score.js';
 import { categorizeDomain } from '../common/categories.js';
@@ -164,6 +165,8 @@ async function showInsightsPopup() {
   // Also close on Escape key while banner is visible
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && banner.style.display !== 'none') {
+      const settingsView = document.getElementById('settings-view');
+      if (settingsView && !settingsView.hidden) return;
       closeBanner();
     }
   });
@@ -1126,29 +1129,26 @@ async function updateFocusScoreDisplay() {
 // Settings Panel - Accessibility Toggles
 // ========================================
 
-// Color Blind Mode Toggle
-const colorBlindToggle = document.getElementById('color-blind-mode');
-if (colorBlindToggle) {
-  // Load saved preference
-  chrome.storage.local.get(['colorBlindMode'], (result) => {
-    if (result.colorBlindMode) {
-      colorBlindToggle.checked = true;
-      document.body.classList.add('color-blind-mode');
-    }
-  });
+// High contrast toggle (settings.highContrastMode + body.high-contrast)
+const highContrastToggle = document.getElementById('high-contrast-toggle');
+if (highContrastToggle) {
+  getSettings()
+    .then((settings) => {
+      const enabled = Boolean(settings.highContrastMode);
+      highContrastToggle.checked = enabled;
+      document.body.classList.toggle('high-contrast', enabled);
+    })
+    .catch((err) => console.warn('Unable to load high-contrast setting', err));
 
-  // Handle toggle change
-  colorBlindToggle.addEventListener('change', (e) => {
+  highContrastToggle.addEventListener('change', async (e) => {
     const enabled = e.target.checked;
-    chrome.storage.local.set({ colorBlindMode: enabled });
-
-    if (enabled) {
-      document.body.classList.add('color-blind-mode');
-      showToast('Color Blind Mode enabled');
-    } else {
-      document.body.classList.remove('color-blind-mode');
-      showToast('Color Blind Mode disabled');
+    try {
+      await updateSettings({ highContrastMode: enabled });
+    } catch (err) {
+      console.warn('Unable to save high-contrast setting', err);
     }
+    document.body.classList.toggle('high-contrast', enabled);
+    showToast(enabled ? 'High contrast enabled' : 'High contrast disabled');
   });
 }
 

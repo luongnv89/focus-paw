@@ -111,4 +111,19 @@ describe('visualization-page setup', () => {
     expect(emptyState.hidden).toBe(true);
     expect(emptyState.style.display).toBe('none');
   });
+
+  test('Escape closes settings and restores focus to the settings button', async () => {
+    makeChrome({}, {});
+    await setupVisualizationPage({ defaultRange: 'today', fullPage: false });
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsView = document.getElementById('settings-view');
+    settingsBtn.click();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 20);
+    });
+    expect(settingsView.hidden).toBe(false);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(settingsView.hidden).toBe(true);
+    expect(document.activeElement).toBe(settingsBtn);
+  });
 });

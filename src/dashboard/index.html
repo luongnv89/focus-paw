@@ -71,12 +71,11 @@
 
       <main id="main-view" class="dashboard-main">
         <div class="toolbar">
-          <div class="time-filter" role="tablist" aria-label="Time range filter">
+          <div class="time-filter" role="group" aria-label="Time range filter">
             <button
               class="time-filter-btn active"
               data-range="today"
-              role="tab"
-              aria-selected="true"
+              aria-pressed="true"
               title="View data for today"
             >
               Today
@@ -84,8 +83,7 @@
             <button
               class="time-filter-btn"
               data-range="week"
-              role="tab"
-              aria-selected="false"
+              aria-pressed="false"
               title="View data for the last 7 days"
             >
               Week
@@ -93,8 +91,7 @@
             <button
               class="time-filter-btn"
               data-range="month"
-              role="tab"
-              aria-selected="false"
+              aria-pressed="false"
               title="View data for the last 30 days"
             >
               Month
@@ -502,11 +499,11 @@
             <div class="settings-items">
               <div class="settings-item">
                 <div class="settings-item-info">
-                  <label for="color-blind-mode">High contrast</label>
+                  <label for="high-contrast-toggle">High contrast</label>
                   <p class="settings-item-desc">Enhanced contrast for better visibility</p>
                 </div>
                 <label class="toggle-switch">
-                  <input type="checkbox" id="color-blind-mode" />
+                  <input type="checkbox" id="high-contrast-toggle" />
                   <span class="toggle-slider-round"></span>
                 </label>
               </div>

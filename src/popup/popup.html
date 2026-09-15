@@ -80,37 +80,15 @@
             </button>
           </div>
 
-          <div class="time-filter" role="tablist" aria-label="Time range filter">
-            <button
-              class="time-filter-btn active"
-              data-range="today"
-              role="tab"
-              aria-selected="true"
-              aria-controls="graph-container"
-            >
+          <div class="time-filter" role="group" aria-label="Time range filter">
+            <button class="time-filter-btn active" data-range="today" aria-pressed="true">
               Today
             </button>
-            <button
-              class="time-filter-btn"
-              data-range="week"
-              role="tab"
-              aria-selected="false"
-              aria-controls="graph-container"
-            >
-              Week
-            </button>
-            <button
-              class="time-filter-btn"
-              data-range="month"
-              role="tab"
-              aria-selected="false"
-              aria-controls="graph-container"
-            >
-              Month
-            </button>
+            <button class="time-filter-btn" data-range="week" aria-pressed="false">Week</button>
+            <button class="time-filter-btn" data-range="month" aria-pressed="false">Month</button>
           </div>
 
-          <div id="graph-container" class="graph-container" role="tabpanel">
+          <div id="graph-container" class="graph-container">
             <!-- D3.js graph will be rendered here -->
           </div>
 
@@ -133,7 +111,7 @@
           <button
             id="settings-back-btn"
             class="pill-button pill-button-secondary"
-            aria-label="Back to dashboard"
+            aria-label="Back to overview"
           >
             <svg class="icon" aria-hidden="true">
               <use href="../../assets/icons.svg#i-arrow-left"></use>

@@ -47,6 +47,13 @@ global.chrome = {
         Object.assign(this.data, items);
         if (callback) callback();
       },
+      remove(keys, callback) {
+        const list = Array.isArray(keys) ? keys : [keys];
+        list.forEach((key) => {
+          delete this.data[key];
+        });
+        if (callback) callback();
+      },
       clear(callback) {
         this.data = {};
         if (callback) callback();
@@ -510,6 +517,22 @@ describe('Storage Module', () => {
     test('returns default settings when none exist', async () => {
       const settings = await getSettings();
       expect(settings.onboardingComplete).toBe(false);
+    });
+
+    test('migrates legacy colorBlindMode to highContrastMode once', async () => {
+      chrome.storage.local.data.colorBlindMode = true;
+      const settings = await getSettings();
+      expect(settings.highContrastMode).toBe(true);
+      expect(chrome.storage.local.data.settings.highContrastMode).toBe(true);
+      expect(chrome.storage.local.data.colorBlindMode).toBeUndefined();
+    });
+
+    test('does not override an explicit highContrastMode from colorBlindMode', async () => {
+      chrome.storage.local.data.settings = { highContrastMode: false };
+      chrome.storage.local.data.colorBlindMode = true;
+      const settings = await getSettings();
+      expect(settings.highContrastMode).toBe(false);
+      expect(chrome.storage.local.data.colorBlindMode).toBe(true);
     });
   });
 
