@@ -18,7 +18,9 @@ function makeChrome(data = {}) {
           if (keys === null || keys === undefined) {
             res = this.data;
           } else if (Array.isArray(keys)) {
-            keys.forEach((k) => { if (this.data[k] !== undefined) res[k] = this.data[k]; });
+            keys.forEach((k) => {
+              if (this.data[k] !== undefined) res[k] = this.data[k];
+            });
           } else if (typeof keys === 'string') {
             res = { [keys]: this.data[keys] };
           } else {
@@ -67,13 +69,21 @@ describe('achievements', () => {
 
   describe('checkAchievements', () => {
     test('unlocks first-step when a limit exists', async () => {
-      makeChrome({ limits: { 'example.com': createDefaultLimitConfig() }, achievements: { unlocked: [], progress: {} }, visits: {} });
+      makeChrome({
+        limits: { 'example.com': createDefaultLimitConfig() },
+        achievements: { unlocked: [], progress: {} },
+        visits: {},
+      });
       const unlocked = await checkAchievements();
       expect(unlocked).toContain('first-step');
     });
 
     test('does not re-unlock already unlocked', async () => {
-      makeChrome({ limits: { 'example.com': createDefaultLimitConfig() }, achievements: { unlocked: ['first-step'], progress: {} }, visits: {} });
+      makeChrome({
+        limits: { 'example.com': createDefaultLimitConfig() },
+        achievements: { unlocked: ['first-step'], progress: {} },
+        visits: {},
+      });
       const unlocked = await checkAchievements();
       expect(unlocked).not.toContain('first-step');
     });

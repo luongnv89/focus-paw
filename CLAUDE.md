@@ -21,6 +21,7 @@ The project is organized into 4 phases (see `tasks.md` for detailed breakdown):
 5. **Phase 4:** Launch - store assets, accessibility audit, Chrome Web Store submission (1 week)
 
 **MVP Feature Set:**
+
 - Per-domain focus visit tracking
 - Interactive radial graph visualization with time-range filtering
 - Per-site daily limits with countdown bubbles
@@ -185,6 +186,7 @@ npm run icons:generate          # sharp-based icon generation (Task 2.9)
 - **Module layout:** `background/` (tracking/storage/limits/focus-score/achievements/badge) · `popup/` + `popup/graph.js` (D3 radial graph) · `dashboard/` (full-page dashboard, blocking, domain) · `blocked/` · `help/` · `content/countdown-toast.js` · `common/visualization-page.js` (shared helpers) · `landing-page/` (Vite/React second package) — see `docs/dev-setup.md` for the full tree.
 
 Load unpacked for manual testing:
+
 ```bash
 # 1. Open chrome://extensions/ → Developer mode ON
 # 2. Load unpacked → select dist/ (after npm run build)
@@ -268,10 +270,11 @@ The extension UI uses the "Obsidian instrument panel" design system. Design toke
 - **Data deletion** - Users can clear all tracking data via Chrome's extension settings
 - **Testing environments** - Use test suites and manual testing with multiple tab/domain scenarios
 
-
 ## Active Technologies
+
 - JavaScript ES2020+ (React 18.x, Vite 5.x) + React 18, React Router 6, TailwindCSS 3, Lucide Icons, react-medium-image-zoom or similar lightbox library (001-landing-page)
 - N/A (static site, no backend storage) (001-landing-page)
 
 ## Recent Changes
+
 - 001-landing-page: Added JavaScript ES2020+ (React 18.x, Vite 5.x) + React 18, React Router 6, TailwindCSS 3, Lucide Icons, react-medium-image-zoom or similar lightbox library

@@ -299,7 +299,10 @@ describe('Tracking Module', () => {
 
       await trackCurrentTab();
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error tracking current tab:', expect.any(Error));
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Error tracking current tab:',
+        expect.any(Error),
+      );
       consoleErrorSpy.mockRestore();
     });
 

@@ -56,7 +56,9 @@ describe('storage streaks', () => {
     test('counts consecutive compliant days', () => {
       const today = new Date();
       const visits = {};
-      const limits = { 'example.com': createDefaultLimitConfig({ daily: { enabled: true, limit: 5 } }) };
+      const limits = {
+        'example.com': createDefaultLimitConfig({ daily: { enabled: true, limit: 5 } }),
+      };
       for (let i = 0; i < 3; i += 1) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
@@ -69,7 +71,9 @@ describe('storage streaks', () => {
     test('breaks streak when exceeding limit', () => {
       const today = new Date();
       const visits = {};
-      const limits = { 'example.com': createDefaultLimitConfig({ daily: { enabled: true, limit: 5 } }) };
+      const limits = {
+        'example.com': createDefaultLimitConfig({ daily: { enabled: true, limit: 5 } }),
+      };
       const d0 = getDateKey(today);
       const d1 = getDateKey(new Date(today.getTime() - 86400000));
       const d2 = getDateKey(new Date(today.getTime() - 2 * 86400000));
@@ -81,7 +85,11 @@ describe('storage streaks', () => {
     });
 
     test('best is max of current and existing best', () => {
-      const res = computeOverallStreakFromData({}, { 'example.com': createDefaultLimitConfig() }, { current: 1, best: 10 });
+      const res = computeOverallStreakFromData(
+        {},
+        { 'example.com': createDefaultLimitConfig() },
+        { current: 1, best: 10 },
+      );
       // With no visits and limits? Actually with no visits, limit respected? But we have limit, today count 0 <= limit, so current would be large (365). So best should be max.
       expect(res.best).toBeGreaterThanOrEqual(10);
     });
@@ -162,7 +170,9 @@ describe('storage streaks', () => {
       }
       makeChromeMock({
         visits,
-        limits: { 'example.com': createDefaultLimitConfig({ daily: { enabled: true, limit: 10 } }) },
+        limits: {
+          'example.com': createDefaultLimitConfig({ daily: { enabled: true, limit: 10 } }),
+        },
         overallStreak: { current: 0, best: 0 },
       });
       const res = await calculateOverallStreak();

@@ -9,13 +9,18 @@ function makeChrome(visits = {}) {
         get(keys, cb) {
           let res = {};
           if (Array.isArray(keys)) {
-            keys.forEach((k) => { if (this.data[k] !== undefined) res[k] = this.data[k]; });
+            keys.forEach((k) => {
+              if (this.data[k] !== undefined) res[k] = this.data[k];
+            });
           } else if (typeof keys === 'string') {
             res = { [keys]: this.data[keys] };
           } else if (keys === null) {
             res = this.data;
           }
-          if (typeof cb === 'function') { cb(res); return undefined; }
+          if (typeof cb === 'function') {
+            cb(res);
+            return undefined;
+          }
           return Promise.resolve(res);
         },
         set(items, cb) {
@@ -28,7 +33,10 @@ function makeChrome(visits = {}) {
     runtime: {},
   };
   global.chrome.action = { setBadgeText: async () => {}, setBadgeBackgroundColor: async () => {} };
-  global.chrome.declarativeNetRequest = { updateDynamicRules: async () => {}, getDynamicRules: async () => [] };
+  global.chrome.declarativeNetRequest = {
+    updateDynamicRules: async () => {},
+    getDynamicRules: async () => [],
+  };
 }
 
 describe('visualization-page', () => {
@@ -51,7 +59,9 @@ describe('visualization-page', () => {
       const weekData = { 'example.com': { count: 100, lastVisit: Date.now(), subpaths: {} } };
       const limits = { 'example.com': { enabled: true, daily: { enabled: true, limit: 5 } } };
       const insights = generateWeeklyInsights(weekData, limits);
-      expect(insights.some((i) => i.type === 'warning' && i.title.includes('Limits Exceeded'))).toBe(true);
+      expect(
+        insights.some((i) => i.type === 'warning' && i.title.includes('Limits Exceeded')),
+      ).toBe(true);
     });
 
     test('success when within limits', () => {
@@ -94,7 +104,9 @@ describe('visualization-page', () => {
   describe('loadAggregatedStats', () => {
     test('aggregates today visits from storage', async () => {
       const todayKey = getDateKey(new Date());
-      makeChrome({ [todayKey]: { 'example.com': { count: 5, lastVisit: Date.now(), subpaths: {} } } });
+      makeChrome({
+        [todayKey]: { 'example.com': { count: 5, lastVisit: Date.now(), subpaths: {} } },
+      });
       const stats = await loadAggregatedStats('today');
       expect(stats['example.com'].count).toBe(5);
     });

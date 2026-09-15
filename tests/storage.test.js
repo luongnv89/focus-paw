@@ -74,7 +74,7 @@ describe('Storage Module', () => {
       expect(dateKey).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
-    test('returns today\'s date', () => {
+    test("returns today's date", () => {
       expect(getTodayKey()).toMatch(/\d{4}-\d{2}-\d{2}/);
     });
   });
@@ -153,14 +153,14 @@ describe('Storage Module', () => {
       };
     });
 
-    test('aggregates today\'s visits', async () => {
+    test("aggregates today's visits", async () => {
       const stats = await getAggregatedStats('today');
       expect(stats['example.com'].count).toBe(5);
       expect(stats['twitter.com'].count).toBe(10);
       expect(stats['facebook.com']).toBeUndefined();
     });
 
-    test('aggregates week\'s visits', async () => {
+    test("aggregates week's visits", async () => {
       const stats = await getAggregatedStats('week');
       expect(stats['example.com'].count).toBe(10); // 5 + 3 + 2
       expect(stats['twitter.com'].count).toBe(10);

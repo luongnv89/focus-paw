@@ -60,7 +60,11 @@ describe('focus-score', () => {
     test('compliance score: staying under limit yields higher score than exceeding', () => {
       const date = '2025-01-10';
       const limits = {
-        'example.com': { enabled: true, fiveHour: { enabled: true, limit: 10 }, daily: { enabled: true, limit: 5 } },
+        'example.com': {
+          enabled: true,
+          fiveHour: { enabled: true, limit: 10 },
+          daily: { enabled: true, limit: 5 },
+        },
       };
       const visitsUnder = { [date]: { 'example.com': { count: 2 } } };
       const visitsOver = { [date]: { 'example.com': { count: 20 } } };
@@ -92,7 +96,9 @@ describe('focus-score', () => {
       const date = '2025-01-10';
       const previousDates = getPreviousDates(date, 7);
       const visits = {};
-      previousDates.forEach((d) => { visits[d] = { 'example.com': { count: 10 } }; });
+      previousDates.forEach((d) => {
+        visits[d] = { 'example.com': { count: 10 } };
+      });
       visits[date] = { 'example.com': { count: 1 } };
       const lowToday = calculateDailyFocusScoreWithData(date, visits, {}, 0);
       visits[date] = { 'example.com': { count: 20 } };
@@ -116,7 +122,13 @@ describe('focus-score', () => {
     test('getFocusScoreBreakdown returns total and components', async () => {
       const today = getTodayKey();
       const visits = { [today]: { 'example.com': { count: 3 } } };
-      const limits = { 'example.com': { enabled: true, fiveHour: { enabled: true, limit: 10 }, daily: { enabled: true, limit: 10 } } };
+      const limits = {
+        'example.com': {
+          enabled: true,
+          fiveHour: { enabled: true, limit: 10 },
+          daily: { enabled: true, limit: 10 },
+        },
+      };
       chromeStorageMock(visits, limits, { current: 2, best: 2 });
       const breakdown = await getFocusScoreBreakdown(today);
       expect(breakdown).toHaveProperty('total');

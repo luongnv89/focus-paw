@@ -54,10 +54,16 @@ describe('blocked page', () => {
           data: {},
           get(keys, cb) {
             const res = {};
-            if (typeof cb === 'function') { cb(res); return; }
+            if (typeof cb === 'function') {
+              cb(res);
+              return;
+            }
             return Promise.resolve(res);
           },
-          set(items, cb) { if (typeof cb === 'function') cb(); return Promise.resolve(); },
+          set(items, cb) {
+            if (typeof cb === 'function') cb();
+            return Promise.resolve();
+          },
         },
       },
       runtime: { getURL: (p) => `chrome-extension://id/${p}` },

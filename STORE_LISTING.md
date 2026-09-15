@@ -7,11 +7,13 @@ This document contains all the information needed to submit FocusPaw to the Chro
 ## Basic Information
 
 ### Extension Name
+
 ```
 FocusPaw - Focus Tracker
 ```
 
 ### Short Description (132 characters max)
+
 ```
 Track focus-switching habits with privacy-first visualizations. Set limits, build streaks, improve productivity.
 ```
@@ -104,11 +106,13 @@ Take control of your attention. Install FocusPaw today!
 ```
 
 ### Category
+
 ```
 Productivity
 ```
 
 ### Language
+
 ```
 English
 ```
@@ -118,16 +122,19 @@ English
 ## Store Assets Checklist
 
 ### Required Icons
+
 - [x] 16x16 PNG (`assets/icon-16.png`)
 - [x] 32x32 PNG (`assets/icon-32.png`)
 - [x] 48x48 PNG (`assets/icon-48.png`)
 - [x] 128x128 PNG (`assets/icon-128.png`)
 
 ### Store Icon
+
 - [ ] **Store Icon:** 128x128 PNG (for store listing)
   - Use: `assets/icon-128.png`
 
 ### Promotional Images
+
 - [ ] **Small Promo Tile:** 440x280 PNG
   - Location: `assets/store/promo-small.png`
   - Shows: Logo + tagline on brand background
@@ -141,6 +148,7 @@ English
   - Shows: Full feature showcase
 
 ### Screenshots (Required: 1-5)
+
 - [ ] **Screenshot 1:** 1280x800 or 640x400 PNG
   - Dashboard with radial graph
   - Location: `assets/store/screenshot-1-dashboard.png`
@@ -166,22 +174,24 @@ English
 ## Privacy & Permissions
 
 ### Privacy Policy URL
+
 ```
 https://github.com/luongnv89/focus-paw/blob/main/PRIVACY.md
 ```
 
 ### Permission Justifications
 
-| Permission | Justification |
-|------------|---------------|
-| `tabs` | Required to detect tab switches and track which domains you visit. Only the domain name is recorded, not full URLs or page content. |
-| `storage` | Required to save your visit data, settings, and limits locally on your device. No data is synced externally. |
-| `notifications` | Used to show countdown alerts when you're approaching your configured daily limits. |
-| `declarativeNetRequest` | Required to block access to websites when you exceed your self-configured daily limits. |
-| `declarativeNetRequestWithHostAccess` | Works with declarativeNetRequest to dynamically add blocking rules for specific domains when user-configured limits are exceeded. |
-| `host_permissions (<all_urls>)` | Required to track domain visits across all websites. Only domain names are recorded for visit counting. |
+| Permission                            | Justification                                                                                                                       |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `tabs`                                | Required to detect tab switches and track which domains you visit. Only the domain name is recorded, not full URLs or page content. |
+| `storage`                             | Required to save your visit data, settings, and limits locally on your device. No data is synced externally.                        |
+| `notifications`                       | Used to show countdown alerts when you're approaching your configured daily limits.                                                 |
+| `declarativeNetRequest`               | Required to block access to websites when you exceed your self-configured daily limits.                                             |
+| `declarativeNetRequestWithHostAccess` | Works with declarativeNetRequest to dynamically add blocking rules for specific domains when user-configured limits are exceeded.   |
+| `host_permissions (<all_urls>)`       | Required to track domain visits across all websites. Only domain names are recorded for visit counting.                             |
 
 ### Single Purpose Description
+
 ```
 FocusPaw helps users track and limit their focus-switching habits by counting domain visits and enforcing user-configured daily limits.
 ```
@@ -191,6 +201,7 @@ FocusPaw helps users track and limit their focus-switching habits by counting do
 ## Submission Checklist
 
 ### Before Submission
+
 - [ ] Test extension thoroughly in Chrome
 - [ ] Verify all features work correctly
 - [ ] Test in both dark and light mode
@@ -200,6 +211,7 @@ FocusPaw helps users track and limit their focus-switching habits by counting do
 - [ ] Check all links work (GitHub, etc.)
 
 ### Files to Include in ZIP
+
 ```
 dist/
 ├── manifest.json
@@ -222,12 +234,14 @@ dist/
 ```
 
 ### Build Command
+
 ```bash
 npm run build
 # Creates dist/ folder ready for submission
 ```
 
 ### ZIP Creation
+
 ```bash
 cd dist
 zip -r ../focuspaw-v1.0.0.zip .
@@ -238,16 +252,19 @@ zip -r ../focuspaw-v1.0.0.zip .
 ## Developer Account
 
 ### Publisher Name
+
 ```
 FocusPaw Team
 ```
 
 ### Support Email
+
 ```
 (Add your support email)
 ```
 
 ### Website
+
 ```
 https://github.com/luongnv89/focus-paw
 ```
@@ -266,6 +283,7 @@ https://github.com/luongnv89/focus-paw
 ## Post-Submission
 
 After approval:
+
 1. Update README.md with Chrome Web Store link
 2. Add Chrome Web Store badge to repository
 3. Announce release on social media / relevant communities

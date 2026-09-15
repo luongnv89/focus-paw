@@ -190,7 +190,11 @@ describe('Smoke: background SW wiring', () => {
     const tabActivated = onActivatedListeners[0];
     expect(tabActivated).toBeDefined();
 
-    chrome.tabs.get.mockResolvedValueOnce({ id: 42, url: 'https://example.com/page', active: true });
+    chrome.tabs.get.mockResolvedValueOnce({
+      id: 42,
+      url: 'https://example.com/page',
+      active: true,
+    });
     await tabActivated({ tabId: 42, windowId: 1 });
     await new Promise((r) => setTimeout(r, 50));
 
@@ -205,7 +209,11 @@ describe('Smoke: background SW wiring', () => {
     });
     const listener = onActivatedListeners[0];
     expect(listener).toBeDefined();
-    chrome.tabs.get.mockResolvedValueOnce({ id: 99, url: 'https://example.com/other', active: true });
+    chrome.tabs.get.mockResolvedValueOnce({
+      id: 99,
+      url: 'https://example.com/other',
+      active: true,
+    });
     expect(() => listener({ tabId: 99, windowId: 1 })).not.toThrow();
     await new Promise((r) => setTimeout(r, 50));
   });

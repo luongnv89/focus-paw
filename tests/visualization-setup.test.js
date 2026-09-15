@@ -10,9 +10,14 @@ function makeChrome(visits = {}, limits = {}) {
           if (keys === null) res = this.data;
           else if (Array.isArray(keys)) {
             res = {};
-            keys.forEach((k) => { if (this.data[k] !== undefined) res[k] = this.data[k]; });
+            keys.forEach((k) => {
+              if (this.data[k] !== undefined) res[k] = this.data[k];
+            });
           } else if (typeof keys === 'string') res = { [keys]: this.data[keys] };
-          if (typeof cb === 'function') { cb(res); return; }
+          if (typeof cb === 'function') {
+            cb(res);
+            return;
+          }
           return Promise.resolve(res);
         },
         set(items, cb) {
@@ -20,11 +25,18 @@ function makeChrome(visits = {}, limits = {}) {
           if (typeof cb === 'function') cb();
           return Promise.resolve();
         },
-        clear(cb) { this.data = {}; if (typeof cb === 'function') cb(); return Promise.resolve(); },
+        clear(cb) {
+          this.data = {};
+          if (typeof cb === 'function') cb();
+          return Promise.resolve();
+        },
       },
     },
     runtime: { getURL: (p) => `chrome-extension://id/${p}` },
-    declarativeNetRequest: { updateDynamicRules: jest.fn(async () => {}), getDynamicRules: jest.fn(async () => []) },
+    declarativeNetRequest: {
+      updateDynamicRules: jest.fn(async () => {}),
+      getDynamicRules: jest.fn(async () => []),
+    },
     notifications: { create: jest.fn() },
   };
   global.chrome.action = { setBadgeText: async () => {}, setBadgeBackgroundColor: async () => {} };
@@ -79,7 +91,9 @@ describe('visualization-page setup', () => {
 
   test('setupVisualizationPage renders without throwing (empty visits)', async () => {
     makeChrome({}, {});
-    await expect(setupVisualizationPage({ defaultRange: 'today', fullPage: false })).resolves.toBeUndefined();
+    await expect(
+      setupVisualizationPage({ defaultRange: 'today', fullPage: false }),
+    ).resolves.toBeUndefined();
     // After setup, loading should be hidden
     const loading = document.getElementById('loading');
     expect(loading.style.display).toBe('none');
@@ -100,7 +114,10 @@ describe('visualization-page setup', () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    makeChrome({ [todayKey]: { 'example.com': { count: 5, lastVisit: Date.now(), subpaths: {} } } }, {});
+    makeChrome(
+      { [todayKey]: { 'example.com': { count: 5, lastVisit: Date.now(), subpaths: {} } } },
+      {},
+    );
     await setupVisualizationPage({ defaultRange: 'today' });
     // Should have rendered content or empty-state correctly without throwing
     expect(document.getElementById('loading').style.display).toBe('none');

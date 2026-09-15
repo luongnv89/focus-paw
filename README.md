@@ -1,16 +1,17 @@
 <div align="center">
   <img src="assets/icon.svg" alt="FocusPaw Logo" width="128" height="128">
 
-  # FocusPaw
+# FocusPaw
 
-  ### Track your focus, one paw at a time
+### Track your focus, one paw at a time
 
-  A playful, privacy-first Chrome extension that helps you track focus-switching habits through beautiful D3.js visualizations.
+A playful, privacy-first Chrome extension that helps you track focus-switching habits through beautiful D3.js visualizations.
 
-  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-  [![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-yellow.svg)](https://www.google.com/chrome/)
-  [![Privacy First](https://img.shields.io/badge/Privacy-100%25%20Local-green.svg)](#privacy)
-  [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](manifest.json)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-yellow.svg)](https://www.google.com/chrome/)
+[![Privacy First](https://img.shields.io/badge/Privacy-100%25%20Local-green.svg)](#privacy)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](manifest.json)
+
 </div>
 
 ---
@@ -36,11 +37,13 @@ FocusPaw helps you understand and improve your browsing habits by tracking how o
 ## Installation
 
 ### From Chrome Web Store (Coming Soon)
+
 <!-- [Install FocusPaw](https://chrome.google.com/webstore/detail/focusbear/YOUR_EXTENSION_ID) -->
 
 ### Manual Installation (Developer Mode)
 
 1. Download or clone this repository
+
    ```bash
    git clone https://github.com/luongnv89/focus-paw.git
    cd focus-paw
@@ -91,6 +94,7 @@ Read our full [Privacy Policy](PRIVACY.md).
 ### Focus Score (0-100)
 
 Your daily focus score is calculated from:
+
 - **Limits Compliance (40%)** — Staying within your set limits
 - **Visit Reduction (30%)** — Reducing visits vs. previous week
 - **Streak Bonus (20%)** — Longer streaks = higher contribution
