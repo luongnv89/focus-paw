@@ -17,6 +17,7 @@ import { updateBlockingRules } from '../background/limits.js';
 import { getTodayKey, aggregateVisitsInRange } from './date-utils.js';
 import { validateLimitConfig, validateDomain } from './limit-validation.js';
 import { csvRow } from './csv-escape.js';
+import { initMapViewTabs, bindMapChrome, updateMapView } from '../dashboard/map-view.js';
 
 // "Near limit" threshold: 80% of a configured limit triggers the near-limit warning.
 const NEAR_LIMIT_THRESHOLD = 0.8;
@@ -523,11 +524,13 @@ function wireVisualizationRender(ctx) {
         setShown(emptyState, true);
         setShown(content, false);
         if (ctx.onDataLoaded) ctx.onDataLoaded({});
+        await updateMapView({});
         return;
       }
       setShown(emptyState, false);
       setShown(content, true);
       if (ctx.onDataLoaded) ctx.onDataLoaded(aggregatedVisits);
+      await updateMapView(aggregatedVisits);
       await renderQuickLimits(aggregatedVisits);
 
       if (ctx.cleanupGraph) {
@@ -1135,5 +1138,7 @@ export async function setupVisualizationPage(options = {}) {
   wireVisualizationRender(ctx);
   wireVisualizationSettings(ctx);
   bindZoomControls(ctx);
+  initMapViewTabs();
+  bindMapChrome();
   await wireVisualizationActions(ctx, options);
 }

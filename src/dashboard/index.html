@@ -254,9 +254,39 @@
             <!-- Topology Panel -->
             <div class="topology-panel" id="topology-panel">
               <div class="panel-header">
-                <h3>My Attention Map</h3>
+                <h3 id="topology-title">My Attention Map</h3>
+                <div class="viz-tabs" id="viz-tablist" role="tablist" aria-label="Visualization">
+                  <button
+                    type="button"
+                    class="viz-tab"
+                    role="tab"
+                    id="tab-graph"
+                    aria-controls="graph-panel"
+                    aria-selected="true"
+                    tabindex="0"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-chart-bar"></use>
+                    </svg>
+                    Graph
+                  </button>
+                  <button
+                    type="button"
+                    class="viz-tab"
+                    role="tab"
+                    id="tab-map"
+                    aria-controls="map-panel"
+                    aria-selected="false"
+                    tabindex="-1"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-globe"></use>
+                    </svg>
+                    Map
+                  </button>
+                </div>
               </div>
-              <div class="graph-stage">
+              <div class="graph-stage" id="graph-panel" role="tabpanel" aria-labelledby="tab-graph">
                 <div id="graph-container" class="graph-container" role="region"></div>
 
                 <!-- Overlays are siblings of #graph-container: D3 wipes its innerHTML -->
@@ -305,6 +335,80 @@
                     <span id="zoom-level" class="tnum">100%</span>
                   </button>
                   <button id="zoom-in" class="btn btn-ghost btn-icon-only" aria-label="Zoom in">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-zoom-in"></use>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="map-stage"
+                id="map-panel"
+                role="tabpanel"
+                aria-labelledby="tab-map"
+                hidden
+              >
+                <div
+                  id="map-container"
+                  class="map-container"
+                  role="region"
+                  aria-label="World map of tracked websites"
+                ></div>
+
+                <div class="map-geo-overlay" id="map-geo-overlay" role="status" aria-live="polite">
+                  <h4 class="map-overlay-title">Location lookup is off</h4>
+                  <p class="map-overlay-copy">
+                    This world outline is stored on your device. Website pins appear only after you
+                    turn on location lookup in Settings. That sends hostnames to ipwho.is over
+                    HTTPS. Off by default. No street maps. No GPS.
+                  </p>
+                  <button type="button" id="map-open-settings" class="btn btn-primary">
+                    Open Settings
+                  </button>
+                </div>
+
+                <div class="map-chrome">
+                  <p class="map-status" id="map-status" aria-live="polite">
+                    Local world outline. Location lookup is off.
+                  </p>
+                  <button
+                    type="button"
+                    id="map-clear-cache"
+                    class="btn btn-ghost"
+                    aria-label="Clear saved website coordinates from this device"
+                    title="Clear location cache"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-trash"></use>
+                    </svg>
+                    Clear location cache
+                  </button>
+                </div>
+
+                <div class="graph-zoom map-zoom">
+                  <button
+                    id="map-zoom-out"
+                    class="btn btn-ghost btn-icon-only"
+                    aria-label="Zoom map out"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-zoom-out"></use>
+                    </svg>
+                  </button>
+                  <button
+                    id="map-zoom-reset"
+                    class="btn btn-ghost"
+                    title="Reset map zoom"
+                    aria-label="Reset map zoom"
+                  >
+                    <span id="map-zoom-level" class="tnum">100%</span>
+                  </button>
+                  <button
+                    id="map-zoom-in"
+                    class="btn btn-ghost btn-icon-only"
+                    aria-label="Zoom map in"
+                  >
                     <svg class="icon" aria-hidden="true">
                       <use href="../../assets/icons.svg#i-zoom-in"></use>
                     </svg>
@@ -514,6 +618,37 @@
                 </div>
                 <label class="toggle-switch">
                   <input type="checkbox" id="dark-mode" checked />
+                  <span class="toggle-slider-round"></span>
+                </label>
+              </div>
+            </div>
+          </article>
+
+          <article class="settings-card" id="map-privacy-card">
+            <div class="card-header">
+              <div class="card-icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="../../assets/icons.svg#i-globe"></use>
+                </svg>
+              </div>
+              <div>
+                <h3>Map location lookup</h3>
+                <p class="card-subtitle">
+                  Optional. Off by default. The Map atlas never needs the network.
+                </p>
+              </div>
+            </div>
+            <div class="settings-items">
+              <div class="settings-item">
+                <div class="settings-item-info">
+                  <label for="geo-lookup-toggle">Look up website locations</label>
+                  <p class="settings-item-desc">
+                    Send tracked hostnames to ipwho.is over HTTPS so Map can place pins. Results
+                    stay in local cache for about 7 days. No OpenStreetMap tiles. No device GPS.
+                  </p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="geo-lookup-toggle" />
                   <span class="toggle-slider-round"></span>
                 </label>
               </div>

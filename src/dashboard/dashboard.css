@@ -492,6 +492,171 @@ body.dashboard-view .dashboard-main {
   overflow: hidden;
 }
 
+.viz-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-pill);
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.viz-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.viz-tab:hover {
+  background: var(--bg-3);
+  color: var(--ink-1);
+}
+
+.viz-tab[aria-selected='true'] {
+  background: var(--bg-3);
+  color: var(--ink-1);
+  box-shadow: var(--shadow-1);
+}
+
+.viz-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.viz-tab .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.map-stage {
+  position: relative;
+  flex: 1;
+  min-height: 360px;
+  overflow: hidden;
+  background: var(--bg-0);
+}
+
+.topology-panel #map-container,
+.map-container {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  margin: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.map-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.map-ocean {
+  fill: var(--bg-2);
+  stroke: none;
+}
+
+.map-land {
+  fill: var(--bg-3);
+  stroke: var(--line-2);
+  stroke-width: 0.5px;
+}
+
+body.high-contrast .map-land {
+  stroke: var(--ink-1);
+}
+
+.map-marker:focus-visible .map-marker-dot {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.map-marker-dot {
+  fill: var(--accent);
+  stroke: var(--bg-0);
+  stroke-width: 1.5px;
+}
+
+.map-marker-label {
+  fill: var(--ink-1);
+  font-size: 9px;
+  pointer-events: none;
+}
+
+.map-basemap-fallback {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 55%, var(--bg-3) 0%, var(--bg-2) 45%, var(--bg-0) 72%);
+}
+
+.map-geo-overlay {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 12;
+  max-width: min(420px, calc(100% - 24px));
+  background: var(--bg-1);
+  background: color-mix(in srgb, var(--bg-1) 94%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-2);
+}
+
+.map-overlay-title {
+  margin: 0 0 8px;
+  font-size: var(--fs-14);
+  font-weight: 600;
+  color: var(--ink-1);
+}
+
+.map-overlay-copy {
+  margin: 0 0 12px;
+  font-size: var(--fs-12);
+  line-height: var(--lh-body);
+  color: var(--ink-2);
+}
+
+.map-chrome {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 11;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  max-width: calc(100% - 140px);
+}
+
+.map-status {
+  margin: 0;
+  font-size: var(--fs-11);
+  color: var(--ink-2);
+  background: var(--bg-1);
+  background: color-mix(in srgb, var(--bg-1) 92%, transparent);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: 6px 10px;
+}
+
+.map-zoom {
+  z-index: 12;
+}
+
 /* D3 wipes #graph-container's innerHTML — overlays must be siblings.
    ID selector also outranks popup.css `body.dashboard-view .graph-container`
    (min-height:600px card styling) which would otherwise break the stage. */
