@@ -59,9 +59,13 @@ body {
   transition: border-color var(--dur) var(--ease);
 }
 
-.form-field input:focus,
-.limit-input-group input:focus {
+.form-field input:focus:not(:focus-visible),
+.limit-input-group input:focus:not(:focus-visible) {
   outline: none;
+}
+
+.form-field input:focus-visible,
+.limit-input-group input:focus-visible {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }

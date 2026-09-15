@@ -107,6 +107,49 @@ body.light-mode {
   --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
+/* High contrast — stronger ink/surface separation (dashboard, popup, help) */
+body.high-contrast {
+  --bg-0: #000000;
+  --bg-1: #0a0a0a;
+  --bg-2: #141414;
+  --bg-3: #1f1f1f;
+  --line-1: #ffffff;
+  --line-2: #d4d4d4;
+  --ink-1: #ffffff;
+  --ink-2: #e8e8e8;
+  --ink-3: #d0d0d0;
+  --accent: #00d4ff;
+  --accent-ink: #001018;
+  --accent-soft: rgba(0, 212, 255, 0.18);
+  --ok: #00ff88;
+  --ok-soft: rgba(0, 255, 136, 0.18);
+  --warn: #ffaa00;
+  --warn-soft: rgba(255, 170, 0, 0.2);
+  --bad: #ff3366;
+  --bad-soft: rgba(255, 51, 102, 0.2);
+}
+
+body.high-contrast.light-mode {
+  --bg-0: #ffffff;
+  --bg-1: #f5f5f5;
+  --bg-2: #ebebeb;
+  --bg-3: #dedede;
+  --line-1: #000000;
+  --line-2: #333333;
+  --ink-1: #000000;
+  --ink-2: #1a1a1a;
+  --ink-3: #333333;
+  --accent: #0066cc;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(0, 102, 204, 0.15);
+  --ok: #006600;
+  --ok-soft: rgba(0, 102, 0, 0.12);
+  --warn: #8a5a00;
+  --warn-soft: rgba(138, 90, 0, 0.14);
+  --bad: #b30000;
+  --bad-soft: rgba(179, 0, 0, 0.12);
+}
+
 /* Base rules */
 *,
 *::before,
@@ -313,8 +356,8 @@ select:focus {
 .table-toggle {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 22px;
+  width: 44px;
+  height: 24px;
   flex-shrink: 0;
   cursor: pointer;
 }
@@ -361,7 +404,7 @@ select:focus {
 
 .toggle-switch input:checked + .toggle-slider-round::before,
 .table-toggle input:checked + .toggle-slider::before {
-  transform: translateX(18px);
+  transform: translateX(20px);
 }
 
 /* Status pills */

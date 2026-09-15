@@ -101,8 +101,8 @@ body {
 .toggle-input {
   appearance: none;
   -webkit-appearance: none;
-  width: 40px;
-  height: 22px;
+  width: 44px;
+  height: 24px;
   border-radius: var(--r-pill);
   background: var(--line-2);
   border: none;
@@ -130,7 +130,7 @@ body {
 }
 
 .toggle-input:checked::before {
-  transform: translateX(18px);
+  transform: translateX(20px);
 }
 
 .toggle-input:focus-visible {
@@ -178,8 +178,11 @@ body {
   transition: border-color var(--dur) var(--ease);
 }
 
-.limit-input-group input:focus {
+.limit-input-group input:focus:not(:focus-visible) {
   outline: none;
+}
+
+.limit-input-group input:focus-visible {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
