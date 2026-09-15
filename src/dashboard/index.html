@@ -4,15 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FocusPaw Dashboard</title>
+    <link rel="stylesheet" href="../common/theme.css" />
     <link rel="stylesheet" href="../popup/popup.css" />
+    <link rel="stylesheet" href="../common/shell.css" />
     <link rel="stylesheet" href="./dashboard.css" />
     <script src="../vendor/d3.min.js"></script>
   </head>
 
-  <body class="dashboard-view">
+  <body class="dashboard-view dashboard-home">
     <div class="dashboard-container">
-      <header class="dashboard-header">
-        <!-- Left: Brand -->
+      <header class="app-header">
         <div
           class="header-brand"
           id="dashboard-home-trigger"
@@ -20,21 +21,61 @@
           tabindex="0"
           title="Return to Dashboard Home"
         >
-          <picture class="header-logo">
-            <source srcset="../../assets/icon-dark.svg" media="(prefers-color-scheme: dark)" />
-            <img src="../../assets/icon.svg" alt="FocusPaw logo" />
-          </picture>
-          <h1>FocusPaw Dashboard</h1>
+          <span class="header-logo">
+            <img src="../../assets/icon.svg" alt="FocusPaw logo" width="18" height="18" />
+          </span>
+          <h1 class="brand-name">
+            FocusPaw
+            <span class="header-crumb">Dashboard</span>
+          </h1>
         </div>
 
-        <!-- Center: Time Filter & Comparison Toggle -->
-        <div class="header-center">
-          <div class="time-filter" role="tablist" aria-label="Time range filter">
+        <div class="header-actions">
+          <a
+            href="./blocking.html"
+            id="blocking-btn"
+            class="btn btn-ghost"
+            aria-label="Manage blocking rules and limits"
+            title="Manage blocking rules and limits"
+          >
+            <svg class="icon" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-shield"></use>
+            </svg>
+            <span class="label">Blocks</span>
+          </a>
+          <a
+            href="../help/help.html"
+            id="help-btn"
+            class="btn btn-ghost"
+            aria-label="Help & FAQ"
+            title="Help and frequently asked questions"
+          >
+            <svg class="icon" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-help-circle"></use>
+            </svg>
+            <span class="label">Help</span>
+          </a>
+          <button
+            id="settings-btn"
+            class="btn btn-ghost"
+            aria-label="Settings"
+            title="Configure extension settings"
+          >
+            <svg class="icon" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-settings"></use>
+            </svg>
+            <span class="label">Settings</span>
+          </button>
+        </div>
+      </header>
+
+      <main id="main-view" class="dashboard-main">
+        <div class="toolbar">
+          <div class="time-filter" role="group" aria-label="Time range filter">
             <button
               class="time-filter-btn active"
               data-range="today"
-              role="tab"
-              aria-selected="true"
+              aria-pressed="true"
               title="View data for today"
             >
               Today
@@ -42,8 +83,7 @@
             <button
               class="time-filter-btn"
               data-range="week"
-              role="tab"
-              aria-selected="false"
+              aria-pressed="false"
               title="View data for the last 7 days"
             >
               Week
@@ -51,8 +91,7 @@
             <button
               class="time-filter-btn"
               data-range="month"
-              role="tab"
-              aria-selected="false"
+              aria-pressed="false"
               title="View data for the last 30 days"
             >
               Month
@@ -62,77 +101,57 @@
           <label class="comparison-toggle" title="Compare to previous period">
             <input type="checkbox" id="comparison-toggle-input" />
             <span class="comparison-toggle-label">
-              <span class="comparison-icon">📊</span>
-              <span class="comparison-text">Compare</span>
+              <svg class="icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-chart-bar"></use>
+              </svg>
+              <span>Compare</span>
             </span>
           </label>
         </div>
 
-        <!-- Right: Stats + Actions -->
-        <div class="header-right">
-          <div class="stats-summary" id="stats-summary">
-            <span class="stat-item" title="Total unique websites visited in selected period">
-              <strong id="total-domains">0</strong>
-              <span class="stat-label">domains</span>
-            </span>
-            <span class="stat-item" title="Total page visits in selected period">
-              <strong id="total-visits">0</strong>
-              <span class="stat-label">visits</span>
-            </span>
-            <span
-              class="stat-item streak-stat"
-              id="streak-stat"
-              title="Consecutive days staying within all limits"
-            >
-              <span class="streak-icon">🔥</span>
-              <strong id="current-streak">0</strong>
-              <span class="stat-label">day streak</span>
-            </span>
-            <span
-              class="stat-item focus-score-stat"
-              id="focus-score-stat"
-              title="Today's focus score (0-100)"
-            >
-              <span class="focus-score-icon">⭐</span>
-              <strong id="focus-score">0</strong>
-              <span class="stat-label">focus score</span>
-            </span>
+        <div class="kpi-strip" id="stats-summary">
+          <div class="kpi" title="Total unique websites visited in selected period">
+            <div class="kpi-label eyebrow">
+              <svg class="icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-globe"></use>
+              </svg>
+              Domains
+            </div>
+            <div class="kpi-value tnum"><strong id="total-domains">0</strong></div>
+            <div class="kpi-sub">in selected period</div>
           </div>
-
-          <div class="header-actions">
-            <a
-              href="./blocking.html"
-              id="blocking-btn"
-              class="icon-button"
-              aria-label="Blocking Rules"
-              title="Manage blocking rules and limits"
-              style="text-decoration: none"
-            >
-              <span aria-hidden="true">🛡️</span> <span class="icon-label">Blocks</span>
-            </a>
-            <a
-              href="../help/help.html"
-              id="help-btn"
-              class="icon-button"
-              aria-label="Help & FAQ"
-              title="Help and frequently asked questions"
-              style="text-decoration: none"
-            >
-              <span aria-hidden="true">❓</span> <span class="icon-label">Help</span>
-            </a>
-            <button
-              id="settings-btn"
-              class="icon-button"
-              aria-label="Settings"
-              title="Configure extension settings"
-            >
-              <span aria-hidden="true">⚙️</span> <span class="icon-label">Settings</span>
-            </button>
+          <div class="kpi" title="Total page visits in selected period">
+            <div class="kpi-label eyebrow">
+              <svg class="icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-mouse-pointer-click"></use>
+              </svg>
+              Visits
+            </div>
+            <div class="kpi-value tnum"><strong id="total-visits">0</strong></div>
+            <div class="kpi-sub">in selected period</div>
+          </div>
+          <div class="kpi" id="streak-stat" title="Consecutive days staying within all limits">
+            <div class="kpi-label eyebrow">
+              <svg class="icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-flame"></use>
+              </svg>
+              Day streak
+            </div>
+            <div class="kpi-value tnum"><strong id="current-streak">0</strong></div>
+            <div class="kpi-sub">within all limits</div>
+          </div>
+          <div class="kpi" id="focus-score-stat" title="Today's focus score (0-100)">
+            <div class="kpi-label eyebrow">
+              <svg class="icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-target"></use>
+              </svg>
+              Focus score
+            </div>
+            <div class="kpi-value tnum"><strong id="focus-score">0</strong></div>
+            <div class="kpi-sub">today, out of 100</div>
           </div>
         </div>
-      </header>
 
-      <main id="main-view" class="dashboard-main">
         <div id="loading" class="loading-state">
           <div class="loading-skeleton">
             <div class="skeleton-header">
@@ -151,48 +170,82 @@
         </div>
 
         <div id="empty-state" style="display: none" class="empty-state">
-          <div class="empty-illustration" role="img" aria-label="Bear mascot waving">
-            <span class="bear-icon">🐻</span>
-            <span class="wave-icon">👋</span>
-          </div>
+          <img
+            class="empty-logo"
+            src="../../assets/icon.svg"
+            alt="FocusPaw logo"
+            width="56"
+            height="56"
+          />
           <h2 class="empty-title">Welcome to FocusPaw!</h2>
           <p class="empty-message">
             Your focus journey starts here. Let's track your browsing habits and help you stay on
             target!
           </p>
           <div class="empty-instructions">
-            <p class="empty-eyebrow">Here's what happens next:</p>
+            <p class="empty-eyebrow eyebrow">Here's what happens next:</p>
             <ul class="empty-steps">
               <li>
-                <span class="step-icon">📍</span>
-                <span class="step-text">We track which sites get your attention as you browse</span>
+                <svg class="icon step-icon" aria-hidden="true">
+                  <use href="../../assets/icons.svg#i-mouse-pointer-click"></use>
+                </svg>
+                <span class="step-text">
+                  We track which sites get your attention as you browse
+                </span>
               </li>
               <li>
-                <span class="step-icon">📊</span>
-                <span class="step-text">See a beautiful visualization of your focus patterns</span>
+                <svg class="icon step-icon" aria-hidden="true">
+                  <use href="../../assets/icons.svg#i-chart-bar"></use>
+                </svg>
+                <span class="step-text">
+                  See a beautiful visualization of your focus patterns
+                </span>
               </li>
               <li>
-                <span class="step-icon">🎯</span>
+                <svg class="icon step-icon" aria-hidden="true">
+                  <use href="../../assets/icons.svg#i-target"></use>
+                </svg>
                 <span class="step-text">Set limits on distracting sites to stay productive</span>
               </li>
               <li>
-                <span class="step-icon">🔒</span>
-                <span class="step-text">All data stays private on your device—100% secure</span>
+                <svg class="icon step-icon" aria-hidden="true">
+                  <use href="../../assets/icons.svg#i-lock"></use>
+                </svg>
+                <span class="step-text"> All data stays private on your device—100% secure </span>
               </li>
             </ul>
           </div>
           <p class="empty-cta">Start browsing to see your focus patterns appear!</p>
-          <button id="demo-data-btn" class="demo-button"><span>✨</span> See Demo Data</button>
+          <button id="demo-data-btn" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-sparkles"></use>
+            </svg>
+            See Demo Data
+          </button>
         </div>
 
         <!-- Error State -->
         <div id="error-state" style="display: none" class="error-state">
-          <div class="error-illustration" role="img" aria-label="Error icon">⚠️</div>
+          <div class="error-illustration" role="img" aria-label="Error icon">
+            <svg class="icon" aria-hidden="true" width="48" height="48">
+              <use href="../../assets/icons.svg#i-alert-triangle"></use>
+            </svg>
+          </div>
           <h2 class="error-title">Oops! Something went wrong</h2>
           <p class="error-message" id="error-message">We encountered an issue loading your data.</p>
           <div class="error-actions">
-            <button id="retry-btn" class="retry-button"><span>🔄</span> Try Again</button>
-            <button id="support-btn" class="support-button"><span>💬</span> Get Help</button>
+            <button id="retry-btn" class="btn btn-primary">
+              <svg class="icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-refresh-cw"></use>
+              </svg>
+              Try Again
+            </button>
+            <button id="support-btn" class="btn btn-secondary">
+              <svg class="icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-help-circle"></use>
+              </svg>
+              Get Help
+            </button>
           </div>
         </div>
 
@@ -202,71 +255,60 @@
             <div class="topology-panel" id="topology-panel">
               <div class="panel-header">
                 <h3>My Attention Map</h3>
-                <p class="panel-subtitle">Interactive visualization of your attention patterns</p>
               </div>
-              <div id="graph-container" class="graph-container" role="region">
-                <!-- Graph Legend (positioned absolutely within container) -->
+              <div class="graph-stage">
+                <div id="graph-container" class="graph-container" role="region"></div>
+
+                <!-- Overlays are siblings of #graph-container: D3 wipes its innerHTML -->
                 <div
                   class="graph-legend"
                   id="graph-legend"
                   role="complementary"
                   aria-label="Graph legend"
                 >
-                  <div class="legend-title">Legend</div>
+                  <div class="legend-title eyebrow">Status</div>
                   <div class="legend-items">
                     <div class="legend-item">
-                      <span
-                        class="legend-color-box"
-                        style="border: 3px solid var(--color-success)"
-                      ></span>
-                      <span class="legend-label">On Track</span>
+                      <span class="legend-ring legend-ring-ok"></span>
+                      <span class="legend-label">On track</span>
                     </div>
                     <div class="legend-item">
-                      <span
-                        class="legend-color-box"
-                        style="border: 3px solid var(--color-warning)"
-                      ></span>
-                      <span class="legend-label">Near Limit</span>
+                      <span class="legend-ring legend-ring-warn"></span>
+                      <span class="legend-label">Near limit</span>
                     </div>
                     <div class="legend-item">
-                      <span
-                        class="legend-color-box"
-                        style="border: 3px solid var(--color-error)"
-                      ></span>
-                      <span class="legend-label">Over Limit</span>
+                      <span class="legend-ring legend-ring-bad"></span>
+                      <span class="legend-label">Over limit</span>
                     </div>
                     <div class="legend-item">
-                      <span
-                        class="legend-color-box"
-                        style="border: 3px solid var(--color-secondary)"
-                      ></span>
-                      <span class="legend-label">No Limit</span>
+                      <span class="legend-ring legend-ring-none"></span>
+                      <span class="legend-label">No limit</span>
                     </div>
                   </div>
-                  <div class="legend-divider"></div>
-                  <div class="legend-section-title">Categories</div>
-                  <div class="legend-categories">
-                    <div class="legend-category-item" title="Social media platforms">
-                      <span class="category-dot" style="background: #3a3a3a"></span>
-                      <span class="category-name">Social</span>
-                    </div>
-                    <div class="legend-category-item" title="Productivity tools">
-                      <span class="category-dot" style="background: #555555"></span>
-                      <span class="category-name">Work</span>
-                    </div>
-                    <div class="legend-category-item" title="Development tools">
-                      <span class="category-dot" style="background: #777777"></span>
-                      <span class="category-name">Dev</span>
-                    </div>
-                    <div class="legend-category-item" title="Entertainment sites">
-                      <span class="category-dot" style="background: #8f8f8f"></span>
-                      <span class="category-name">Media</span>
-                    </div>
+                  <div class="legend-foot">
+                    <span id="legend-hint-text">Bubble size = visits</span>
                   </div>
-                  <div class="legend-hint">
-                    💡 <span id="legend-hint-text">Larger bubbles = More opens</span>
-                  </div>
-                  <div class="legend-zoom">Zoom: <span id="zoom-level">100%</span></div>
+                </div>
+
+                <div class="graph-zoom">
+                  <button id="zoom-out" class="btn btn-ghost btn-icon-only" aria-label="Zoom out">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-zoom-out"></use>
+                    </svg>
+                  </button>
+                  <button
+                    id="zoom-reset"
+                    class="btn btn-ghost"
+                    title="Reset zoom"
+                    aria-label="Reset zoom"
+                  >
+                    <span id="zoom-level" class="tnum">100%</span>
+                  </button>
+                  <button id="zoom-in" class="btn btn-ghost btn-icon-only" aria-label="Zoom in">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-zoom-in"></use>
+                    </svg>
+                  </button>
                 </div>
               </div>
 
@@ -292,13 +334,20 @@
               >
                 <div class="insights-banner-content">
                   <div class="insights-header">
-                    <h4 class="insights-title">📊 Weekly Insights</h4>
+                    <h4 class="insights-title">
+                      <svg class="icon" aria-hidden="true">
+                        <use href="../../assets/icons.svg#i-chart-bar"></use>
+                      </svg>
+                      Weekly Insights
+                    </h4>
                     <button
-                      class="insights-close"
+                      class="insights-close btn btn-ghost btn-icon-only"
                       id="insights-close"
                       aria-label="Dismiss insights"
                     >
-                      ✕
+                      <svg class="icon" aria-hidden="true">
+                        <use href="../../assets/icons.svg#i-x"></use>
+                      </svg>
                     </button>
                   </div>
                   <div class="insights-content" id="insights-content">
@@ -313,12 +362,17 @@
               <div class="panel-header">
                 <h3>Website Activity</h3>
                 <div class="table-controls">
-                  <input
-                    type="search"
-                    id="table-search"
-                    placeholder="Search websites..."
-                    aria-label="Search websites"
-                  />
+                  <div class="input-with-icon">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-search"></use>
+                    </svg>
+                    <input
+                      type="search"
+                      id="table-search"
+                      placeholder="Search websites..."
+                      aria-label="Search websites"
+                    />
+                  </div>
                   <select id="table-sort" aria-label="Sort by">
                     <option value="count-desc">Most opened first</option>
                     <option value="count-asc">Least opened first</option>
@@ -332,18 +386,30 @@
                 <table class="data-table" id="data-table">
                   <thead>
                     <tr>
-                      <th class="sortable" data-sort="domain">
-                        Website
-                        <span class="sort-indicator"></span>
+                      <th class="sortable" data-sort="domain" aria-sort="none">
+                        <button type="button" class="sort-btn">
+                          Website
+                          <svg class="icon sort-indicator" aria-hidden="true">
+                            <use href="../../assets/icons.svg#i-chevron-down"></use>
+                          </svg>
+                        </button>
                       </th>
-                      <th class="sortable" data-sort="count">
-                        Times Opened
-                        <span class="sort-indicator"></span>
+                      <th class="sortable" data-sort="count" aria-sort="none">
+                        <button type="button" class="sort-btn">
+                          Visits
+                          <svg class="icon sort-indicator" aria-hidden="true">
+                            <use href="../../assets/icons.svg#i-chevron-down"></use>
+                          </svg>
+                        </button>
                       </th>
                       <th class="comparison-column" style="display: none">Change</th>
-                      <th class="sortable" data-sort="lastVisit">
-                        Last Visit
-                        <span class="sort-indicator"></span>
+                      <th class="sortable" data-sort="lastVisit" aria-sort="none">
+                        <button type="button" class="sort-btn">
+                          Last visit
+                          <svg class="icon sort-indicator" aria-hidden="true">
+                            <use href="../../assets/icons.svg#i-chevron-down"></use>
+                          </svg>
+                        </button>
                       </th>
                       <th>Limit</th>
                       <th>Status</th>
@@ -363,12 +429,24 @@
                   <span id="pagination-total">0</span>
                 </div>
                 <div class="pagination-controls">
-                  <button id="pagination-prev" class="pagination-btn" aria-label="Previous page">
-                    ←
+                  <button
+                    id="pagination-prev"
+                    class="btn btn-ghost btn-icon-only"
+                    aria-label="Previous page"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-arrow-left"></use>
+                    </svg>
                   </button>
-                  <span id="pagination-page" class="pagination-page">Page 1</span>
-                  <button id="pagination-next" class="pagination-btn" aria-label="Next page">
-                    →
+                  <span id="pagination-page" class="pagination-page tnum">Page 1</span>
+                  <button
+                    id="pagination-next"
+                    class="btn btn-ghost btn-icon-only"
+                    aria-label="Next page"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-arrow-right"></use>
+                    </svg>
                   </button>
                 </div>
                 <select id="pagination-size" class="pagination-size" aria-label="Items per page">
@@ -383,7 +461,7 @@
         </div>
       </main>
 
-      <!-- Settings Panel (unchanged) -->
+      <!-- Settings Panel -->
       <section id="settings-view" class="settings-panel" hidden aria-hidden="true" tabindex="-1">
         <div class="settings-header">
           <button
@@ -391,10 +469,12 @@
             class="pill-button pill-button-secondary"
             aria-label="Back to dashboard"
           >
-            ← Back
+            <svg class="icon" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-arrow-left"></use>
+            </svg>
+            Back
           </button>
           <div class="settings-header-content">
-            <p class="eyebrow">CONTROL CENTER</p>
             <h2>Settings</h2>
             <p class="settings-subtitle">Customize your FocusPaw experience</p>
           </div>
@@ -404,7 +484,11 @@
           <!-- Accessibility Card -->
           <article class="settings-card">
             <div class="card-header">
-              <div class="card-icon">👁️</div>
+              <div class="card-icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="../../assets/icons.svg#i-eye"></use>
+                </svg>
+              </div>
               <div>
                 <h3>Accessibility</h3>
                 <p class="card-subtitle">
@@ -415,11 +499,11 @@
             <div class="settings-items">
               <div class="settings-item">
                 <div class="settings-item-info">
-                  <label for="color-blind-mode">Color Blind Mode</label>
+                  <label for="high-contrast-toggle">High contrast</label>
                   <p class="settings-item-desc">Enhanced contrast for better visibility</p>
                 </div>
                 <label class="toggle-switch">
-                  <input type="checkbox" id="color-blind-mode" />
+                  <input type="checkbox" id="high-contrast-toggle" />
                   <span class="toggle-slider-round"></span>
                 </label>
               </div>
@@ -439,7 +523,11 @@
           <!-- Export Data Card -->
           <article class="settings-card">
             <div class="card-header">
-              <div class="card-icon">📥</div>
+              <div class="card-icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="../../assets/icons.svg#i-download"></use>
+                </svg>
+              </div>
               <div>
                 <h3>Export Data</h3>
                 <p class="card-subtitle">
@@ -449,14 +537,22 @@
             </div>
             <div class="export-buttons">
               <button id="export-json-btn" class="export-btn">
-                <span class="btn-icon">{ }</span>
+                <span class="btn-icon">
+                  <svg class="icon" aria-hidden="true">
+                    <use href="../../assets/icons.svg#i-braces"></use>
+                  </svg>
+                </span>
                 <div class="btn-content">
                   <span class="btn-label">Export as JSON</span>
                   <span class="btn-desc">Machine-readable format</span>
                 </div>
               </button>
               <button id="export-csv-btn" class="export-btn">
-                <span class="btn-icon">📊</span>
+                <span class="btn-icon">
+                  <svg class="icon" aria-hidden="true">
+                    <use href="../../assets/icons.svg#i-table"></use>
+                  </svg>
+                </span>
                 <div class="btn-content">
                   <span class="btn-label">Export as CSV</span>
                   <span class="btn-desc">Spreadsheet compatible</span>
@@ -464,7 +560,9 @@
               </button>
             </div>
             <div class="info-banner">
-              <span class="info-icon">🔒</span>
+              <svg class="icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-lock"></use>
+              </svg>
               <span>Your data never leaves your device unless you share it.</span>
             </div>
           </article>
@@ -472,7 +570,11 @@
           <!-- Data Management Card -->
           <article class="settings-card danger-card">
             <div class="card-header">
-              <div class="card-icon danger-icon">⚠️</div>
+              <div class="card-icon danger-icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="../../assets/icons.svg#i-alert-triangle"></use>
+                </svg>
+              </div>
               <div>
                 <h3>Data Management</h3>
                 <p class="card-subtitle">
@@ -482,11 +584,14 @@
             </div>
             <div class="danger-zone">
               <div class="danger-warning">
-                <strong>⚡ Warning:</strong> This action cannot be undone. All your tracking data,
+                <strong>Warning:</strong> This action cannot be undone. All your tracking data,
                 limits, and settings will be permanently deleted.
               </div>
               <button id="reset-data-btn" class="pill-button pill-button-danger">
-                <span>🗑️</span> Reset All Focus Data
+                <svg class="icon" aria-hidden="true">
+                  <use href="../../assets/icons.svg#i-trash"></use>
+                </svg>
+                Reset all focus data
               </button>
             </div>
           </article>
@@ -503,7 +608,12 @@
           <span class="footer-separator">•</span>
           <span id="footer-version" class="footer-version">v1.0.0</span>
           <span class="footer-separator">•</span>
-          <span class="footer-privacy">🔒 All data stays local</span>
+          <span class="footer-privacy">
+            <svg class="icon" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-lock"></use>
+            </svg>
+            All data stays local
+          </span>
           <span class="footer-separator">•</span>
           <a href="../help/help.html" class="footer-link">Help</a>
           <span class="footer-separator">•</span>

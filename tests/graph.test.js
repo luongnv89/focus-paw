@@ -37,12 +37,21 @@ function makeD3Mock() {
       };
       return sim;
     }),
-    forceLink: jest.fn(() => ({ id: jest.fn().mockReturnThis(), distance: jest.fn().mockReturnThis() })),
+    forceLink: jest.fn(() => ({
+      id: jest.fn().mockReturnThis(),
+      distance: jest.fn().mockReturnThis(),
+    })),
     forceManyBody: jest.fn(() => ({ strength: jest.fn().mockReturnThis() })),
     forceCollide: jest.fn(() => ({ radius: jest.fn().mockReturnThis() })),
     forceCenter: jest.fn(() => ({})),
     drag: jest.fn(() => ({ on: jest.fn().mockReturnThis() })),
-    zoom: jest.fn(() => ({ scaleExtent: jest.fn().mockReturnThis(), on: jest.fn().mockReturnThis() })),
+    zoom: jest.fn(() => ({
+      scaleExtent: jest.fn().mockReturnThis(),
+      on: jest.fn().mockReturnThis(),
+      scaleBy: jest.fn(),
+      transform: jest.fn(),
+    })),
+    zoomIdentity: { k: 1, x: 0, y: 0 },
   };
   return { d3Mock, svgMock };
 }
@@ -89,10 +98,16 @@ describe('graph', () => {
     window.d3 = d3Mock;
     // Need actual svg creation path: d3.select(container).append(svg) etc. With mock, container.innerHTML will be empty but should not throw
     const data = {
-      'example.com': { count: 10, lastVisit: Date.now(), subpaths: { '/a': { count: 3, lastVisit: Date.now() } } },
+      'example.com': {
+        count: 10,
+        lastVisit: Date.now(),
+        subpaths: { '/a': { count: 3, lastVisit: Date.now() } },
+      },
       'other.com': { count: 2, lastVisit: Date.now(), subpaths: {} },
     };
-    expect(() => renderRadialGraph(container, data, { width: 400, height: 400, badges: {} })).not.toThrow();
+    expect(() =>
+      renderRadialGraph(container, data, { width: 400, height: 400, badges: {} }),
+    ).not.toThrow();
     // Should have called d3.select
     expect(d3Mock.select).toHaveBeenCalled();
   });
@@ -101,9 +116,26 @@ describe('graph', () => {
     const { d3Mock } = makeD3Mock();
     window.d3 = d3Mock;
     const data = {};
-    for (let i = 0; i < 50; i += 1) data[`site${i}.com`] = { count: i + 1, lastVisit: Date.now(), subpaths: {} };
-    expect(() => renderRadialGraph(container, data, { badges: { 'site0.com': { streak: 3 } } })).not.toThrow();
+    for (let i = 0; i < 50; i += 1)
+      data[`site${i}.com`] = { count: i + 1, lastVisit: Date.now(), subpaths: {} };
+    expect(() =>
+      renderRadialGraph(container, data, { badges: { 'site0.com': { streak: 3 } } }),
+    ).not.toThrow();
     expect(d3Mock.select).toHaveBeenCalled();
+  });
+
+  test('returns cleanup with external zoom API', () => {
+    const { d3Mock } = makeD3Mock();
+    window.d3 = d3Mock;
+    const data = { 'example.com': { count: 5, lastVisit: Date.now(), subpaths: {} } };
+    const result = renderRadialGraph(container, data);
+    expect(typeof result).toBe('function');
+    expect(typeof result.zoomIn).toBe('function');
+    expect(typeof result.zoomOut).toBe('function');
+    expect(typeof result.resetZoom).toBe('function');
+    expect(() => result.zoomIn()).not.toThrow();
+    expect(() => result.zoomOut()).not.toThrow();
+    expect(() => result.resetZoom()).not.toThrow();
   });
 
   test('returns cleanup function that stops simulation', () => {

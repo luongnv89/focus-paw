@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadThemeSettings() {
   // Check if chrome.storage is available (extension context)
   if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-    chrome.storage.local.get(['darkMode', 'colorBlindMode'], (result) => {
+    chrome.storage.local.get(['darkMode', 'settings', 'colorBlindMode'], (result) => {
       // Default is dark mode (true)
       const isDarkMode = result.darkMode !== false;
 
@@ -24,9 +24,9 @@ function loadThemeSettings() {
         document.body.classList.add('light-mode');
       }
 
-      // Apply color blind mode if enabled
-      if (result.colorBlindMode) {
-        document.body.classList.add('color-blind-mode');
+      const fromSettings = result.settings?.highContrastMode;
+      if (fromSettings === true || (fromSettings === undefined && result.colorBlindMode)) {
+        document.body.classList.add('high-contrast');
       }
     });
 
@@ -42,12 +42,11 @@ function loadThemeSettings() {
         }
       }
 
-      if (changes.colorBlindMode) {
-        if (changes.colorBlindMode.newValue) {
-          document.body.classList.add('color-blind-mode');
-        } else {
-          document.body.classList.remove('color-blind-mode');
-        }
+      if (changes.settings) {
+        document.body.classList.toggle(
+          'high-contrast',
+          Boolean(changes.settings.newValue?.highContrastMode),
+        );
       }
     });
   }

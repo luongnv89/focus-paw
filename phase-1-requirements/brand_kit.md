@@ -31,100 +31,49 @@ FocusPaw is the **fun, local-only focus tracker** that turns your tab-switching 
 
 ## Color Palette
 
-### Primary Colors
+> The extension UI uses the "Obsidian instrument panel" token set defined in `src/common/theme.css` (detailed spec: `phase-1-requirements/ui-refresh-spec.md`). Legacy `--color-*` names remain as aliases to these tokens.
 
-**Primary Color – Sky Blue**
-- **Hex:** `#87CEEB`
-- **RGB:** `rgb(135, 206, 235)`
-- **HSL:** `hsl(197, 71%, 73%)`
-- **Usage:** Primary buttons, key CTAs, headers, active graph nodes, focus rings, backgrounds
-- **Rationale:**
-  - Sky blue evokes openness, clarity, and mental space—perfect for a focus tool.
-  - The lighter, airy tone feels calm and approachable rather than corporate.
-  - Creates a distinctive, friendly visual identity that stands out from darker productivity apps.
+### Surfaces (dark, default)
 
-**Primary Variants**
-- **Primary Lighter:** `#E0F4FF` – Very subtle backgrounds, info highlights, empty states
-- **Primary Light:** `#B3E0F7` – Hover states for buttons and graph hover states
-- **Primary Dark:** `#5DADE2` – Pressed states, emphasis outlines, high-contrast accents
+- **`--bg-0` `#070707`** – page background
+- **`--bg-1` `#0d0d0d`** – panels, cards
+- **`--bg-2` `#131313`** – raised surfaces (inputs, tiles, segmented control)
+- **`--bg-3` `#1a1a1a`** – hover / active segment
+- **`--line-1` `#1c1c1c`** – hairline borders
+- **`--line-2` `#2a2a2a`** – strong borders (inputs, buttons)
 
----
+### Ink (text)
 
-### Secondary Colors
+- **`--ink-1` `#f2f2f2`** – primary text
+- **`--ink-2` `#a3a3a3`** – secondary text
+- **`--ink-3` `#6b6b6b`** – muted / tertiary text
 
-**Secondary Color – Focus Purple**
-- **Hex:** `#6C5CE7`
-- **RGB:** `rgb(108, 92, 231)`
-- **HSL:** `hsl(247, 74%, 63%)`
-- **Usage:** Secondary actions, highlights in graphs, badges (e.g., “Focus Hero”), accent elements on landing pages
-- **Rationale:**
-  - Purple conveys creativity and “magic” – a good fit for an app that transforms messy habits into clear insights.
-  - Pairs well with Paw Blue for a memorable, modern palette.
+### Signal Colors
 
-**Secondary Variants**
-- **Secondary Light:** `#A29BFF` – Badges, subtle accents
-- **Secondary Dark:** `#4B3AC9` – Secondary button hover state, emphasis labels
+- **Accent / OK:** `--accent`, `--ok` `#1bff6e` with `--accent-ink` `#062b14` (text on accent fill) and soft variants `rgba(27,255,110,.12)`
+- **Warning:** `--warn` `#f5b942` (+ `--warn-soft`)
+- **Error:** `--bad` `#ff5c5c` (+ `--bad-soft`)
+- **Info:** `--info` `#7dd3fc`
 
----
+Green is a signal color only — primary actions, active/on-track states, focus rings. Surfaces stay near-black and neutral.
 
-### Neutral Palette
+### Light Mode (`body.light-mode`)
 
-- **Black:** `#050816` – High-emphasis text on very light backgrounds
-- **Gray 900:** `#111827` – Primary text, titles in the extension and site
-- **Gray 700:** `#4B5563` – Body text, labels, supporting copy
-- **Gray 500:** `#9CA3AF` – Secondary text, placeholders, metadata
-- **Gray 300:** `#D1D5DB` – Borders, dividers, input outlines
-- **Gray 100:** `#F3F4F6` – Subtle backgrounds, cards, panels
-- **White:** `#FFFFFF` – Primary background for cards, popup, and landing pages
-
----
-
-### Semantic Colors
-
-- **Success – Calm Green**
-  - Hex: `#55EFC4`
-  - RGB: `rgb(85, 239, 196)`
-  - Usage: Success toasts, streak achievements, “limit set” confirmations
-
-- **Error – Alert Red**
-  - Hex: `#D63031`
-  - RGB: `rgb(214, 48, 49)`
-  - Usage: Fatal errors, destructive actions (reset data), error banners
-
-- **Warning – Focus Orange**
-  - Hex: `#FF9F43`
-  - RGB: `rgb(255, 159, 67)`
-  - Usage: “Visits remaining” warnings, soft alerts before hitting limits
-
-- **Info – Sunshine Yellow**
-  - Hex: `#FFDD57`
-  - RGB: `rgb(255, 221, 87)`
-  - Usage: Informational messages, onboarding callouts, tooltips
-
-> Note: Info is intentionally warm (yellow) to feel friendly and less “corporate security warning”.
+- Surfaces `--bg-0..3`: `#f6f6f4` / `#ffffff` / `#f1f1ef` / `#e9e9e6`
+- Lines `--line-1/2`: `#e6e6e2` / `#d2d2cc`
+- Ink `--ink-1..3`: `#141414` / `#5c5c5c` / `#8a8a8a`
+- Signals: accent/ok `#0fa958` (accent-ink `#ffffff`), warn `#b7791f`, bad `#d64545`; soft variants follow the same alpha pattern.
 
 ---
 
 ### Accessibility Guidelines
 
-- **Text on Primary (`#87CEEB`):**
-  - Use dark text (Gray 900 `#111827`) for buttons and high-emphasis labels.
-  - This pairing meets WCAG 2.1 AA contrast for normal text.
-
-- **Text on Secondary (`#6C5CE7`):**
-  - Use white text (`#FFFFFF`) for buttons and badges.
-
-- **Text on Light Backgrounds (`#FFFFFF` / `#F3F4F6`):**
-  - Use Gray 900 (`#111827`) for primary text.
-  - Use Gray 700 (`#4B5563`) for secondary text.
-
-- **Text on Dark Backgrounds (e.g., block page or hero sections):**
-  - Use White (`#FFFFFF`) for primary text.
-  - Use Gray 100 (`#F3F4F6`) for secondary text.
-
+- **Text on accent fill (`--accent`):** use `--accent-ink` (dark `#062b14` in dark mode, white in light mode).
+- **Text on surfaces:** `--ink-1` for primary, `--ink-2` for secondary, `--ink-3` for muted/deemphasized content only.
 - **Contrast Ratios:**
   - Primary text vs. backgrounds must maintain at least **4.5:1** for normal text and **3:1** for large text.
   - Buttons and CTAs must meet **3:1** contrast between text and button background.
+  - Interactive elements get a visible `:focus-visible` ring in `--accent`.
   - Ensure graph node colors always have sufficient contrast with labels or provide hover tooltips with high-contrast text.
 
 ---
@@ -133,37 +82,30 @@ FocusPaw is the **fun, local-only focus tracker** that turns your tab-switching 
 
 ### Font Families
 
-**Primary Font (Headings & UI)**
-- **Font Name:** Inter
-- **Fallback:** system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
-- **Source:** Google Fonts / System
-- **Weights Used:** 400 (Regular), 500 (Medium), 600 (Semi-Bold), 700 (Bold)
+**Primary (all UI)**
+- **Stack (`--font-sans`):** `-apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue', Arial, sans-serif`
+- **Source:** system fonts only — no webfont fetches (privacy + popup load time)
+- **Weights Used:** 400 (Regular), 600 (Semi-Bold)
 
-**Secondary Font (Body Text)**
-- **Font Name:** Inter (same as primary, to keep dev simple and performance-friendly)
-- **Fallback:** same as above
-- **Weights Used:** 400 (Regular), 500 (Medium)
-
-**Monospace Font (Code / Technical snippets on site)**
-- **Font Name:** JetBrains Mono or Fira Code
-- **Fallback:** "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
-- **Usage:** Code examples in documentation, developer-focused sections on landing pages
+**Monospace (`--font-mono`)**
+- **Stack:** `ui-monospace, 'SF Mono', Menlo, Consolas, monospace`
+- **Usage:** KPI values, timers, counters — always with tabular numerals (`.tnum` / `font-variant-numeric: tabular-nums`)
 
 ---
 
 ### Typography Scale
 
-| Element        | Font  | Size        | Weight | Line Height | Letter Spacing |
-|----------------|-------|------------|--------|-------------|----------------|
-| **H1**         | Inter | 32px (2rem) | 700    | 1.2         | -0.02em        |
-| **H2**         | Inter | 24px (1.5rem) | 600  | 1.25        | -0.01em        |
-| **H3**         | Inter | 20px (1.25rem) | 600 | 1.3         | 0              |
-| **H4**         | Inter | 18px (1.125rem) | 500 | 1.4         | 0              |
-| **H5**         | Inter | 16px (1rem) | 500    | 1.4         | 0              |
-| **Body Large** | Inter | 16px (1rem) | 400    | 1.6         | 0              |
-| **Body**       | Inter | 14px (0.875rem) | 400 | 1.6         | 0              |
-| **Body Small** | Inter | 12px (0.75rem) | 400 | 1.5         | 0              |
-| **Caption**    | Inter | 11px        | 400    | 1.4         | 0              |
+| Element            | Token      | Size | Weight | Notes                          |
+|--------------------|------------|------|--------|--------------------------------|
+| **Page title**     | `--fs-26`  | 26px | 600    | line-height 1.15               |
+| **Timer / hero**   | `--fs-32`  | 32px | 600    | mono + tabular                 |
+| **Stat value**     | `--fs-22`  | 22px | 600    | mono + tabular                 |
+| **Section heading**| `--fs-18`  | 18px | 600    |                                |
+| **Card title**     | `--fs-15`  | 15px | 600    |                                |
+| **Body**           | `--fs-14`  | 14px | 400    | line-height 1.5                |
+| **Compact body**   | `--fs-13`  | 13px | 400    | popup default                  |
+| **Secondary**      | `--fs-12`  | 12px | 400    |                                |
+| **Caps label**     | `--fs-11`  | 11px | 600    | uppercase, `--track-caps` 0.06em |
 
 > In the Chrome popup, default body size is 13–14px for clarity in compact layouts.
 
@@ -218,12 +160,13 @@ FocusPaw is the **fun, local-only focus tracker** that turns your tab-switching 
 ## Iconography
 
 **Icon Style:**
-- Rounded, outlined icons with a 2px stroke, gentle corners.
+- Lucide-style outlined icons: 24×24 viewBox, 1.75px stroke, `currentColor`, round caps/joins.
 - Minimal detail, easy to parse at small sizes (16px).
 
 **Icon Set:**
-- Base: Lucide, Heroicons, or similar open-source outline icon set.
-- Customized paw-related icons (paw print, paw steps, paw badges) can be drawn in the same style.
+- `assets/icons.svg` — a single SVG `<symbol>` sprite (ids `i-*`, e.g. `i-shield`, `i-settings`, `i-check`) referenced via `<svg class="icon"><use href=".../assets/icons.svg#i-*"/></svg>`.
+- `src/common/icons.js` `svgIcon(name, {size, className, label})` builds icons via DOM APIs for JS-rendered UI (no `innerHTML`).
+- Emoji are no longer used in UI chrome; the bear mascot remains on the blocked page and the popup empty state.
 
 **Icon Sizes:**
 - **Small (16px):** Inline with text (labels, tags)
@@ -303,66 +246,65 @@ FocusPaw is the **fun, local-only focus tracker** that turns your tab-switching 
 
 ### Buttons
 
-**Primary Button**
-- Background: `#87CEEB` (Sky Blue)
-- Text: `#111827` (Gray 900)
-- Border Radius: 9999px or 8px (pill-like)
-- Padding: 10px 20px
-- Font: Inter, 14px, 500
-- Hover: `#B3E0F7`
-- Active: Slight scale-down + background `#5DADE2`
-- Disabled: Background `#D1D5DB`, text `#9CA3AF`
+Four tiers, all 36px high, `--r-md` radius, 13px/600 (`.btn` / `.pill-button` in `src/common/theme.css`):
 
-**Secondary Button**
-- Background: Transparent
-- Border: 1px solid `#87CEEB`
-- Text: `#87CEEB`
-- Hover: Light background `#E0F4FF`
-- Active: Border `#5DADE2`
+- **Primary (`.btn-primary`)** – `--accent` fill, `--accent-ink` text; commit actions (Save rule, Back to work).
+- **Secondary (`.btn-secondary`)** – `--bg-2` fill, `--line-2` border, `--ink-1` text; navigation and neutral actions.
+- **Ghost (`.btn-ghost`)** – transparent, `--ink-2` → `--bg-2` hover; header/toolbar actions. `.btn-icon-only` = 32px square icon button.
+- **Danger (`.btn-danger`)** – transparent, `--bad` text + border → `--bad-soft` hover; destructive actions (Reset data, Delete).
 
-**Text Button**
-- Background: Transparent
-- Text: `#5DADE2`
-- Hover: Underline or slight color change to `#87CEEB`
-- Used for lightweight actions like "Learn more".
+### Status Pills
+
+`.status-badge` — 11px, nowrap, soft background + matching ink: `.under-limit` (ok), `.near-limit` (warn), `.over-limit` (bad), `.no-limit` (muted `--bg-2`/`--ink-2`).
+
+### KPI Tile
+
+`.kpi` — `--bg-1` card, `--line-1` hairline, `--r-md`; uppercase `.eyebrow` label with 14px icon, `--font-mono` tabular value, `--ink-2` sub-line. State is signaled by value color only (`--ok`/`--warn`/`--bad`), never by the border.
+
+### Segmented Control
+
+`.time-filter` — `--bg-2` pill container, active segment `--bg-3` + `--shadow-1`, 12px/600 labels (Today / Week / Month).
+
+### App Header
+
+`.app-header` (in `src/common/shell.css`) — 56px sticky, `--bg-1`, `--line-1` hairline. Brand: 28px logo disc (light disc in dark mode, `--bg-3` disc in light mode) + "FocusPaw" wordmark + `.header-crumb` page name; `.header-actions` right-aligned ghost buttons. Shared by the dashboard, blocking rules, domain detail, and help pages.
 
 ---
 
 ### Input Fields
 
-- Background: `#FFFFFF`
-- Border: 1px solid `#D1D5DB` (Gray 300)
-- Border Radius: 6px
-- Padding: 8px 12px
-- Placeholder: `#9CA3AF` (Gray 500)
-- Focus: Border `#87CEEB`, outer focus ring (no glow, solid color only)
+- Background: `--bg-2`
+- Border: 1px solid `--line-1` (`--line-2` on emphasis)
+- Border Radius: `--r-md`
+- Padding: 10px 12px
+- Placeholder: `--ink-3`
+- Focus: `--accent` border + `accent-soft` ring (no glow)
 
 **Error State:**
-- Border: `#D63031`
-- Helper text in Error red, small caption text.
+- Border / helper text in `--bad`, 12px caption.
 
 ---
 
 ### Cards
 
-- Background: `#FFFFFF`
-- Border: 1px solid `#E5E7EB` (very light gray) or subtle shadow
-- Radius: 12px
-- Shadow: `0 2px 10px rgba(15, 23, 42, 0.10)`
+- Background: `--bg-1` (raised sections `--bg-2`)
+- Border: 1px hairline `--line-1`
+- Radius: `--r-lg` (14px); nested rows use `--r-md`
+- Shadow: `--shadow-1` at most — no gradients, glows, or hover lifts
 - Padding: 16–24px
 
 Cards are used for:
 - Settings blocks
-- Landing page feature highlights
-- “Today’s Focus Summary” summaries.
+- Add-rule / limit / history panels
+- KPI tiles (see above).
 
 ---
 
 ### Modals / Dialogs
 
-- Background: `#FFFFFF`
-- Overlay: `rgba(15, 23, 42, 0.5)`
-- Radius: 16px
+- Background: `--bg-1`
+- Overlay: `rgba(0, 0, 0, 0.6)`
+- Radius: `--r-lg`
 - Max Width: 480–600px
 - Padding: 24–32px
 - Close Icon: top-right, 24px hit area.

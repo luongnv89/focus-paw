@@ -3,6 +3,7 @@
 ## ✅ Pre-Submission Verification
 
 ### Build & Code Quality
+
 - [x] All tests pass (281/281)
 - [x] Lint/format checks green
 - [x] Build produces clean dist/ folder
@@ -11,6 +12,7 @@
 - [x] ZIP created: `focuspaw-v1.0.0.zip` (338KB)
 
 ### Manifest.json Verification
+
 - [x] `manifest_version`: 3
 - [x] `name`: "FocusPaw - Focus Tracker"
 - [x] `version`: "1.0.0"
@@ -22,6 +24,7 @@
 - [x] `homepage_url`: https://github.com/luongnv89/focus-paw
 
 ### Privacy & Permissions
+
 - [x] Privacy policy URL: https://github.com/luongnv89/focus-paw/blob/main/PRIVACY.md
 - [x] All permissions justified (tabs, storage, notifications, declarativeNetRequest)
 - [x] Single purpose description prepared
@@ -32,31 +35,34 @@
 ## 📋 Required Store Assets
 
 ### Icons (Required)
-| Size | File | Status |
-|------|------|--------|
-| 16x16 | `assets/icon-16.png` | ✅ Ready |
-| 32x32 | `assets/icon-32.png` | ✅ Ready |
-| 48x48 | `assets/icon-48.png` | ✅ Ready |
+
+| Size    | File                  | Status   |
+| ------- | --------------------- | -------- |
+| 16x16   | `assets/icon-16.png`  | ✅ Ready |
+| 32x32   | `assets/icon-32.png`  | ✅ Ready |
+| 48x48   | `assets/icon-48.png`  | ✅ Ready |
 | 128x128 | `assets/icon-128.png` | ✅ Ready |
 
 ### Promotional Images (Optional but Recommended)
-| Type | Size | Status | Action |
-|------|------|--------|--------|
-| Store Icon | 128x128 | ✅ Use icon-128.png | Ready |
-| Small Promo Tile | 440x280 | ⚠️ Create | `landing-page/public/screenshots/` |
-| Large Promo Tile | 920x680 | ⚠️ Create | Dashboard screenshot |
-| Marquee Promo | 1400x560 | ⚠️ Create | Feature showcase |
+
+| Type             | Size     | Status              | Action                             |
+| ---------------- | -------- | ------------------- | ---------------------------------- |
+| Store Icon       | 128x128  | ✅ Use icon-128.png | Ready                              |
+| Small Promo Tile | 440x280  | ⚠️ Create           | `landing-page/public/screenshots/` |
+| Large Promo Tile | 920x680  | ⚠️ Create           | Dashboard screenshot               |
+| Marquee Promo    | 1400x560 | ⚠️ Create           | Feature showcase                   |
 
 ### Screenshots (Required: 1-5 images)
+
 Use screenshots from `landing-page/public/screenshots/`:
 
-| # | Content | Source File | Status |
-|---|---------|-------------|--------|
-| 1 | Dashboard with radial graph | `dashboard.png` | ✅ Ready |
-| 2 | Website activity table | `dashboard-reddit.png` | ✅ Ready |
-| 3 | Settings page | `settings.png` | ✅ Ready |
-| 4 | Block page | `set-block.png` | ✅ Ready |
-| 5 | Help & FAQ | `Help-FAQ.png` | ✅ Ready |
+| #   | Content                     | Source File            | Status   |
+| --- | --------------------------- | ---------------------- | -------- |
+| 1   | Dashboard with radial graph | `dashboard.png`        | ✅ Ready |
+| 2   | Website activity table      | `dashboard-reddit.png` | ✅ Ready |
+| 3   | Settings page               | `settings.png`         | ✅ Ready |
+| 4   | Block page                  | `set-block.png`        | ✅ Ready |
+| 5   | Help & FAQ                  | `Help-FAQ.png`         | ✅ Ready |
 
 **Screenshot dimensions:** All screenshots are ~1280x800, which meets the requirement.
 
@@ -65,13 +71,16 @@ Use screenshots from `landing-page/public/screenshots/`:
 ## 📝 Store Listing Content
 
 ### Basic Information
+
 - **Extension Name:** FocusPaw - Focus Tracker
 - **Category:** Productivity
 - **Language:** English
 - **Publisher:** FocusPaw Team
 
 ### Descriptions
+
 - **Short Description (132 chars max):**
+
   ```
   Track focus-switching habits with privacy-first visualizations. Set limits, build streaks, improve productivity.
   ```
@@ -79,6 +88,7 @@ Use screenshots from `landing-page/public/screenshots/`:
 - **Detailed Description:** See `STORE_LISTING.md` for full content
 
 ### Privacy Policy
+
 - **URL:** https://github.com/luongnv89/focus-paw/blob/main/PRIVACY.md
 - **Content:** Comprehensive privacy policy covering all data practices
 
@@ -87,21 +97,25 @@ Use screenshots from `landing-page/public/screenshots/`:
 ## 🚀 Submission Steps
 
 ### 1. Prepare Developer Account
+
 - [ ] Create/Log in to [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)
 - [ ] Pay one-time $5 registration fee (if first time)
 - [ ] Complete developer profile
 
 ### 2. Create New Extension
+
 - [ ] Click "New item"
 - [ ] Upload `focuspaw-v1.0.0.zip`
 - [ ] Fill in all required fields
 
 ### 3. Upload Assets
+
 - [ ] Upload icons (16, 32, 48, 128)
 - [ ] Upload promotional images (optional)
 - [ ] Upload screenshots (1-5 images)
 
 ### 4. Fill Details
+
 - [ ] Extension name
 - [ ] Category
 - [ ] Short description
@@ -111,11 +125,13 @@ Use screenshots from `landing-page/public/screenshots/`:
 - [ ] Website URL
 
 ### 5. Review Permissions
+
 - [ ] Review all requested permissions
 - [ ] Add permission justifications
 - [ ] Add single purpose description
 
 ### 6. Submit for Review
+
 - [ ] Review all information
 - [ ] Click "Submit for review"
 - [ ] Wait for approval (typically 1-3 days)
@@ -125,12 +141,14 @@ Use screenshots from `landing-page/public/screenshots/`:
 ## 🔍 Post-Submission
 
 ### After Approval
+
 - [ ] Verify extension appears in store
 - [ ] Test installation from store
 - [ ] Verify all features work after installation
 - [ ] Monitor initial user feedback
 
 ### Ongoing Maintenance
+
 - [ ] Set up version bumping for updates
 - [ ] Monitor reviews and ratings
 - [ ] Plan regular updates (security, features)

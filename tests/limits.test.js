@@ -238,7 +238,11 @@ describe('Limits Module', () => {
               count: 3,
               lastVisit: now,
               subpaths: {},
-              timestamps: [now - 30 * 60 * 1000, now - 4 * 60 * 60 * 1000, now - 7 * 60 * 60 * 1000],
+              timestamps: [
+                now - 30 * 60 * 1000,
+                now - 4 * 60 * 60 * 1000,
+                now - 7 * 60 * 60 * 1000,
+              ],
             },
           },
         },

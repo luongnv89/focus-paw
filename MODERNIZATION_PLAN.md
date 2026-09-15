@@ -3,18 +3,18 @@
 Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baseline at audit:** RED
 **Test command of record:** `npm test -- --ci` · **Pass rate at audit:** not locally measurable (Jest absent); CI green at last run (2025-12-01), which is the recorded "still green" bar until Task 0.1 lands.
 
-**Baseline-green substitution (RED baseline):** until Task 0.1 restores a runnable suite, P0–P4 tasks scheduled before it assert "`npm run build` succeeds (isolated)" instead of the test suite. From 0.1 onward every P0–P4 task asserts *"`npm test -- --ci` passes at ≥ the pass rate recorded in 0.1; `npm run lint` and `npm run format:check` pass."* Pre omits both assertions (install/run notes + create-or-update of `CLAUDE.md`/`AGENTS.md` only).
+**Baseline-green substitution (RED baseline):** until Task 0.1 restores a runnable suite, P0–P4 tasks scheduled before it assert "`npm run build` succeeds (isolated)" instead of the test suite. From 0.1 onward every P0–P4 task asserts _"`npm test -- --ci` passes at ≥ the pass rate recorded in 0.1; `npm run lint` and `npm run format:check` pass."_ Pre omits both assertions (install/run notes + create-or-update of `CLAUDE.md`/`AGENTS.md` only).
 
 ## At a glance
 
-| Phase | Sprints | Tasks | Closes | Milestone |
-|---|---|---|---|---|
-| Pre Agent environment | Pre | 3 | — (enables ME) | ME |
-| P0 Stabilize | 0 | 4 | 2 High (F-BUG-002, F-BUG-003), F-CI-001, F-CI-002, F-TEST-003 | M0 |
-| P1 Secure & Patch | 1 | 5 | 21 High (DEP W1; F-DEP-011 lands in 2.9), F-TEST-002 | M1 |
-| P2 Modernize | 2, 3 | 14 | 5 Critical (F-DEP-072, 201–204), F-DEP-011, 101–104, 111, 121–126, 142, 207 | M2 |
-| P3 Clean & Harden | 4 | 9 | F-BUG-001, F-BUG-007/008/004/005/009, F-PERF-001/002/004/005, F-CLEAN-*, F-DEAD-001..007, F-TEST-001, 70 Low DEP | M3 |
-| P4 Polish | 5 | 8 | F-UX-001..005, F-PERF-003/006, F-SEC-001..003, F-DOCS-001/002, F-CI-003, F-BUG-010 | M4 |
+| Phase                 | Sprints | Tasks | Closes                                                                                                            | Milestone |
+| --------------------- | ------- | ----- | ----------------------------------------------------------------------------------------------------------------- | --------- |
+| Pre Agent environment | Pre     | 3     | — (enables ME)                                                                                                    | ME        |
+| P0 Stabilize          | 0       | 4     | 2 High (F-BUG-002, F-BUG-003), F-CI-001, F-CI-002, F-TEST-003                                                     | M0        |
+| P1 Secure & Patch     | 1       | 5     | 21 High (DEP W1; F-DEP-011 lands in 2.9), F-TEST-002                                                              | M1        |
+| P2 Modernize          | 2, 3    | 14    | 5 Critical (F-DEP-072, 201–204), F-DEP-011, 101–104, 111, 121–126, 142, 207                                       | M2        |
+| P3 Clean & Harden     | 4       | 9     | F-BUG-001, F-BUG-007/008/004/005/009, F-PERF-001/002/004/005, F-CLEAN-\*, F-DEAD-001..007, F-TEST-001, 70 Low DEP | M3        |
+| P4 Polish             | 5       | 8     | F-UX-001..005, F-PERF-003/006, F-SEC-001..003, F-DOCS-001/002, F-CI-003, F-BUG-010                                | M4        |
 
 **Critical path:** `Pre.1 → Pre.2 → 0.1 → 1.1 → 1.2 → 1.5 → 3.1 → 3.6 → 4.1 → 4.3 → 4.5` (≈ 20 days). Nothing in P0 starts before `ME`; nothing outside P0 starts before `M0` (RED baseline); the security waves land before the modernization phases they protect.
 
@@ -33,6 +33,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: — (milestone-enabling: ME)
 
 **Acceptance Criteria**:
+
 - [ ] A `docs/dev-setup.md` (or equivalent) exists listing toolchain install, chrome requirement, and the five recorded commands with their expected output
 - [ ] A later agent can follow the notes from project files alone; the notes explicitly state the audit-time RED status and that 0.1 restores green
 - [ ] `.gitignore` still covers `node_modules/`, `dist/`, `coverage/` and nothing new is committed here
@@ -50,6 +51,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: — (milestone-enabling: ME)
 
 **Acceptance Criteria**:
+
 - [ ] `CLAUDE.md` exists at repo root
 - [ ] `CLAUDE.md` names the recorded build/test commands and the storage/limits architecture constraints (local-only, MV3)
 
@@ -66,6 +68,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: — (milestone-enabling: ME)
 
 **Acceptance Criteria**:
+
 - [ ] `AGENTS.md` exists at repo root and is improved against agent-config checklists
 - [ ] `AGENTS.md` reflects the storage-writer and test-command contract introduced by 0.1/3.3 (after those land, update asynchronously)
 
@@ -88,6 +91,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-TEST-003` (milestone-gate M0)
 
 **Acceptance Criteria**:
+
 - [ ] A clean checkout with `npm ci` produces green `npm run build`
 - [ ] `npm test -- --ci` runs and its pass rate is recorded in Pre.1 notes; new smoke tests cover popup DOM load and background `onInstalled`/`onActivated` handler wiring with no exceptions
 - [ ] `npm run lint` and `npm run format:check` pass from the clean install (or a written list of pre-existing violations to resolve)
@@ -106,6 +110,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-BUG-002`, `F-BUG-003`, `F-BUG-006`
 
 **Acceptance Criteria**:
+
 - [ ] `initializeTracking()` appears exactly once statically; installing the extension then switching tabs increments visits exactly once per switch (asserted by a test simulating `onInstalled` + `onActivated`)
 - [ ] Legacy numeric limit (e.g. `{ "example.com": 10 }`) no longer throws in `checkLimitWarnings` or focus-score; regression test for both
 - [ ] `npm test -- --ci` passes at ≥ the 0.1-recorded rate; `npm run lint` clean
@@ -123,6 +128,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-CI-002`
 
 **Acceptance Criteria**:
+
 - [ ] After a full `npm run build`, `git status --porcelain` shows no change to `manifest.json` (or any tracked file)
 - [ ] The built `dist/manifest.json` still carries the correct `version_name` (base-version-commit-sha)
 - [ ] `npm test -- --ci` green at ≥ recorded rate; pre-commit hook no longer dirties the tree
@@ -140,6 +146,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-CI-001`
 
 **Acceptance Criteria**:
+
 - [ ] CI contains a step that installs and builds `landing-page/` and runs its lint/format checks
 - [ ] The new job is required before merge (branch-protection or status check at GitHub)
 - [ ] `npm test -- --ci` green at ≥ recorded rate; lint clean
@@ -163,6 +170,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-002`, `F-DEP-004`, `F-DEP-005`, `F-DEP-006`, `F-DEP-007`, `F-DEP-008`, `F-DEP-009`, `F-DEP-010`, `F-DEP-012`
 
 **Acceptance Criteria**:
+
 - [ ] `npm audit --json` in the root reports 0 High/Critical (after this task, modulo sharp which is scheduled)
 - [ ] `npm test -- --ci` green at ≥ recorded rate; `npm run lint` clean
 - [ ] The diff touches only the lockfile/package.json (and any documented overrides)
@@ -180,6 +188,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-001`, `F-DEP-003`, `F-DEP-013`
 
 **Acceptance Criteria**:
+
 - [ ] Root `npm audit --json` shows 0 High/Critical remaining; the three listed packages resolve outside their advisory ranges
 - [ ] `npm test -- --ci` green at ≥ recorded rate; lint clean
 
@@ -196,6 +205,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-105`, `F-DEP-108`, `F-DEP-110`, `F-DEP-112`, `F-DEP-113`, `F-DEP-114`, `F-DEP-115`, `F-DEP-116`, `F-DEP-117`, `F-DEP-118`, `F-DEP-119`, `F-DEP-120`
 
 **Acceptance Criteria**:
+
 - [ ] `cd landing-page && npm audit --json` reports 0 High/Critical
 - [ ] `cd landing-page && npm run build` (vite) succeeds; the built page renders (smoke-check via `vite preview` or the CI landing job from 0.4)
 - [ ] Root `npm test -- --ci` green at ≥ recorded rate
@@ -213,6 +223,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-106`, `F-DEP-107`, `F-DEP-109`
 
 **Acceptance Criteria**:
+
 - [ ] Landing audit reports 0 High/Critical and these packages resolve outside advisory ranges
 - [ ] Landing build green; root suite green at ≥ recorded rate
 
@@ -229,6 +240,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-TEST-002`
 
 **Acceptance Criteria**:
+
 - [ ] Tests cover: storage quota/lastError rejection path, legacy numeric limit normalization (limits.js + notifications.js + focus-score.js), and at least the `parseUrl` boundary cases (non-http, localhost, malformed)
 - [ ] No `.skip`/`.only`/`.todo` introduced; suite green at ≥ recorded rate
 
@@ -251,6 +263,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-072`, `F-DEP-142`
 
 **Acceptance Criteria**:
+
 - [ ] `package.json` (both) declare `engines.node >=22` (or the chosen pair) and `.nvmrc` matches
 - [ ] `ci.yml` matrix runs only supported Node lanes and the run is green
 - [ ] Root suite green at ≥ recorded rate on the new lanes; lint clean
@@ -268,6 +281,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-201`
 
 **Acceptance Criteria**:
+
 - [ ] All `actions/checkout` refs in `.github/workflows/*` are `v7` (or pinned SHA) and CI passes
 - [ ] Root suite green at ≥ recorded rate
 
@@ -284,6 +298,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-202`
 
 **Acceptance Criteria**:
+
 - [ ] `setup-node@v7` (or pinned SHA) in all workflows; caching functional
 - [ ] CI green at ≥ recorded rate
 
@@ -300,6 +315,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-203`
 
 **Acceptance Criteria**:
+
 - [ ] `upload-artifact@v7` (or pinned SHA); artifact still produced for node 24 leg
 - [ ] CI green at ≥ recorded rate
 
@@ -316,6 +332,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-204`
 
 **Acceptance Criteria**:
+
 - [ ] `codecov-action@v7` (or pinned SHA); coverage report still uploads
 - [ ] CI green at ≥ recorded rate
 
@@ -327,11 +344,12 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 
 #### Task 2.6: ESLint 8 → 9 migration (root toolchain)
 
-**Description**: One isolated toolchain task: migrate the root lint stack to ESLint 9 + flat config, removing deprecated transitives in one lockfile regeneration. **Migration source not retrieved — spike required**: first AC is producing the migration guide (ESLint 9 transition guide, https://eslint.org/docs/latest/use/migrate-to-9.0.0) and documenting config conversion (`.eslintrc.json` → `eslint.config.js`). Also resolves @humanwhocodes/*, glob, inflight, rimraf deprecations.
+**Description**: One isolated toolchain task: migrate the root lint stack to ESLint 9 + flat config, removing deprecated transitives in one lockfile regeneration. **Migration source not retrieved — spike required**: first AC is producing the migration guide (ESLint 9 transition guide, https://eslint.org/docs/latest/use/migrate-to-9.0.0) and documenting config conversion (`.eslintrc.json` → `eslint.config.js`). Also resolves @humanwhocodes/\*, glob, inflight, rimraf deprecations.
 
 **Closes**: `F-DEP-016`, `F-DEP-014`, `F-DEP-015`, `F-DEP-017`, `F-DEP-018`, `F-DEP-019`
 
 **Acceptance Criteria**:
+
 - [ ] Migration guide retrieved and summarized in the PR description (spike satisfied)
 - [ ] `npm run lint` and `npm run lint:fix` operate on ESLint 9 flat config; zero warnings
 - [ ] Root `npm audit --json` still 0 High/Critical; suite green at ≥ recorded rate; pre-commit still gates lint
@@ -344,11 +362,12 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 
 #### Task 2.7: ESLint 8 → 9 migration (landing toolchain + deprecated transitives)
 
-**Description**: Same ESLint migration for `landing-page/` — resolves F-DEP-121 and its deprecated transitive children (122–126: @humanwhocodes/*, glob, inflight, rimraf) in one coordinated lockfile regeneration. Spike: flat-config conversion for the react plugins.
+**Description**: Same ESLint migration for `landing-page/` — resolves F-DEP-121 and its deprecated transitive children (122–126: @humanwhocodes/\*, glob, inflight, rimraf) in one coordinated lockfile regeneration. Spike: flat-config conversion for the react plugins.
 
 **Closes**: `F-DEP-121`, `F-DEP-122`, `F-DEP-123`, `F-DEP-124`, `F-DEP-125`, `F-DEP-126`
 
 **Acceptance Criteria**:
+
 - [ ] Landing `npm run lint` passes with `--max-warnings 0` on ESLint 9 flat config
 - [ ] Deprecated transitives absent from `landing-page/package-lock.json`
 - [ ] Landing build green; root suite green at ≥ recorded rate
@@ -368,6 +387,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-111`
 
 **Acceptance Criteria**:
+
 - [ ] Migration guide retrieved/summarized; decision recorded (upgrade or defer with written rationale)
 - [ ] If upgraded: `cd landing-page && npm audit --json` reports the esbuild advisory cleared and `npm run build` green
 - [ ] Root suite green at ≥ recorded rate
@@ -385,6 +405,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-011`
 
 **Acceptance Criteria**:
+
 - [ ] Breaking-change notes retrieved (spike satisfied)
 - [ ] `npm run icons:generate` produces identical icon outputs; `npm audit --json` clears the GHSA
 - [ ] Suite green at ≥ recorded rate; lint clean
@@ -402,6 +423,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-103`, `F-DEP-104`
 
 **Acceptance Criteria**:
+
 - [ ] Upgrade guide applied as documented; `react` and `react-dom` move together to 19.x
 - [ ] `cd landing-page && npm run build` green; route-level smoke (Landing + Privacy) renders
 - [ ] Root suite green at ≥ recorded rate
@@ -419,6 +441,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-105` (v7 portion)
 
 **Acceptance Criteria**:
+
 - [ ] v7 upgrade guide retrieved/summarized (spike satisfied)
 - [ ] If upgraded: landing build green and both routes render; if deferred: rationale recorded in M2 notes
 - [ ] Root suite green at ≥ recorded rate
@@ -436,6 +459,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-102`
 
 **Acceptance Criteria**:
+
 - [ ] All icon imports compile under lucide-react v1 (build green)
 - [ ] Landing page renders icons in Header/Footer/Hero/Features/Privacy
 - [ ] Root suite green at ≥ recorded rate
@@ -453,6 +477,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-101`
 
 **Acceptance Criteria**:
+
 - [ ] `focus-trap-react` absent from `landing-page/package.json`, lockfile, and all imports
 - [ ] Landing build green; root suite green at ≥ recorded rate
 
@@ -469,6 +494,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-207`
 
 **Acceptance Criteria**:
+
 - [ ] All `runs-on:` use a pinned label; CI green
 - [ ] Root suite green at ≥ recorded rate
 
@@ -491,6 +517,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-BUG-001`, `F-BUG-008`, `F-PERF-001`
 
 **Acceptance Criteria**:
+
 - [ ] A test fires two overlapping `incrementVisit` calls and asserts both visits are counted (no lost update)
 - [ ] A storage-quota simulation rejects with a surfaced error instead of silently resolving
 - [ ] `visits` history size is bounded: timestamps older than the retention window are dropped during compaction; storage write volume per switch no longer scales with total history
@@ -509,6 +536,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-PERF-002`, `F-PERF-004`, `F-PERF-005`
 
 **Acceptance Criteria**:
+
 - [ ] Dashboard load performs exactly one full `visits` read and zero unnecessary `overallStreak` writes (asserted by test spy on `chrome.storage.local.set`)
 - [ ] Focus-score history matches the previous implementation's values on the same data fixture
 - [ ] Suite green at ≥ recorded rate; lint clean
@@ -526,6 +554,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-BUG-004`, `F-BUG-005`, `F-BUG-009`, `F-CLEAN-002`, `F-CLEAN-003`
 
 **Acceptance Criteria**:
+
 - [ ] One date-key utility is used by storage/goals/notifications/achievements/focus-score/blocked — zero inline `toISOString().split('T')[0]` duplicates remain (grep-clean)
 - [ ] All three limit forms share one validated controller; entering `0` or negatives is rejected identically everywhere
 - [ ] Dashboard table sorts on the value it displays; blocked-page countdown shows the exact reset time used by limit enforcement
@@ -544,6 +573,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEAD-001`
 
 **Acceptance Criteria**:
+
 - [ ] `goals.js` and the dead handler blocks are gone; `window.*` call pattern absent from `src/` (grep-clean)
 - [ ] Background achievements logic (`checkAchievements`/`initializeAchievements` used by tracking) is preserved and still tested
 - [ ] Suite green at ≥ recorded rate; lint clean
@@ -561,6 +591,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEAD-002`, `F-DEAD-003`, `F-DEAD-004`, `F-DEAD-005`, `F-DEAD-006`, `F-DEAD-007`
 
 **Acceptance Criteria**:
+
 - [ ] `copy.js`, placeholder test, unused handler/flags, and dead keywords removed (grep-clean for each name)
 - [ ] `FEATURES` object contains only flags consulted by source (comment lists each consumer)
 - [ ] Suite green at ≥ recorded rate; lint clean
@@ -578,6 +609,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-BUG-007`
 
 **Acceptance Criteria**:
+
 - [ ] No statement of the form `innerHTML\s*=` with an interpolated domain/subpath variable remains in `src/` (grep + review)
 - [ ] Domains/subpaths containing HTML metacharacters render as literal text in toast, tooltip, listing, and table
 - [ ] Suite green at ≥ recorded rate; lint clean
@@ -595,6 +627,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-TEST-001`
 
 **Acceptance Criteria**:
+
 - [ ] `npm run test:coverage -- --ci` produces a number; that number ≥ the M3 target
 - [ ] Every prioritized module listed above has ≥ 1 test file with behavioral (not implementation) assertions
 - [ ] Root suite green at ≥ recorded rate; lint clean
@@ -612,6 +645,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DEP-020`, `F-DEP-021`, `F-DEP-022`, `F-DEP-023`, `F-DEP-024`, `F-DEP-025`, `F-DEP-026`, `F-DEP-027`, `F-DEP-028`, `F-DEP-029`, `F-DEP-030`, `F-DEP-031`, `F-DEP-032`, `F-DEP-033`, `F-DEP-034`, `F-DEP-035`, `F-DEP-036`, `F-DEP-037`, `F-DEP-038`, `F-DEP-039`, `F-DEP-040`, `F-DEP-041`, `F-DEP-042`, `F-DEP-043`, `F-DEP-044`, `F-DEP-045`, `F-DEP-046`, `F-DEP-047`, `F-DEP-048`, `F-DEP-049`, `F-DEP-050`, `F-DEP-051`, `F-DEP-052`, `F-DEP-053`, `F-DEP-054`, `F-DEP-055`, `F-DEP-056`, `F-DEP-057`, `F-DEP-058`, `F-DEP-059`, `F-DEP-060`, `F-DEP-061`, `F-DEP-062`, `F-DEP-063`, `F-DEP-064`, `F-DEP-065`, `F-DEP-066`, `F-DEP-067`, `F-DEP-068`, `F-DEP-069`, `F-DEP-070`, `F-DEP-071`, `F-DEP-127`, `F-DEP-128`, `F-DEP-129`, `F-DEP-130`, `F-DEP-131`, `F-DEP-132`, `F-DEP-133`, `F-DEP-134`, `F-DEP-135`, `F-DEP-136`, `F-DEP-137`, `F-DEP-138`, `F-DEP-139`, `F-DEP-140`, `F-DEP-141`
 
 **Acceptance Criteria**:
+
 - [ ] Duplicate resolver counts drop to the minimum the parents allow; any survivor has a written per-package rationale
 - [ ] Both `npm audit` runs still report 0 High/Critical; both builds green
 - [ ] Suite green at ≥ recorded rate; lint clean
@@ -629,6 +663,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-CLEAN-001`, `F-CLEAN-004`, `F-CLEAN-005`, `F-CLEAN-006`, `F-CLEAN-007`
 
 **Acceptance Criteria**:
+
 - [ ] `setupVisualizationPage` splits into ≤ 3 named responsibilities, each under ~200 lines
 - [ ] Magic values moved to named constants; comments fixed; the preference check simplified
 - [ ] Suite green at ≥ recorded rate; lint clean
@@ -652,6 +687,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-UX-001`, `F-UX-002`, `F-UX-003`, `F-UX-004`, `F-UX-005`
 
 **Acceptance Criteria**:
+
 - [ ] Every visible control has a wired behavior: High-Contrast toggle persists to storage and applies a class (or is removed with its card)
 - [ ] Dashboard "Visits" column shows the same period as the header totals; countdown shows the actual reset time
 - [ ] Buttons have accessible text labels beyond emoji; insights no longer auto-open modally
@@ -670,6 +706,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-PERF-003`, `F-PERF-006`
 
 **Acceptance Criteria**:
+
 - [ ] Per focus switch, `updateBlockingRules` runs at most once (double-invocation test/spy)
 - [ ] `tracking.js` imports `checkLimit` statically
 - [ ] Dashboard load ≤ ~200ms measured in DevTools on a 30-day fixture; suite green at ≥ recorded rate
@@ -687,6 +724,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-SEC-001`, `F-DOCS-001`
 
 **Acceptance Criteria**:
+
 - [ ] Network log shows zero non-extension-network requests from popup/dashboard/blocking pages (DevTools) — or docs explicitly disclose the favicon service with a toggle
 - [ ] PRIVACY.md "No data is transmitted" and "no third-party services" claims hold against a fresh capture
 - [ ] Suite green at ≥ recorded rate; lint clean
@@ -704,6 +742,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-SEC-002`
 
 **Acceptance Criteria**:
+
 - [ ] A subpath beginning with `=` round-trips through the CSV and opens as text in a spreadsheet (test asserts the escaped quoting)
 - [ ] Existing export UX unchanged; suite green at ≥ recorded rate
 
@@ -720,6 +759,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-SEC-003`
 
 **Acceptance Criteria**:
+
 - [ ] PRIVACY.md documents each permission with a one-line justification; any removable permission is removed and verified
 - [ ] Extension still blocks and toasts after the change (manual chrome pass)
 - [ ] Suite green at ≥ recorded rate; lint clean
@@ -737,6 +777,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-DOCS-002`
 
 **Acceptance Criteria**:
+
 - [ ] README's Node prerequisite matches `engines.node`; a landing-page build section exists
 - [ ] No stale version numbers/badges remain (grep for `18`/`1.0.0` drift check)
 - [ ] Suite green at ≥ recorded rate
@@ -754,6 +795,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-CI-003`
 
 **Acceptance Criteria**:
+
 - [ ] CI fails when coverage < target; upload errors fail CI loudly
 - [ ] Suite green at ≥ recorded rate
 
@@ -770,6 +812,7 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 **Closes**: `F-BUG-010`
 
 **Acceptance Criteria**:
+
 - [ ] `categorizeDomain('target.example.net')` no longer categorizes as shopping; `news.anything` nuanced (ends-with/word boundary)
 - [ ] Category tests cover at least one false-positive case per keyword list
 - [ ] Suite green at ≥ recorded rate; lint clean
@@ -782,104 +825,104 @@ Derived from [`MODERNIZATION_REPORT.md`](./MODERNIZATION_REPORT.md) · **Baselin
 
 ## Dependency table
 
-| Task | Depends on | Blocks | Wave / note |
-|---|---|---|---|
-| Pre.1 | — | Pre.2, Pre.3 | W0 |
-| Pre.2 | Pre.1 | 0.1 | W0 |
-| Pre.3 | Pre.1 | 0.1 | W0 |
-| 0.1 | Pre.2, Pre.3 | 0.2, 0.3, 0.4, 1.1 | W0 (baseline) |
-| 0.2 | 0.1 | — | correctness |
-| 0.3 | 0.1 | — | determinism |
-| 0.4 | 0.1 | 1.3, 1.4 | CI gate |
-| 1.1 | 0.1 | 1.2, 1.5, 2.9 | W1 |
-| 1.2 | 1.1 | 1.5 | W1/W2 |
-| 1.3 | 0.4 | 1.4 | W1 |
-| 1.4 | 1.3 | — | W2 |
-| 1.5 | 1.1, 1.2 | 3.1 | tests |
-| 2.1 | 1.1 | 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.14, 4.6 | W3 |
-| 2.2 | 2.1 | — | actions |
-| 2.3 | 2.1 | — | actions |
-| 2.4 | 2.1 | — | actions |
-| 2.5 | 2.1 | — | actions |
-| 2.6 | 2.1 | 2.7, 3.8 | ESLint root |
-| 2.7 | 2.6 | 2.8, 2.13, 3.8 | ESLint landing |
-| 2.8 | 2.7 | 2.10 | Vite |
-| 2.9 | 1.1 | — | sharp major |
-| 2.10 | 2.8 | 2.11, 2.12, 3.8 | react major |
-| 2.11 | 2.10 | — | router major |
-| 2.12 | 2.10 | — | lucide major |
-| 2.13 | 2.7 | — | removal |
-| 2.14 | 2.1 | — | runner pin |
-| 3.1 | 1.5, 2.1 | 3.2, 3.3, 3.4, 3.5, 3.6, 3.7 | storage |
-| 3.2 | 3.1 | 3.9, 4.2 | perf |
-| 3.3 | 3.1 | 4.1 | utils |
-| 3.4 | 3.1 | 3.7 | dead code |
-| 3.5 | 3.1 | — | dead code |
-| 3.6 | 3.1 | 4.1 | XSS |
-| 3.7 | 3.1, 3.4 | 3.9, 4.7, 4.8 | coverage |
-| 3.8 | 2.6, 2.7, 2.8, 2.10 | — | dedupe |
-| 3.9 | 3.2, 3.7 | — | clean |
-| 4.1 | 3.6 | 4.3, 4.4 | UX |
-| 4.2 | 3.2 | — | perf |
-| 4.3 | 4.1 | 4.5, 4.6 | privacy |
-| 4.4 | 4.1 | — | export |
-| 4.5 | 4.3 | — | permissions |
-| 4.6 | 2.1, 4.3 | — | docs |
-| 4.7 | 3.7 | — | CI gate |
-| 4.8 | 3.7 | — | categories |
+| Task  | Depends on          | Blocks                                  | Wave / note    |
+| ----- | ------------------- | --------------------------------------- | -------------- |
+| Pre.1 | —                   | Pre.2, Pre.3                            | W0             |
+| Pre.2 | Pre.1               | 0.1                                     | W0             |
+| Pre.3 | Pre.1               | 0.1                                     | W0             |
+| 0.1   | Pre.2, Pre.3        | 0.2, 0.3, 0.4, 1.1                      | W0 (baseline)  |
+| 0.2   | 0.1                 | —                                       | correctness    |
+| 0.3   | 0.1                 | —                                       | determinism    |
+| 0.4   | 0.1                 | 1.3, 1.4                                | CI gate        |
+| 1.1   | 0.1                 | 1.2, 1.5, 2.9                           | W1             |
+| 1.2   | 1.1                 | 1.5                                     | W1/W2          |
+| 1.3   | 0.4                 | 1.4                                     | W1             |
+| 1.4   | 1.3                 | —                                       | W2             |
+| 1.5   | 1.1, 1.2            | 3.1                                     | tests          |
+| 2.1   | 1.1                 | 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.14, 4.6 | W3             |
+| 2.2   | 2.1                 | —                                       | actions        |
+| 2.3   | 2.1                 | —                                       | actions        |
+| 2.4   | 2.1                 | —                                       | actions        |
+| 2.5   | 2.1                 | —                                       | actions        |
+| 2.6   | 2.1                 | 2.7, 3.8                                | ESLint root    |
+| 2.7   | 2.6                 | 2.8, 2.13, 3.8                          | ESLint landing |
+| 2.8   | 2.7                 | 2.10                                    | Vite           |
+| 2.9   | 1.1                 | —                                       | sharp major    |
+| 2.10  | 2.8                 | 2.11, 2.12, 3.8                         | react major    |
+| 2.11  | 2.10                | —                                       | router major   |
+| 2.12  | 2.10                | —                                       | lucide major   |
+| 2.13  | 2.7                 | —                                       | removal        |
+| 2.14  | 2.1                 | —                                       | runner pin     |
+| 3.1   | 1.5, 2.1            | 3.2, 3.3, 3.4, 3.5, 3.6, 3.7            | storage        |
+| 3.2   | 3.1                 | 3.9, 4.2                                | perf           |
+| 3.3   | 3.1                 | 4.1                                     | utils          |
+| 3.4   | 3.1                 | 3.7                                     | dead code      |
+| 3.5   | 3.1                 | —                                       | dead code      |
+| 3.6   | 3.1                 | 4.1                                     | XSS            |
+| 3.7   | 3.1, 3.4            | 3.9, 4.7, 4.8                           | coverage       |
+| 3.8   | 2.6, 2.7, 2.8, 2.10 | —                                       | dedupe         |
+| 3.9   | 3.2, 3.7            | —                                       | clean          |
+| 4.1   | 3.6                 | 4.3, 4.4                                | UX             |
+| 4.2   | 3.2                 | —                                       | perf           |
+| 4.3   | 4.1                 | 4.5, 4.6                                | privacy        |
+| 4.4   | 4.1                 | —                                       | export         |
+| 4.5   | 4.3                 | —                                       | permissions    |
+| 4.6   | 2.1, 4.3            | —                                       | docs           |
+| 4.7   | 3.7                 | —                                       | CI gate        |
+| 4.8   | 3.7                 | —                                       | categories     |
 
 DAG verified by inspection: every `Depends on` references an existing task ID; no cycles (all edges point to earlier phases). M0 gating is enforced by the execution-wave ordering below: P1+ tasks depend only on 0.1 within P0, and the wave table sequences them after 0.2–0.4 land. **Critical path (recomputed from the table):** Pre.1 → Pre.2 → 0.1 → 1.1 → 1.2 → 1.5 → 3.1 → 3.6 → 4.1 → 4.3 → 4.5. Durations: 1+1+2+2+1+2+3+2+2+2+2 = **20 days ≈ 2 sprints**. (Alternatives: …→1.1 → 2.1 → 2.6 → 2.7 → 2.8 → 2.10 → 3.8 = 18d; …→3.1 → 3.4 → 3.7 → 4.7 = 17d; Pre.1 → 0.1 → 0.4 → 1.3 → 1.4 = 7d.)
 
 ## Execution waves
 
-| Wave | Tasks (parallel-safe) |
-|---|---|
-| 1 | Pre.1 |
-| 2 | Pre.2, Pre.3 |
-| 3 | 0.1 |
-| 4 | 0.2, 0.3, 0.4 |
-| 5 | 1.1, 1.3 |
-| 6 | 1.2, 1.4 |
-| 7 | 1.5, 2.9 |
-| 8 | 2.1 |
-| 9 | 2.2, 2.3, 2.4, 2.5, 2.6, 2.14 |
-| 10 | 2.7 |
-| 11 | 2.8, 2.13 |
-| 12 | 2.10 |
-| 13 | 2.11, 2.12 |
-| 14 | 3.1, 3.8 |
-| 15 | 3.2, 3.4, 3.5, 3.6 |
-| 16 | 3.3, 3.7 |
-| 17 | 3.9, 4.2, 4.8 |
-| 18 | 4.1, 4.7 |
-| 19 | 4.3, 4.4 |
-| 20 | 4.5, 4.6 |
+| Wave | Tasks (parallel-safe)         |
+| ---- | ----------------------------- |
+| 1    | Pre.1                         |
+| 2    | Pre.2, Pre.3                  |
+| 3    | 0.1                           |
+| 4    | 0.2, 0.3, 0.4                 |
+| 5    | 1.1, 1.3                      |
+| 6    | 1.2, 1.4                      |
+| 7    | 1.5, 2.9                      |
+| 8    | 2.1                           |
+| 9    | 2.2, 2.3, 2.4, 2.5, 2.6, 2.14 |
+| 10   | 2.7                           |
+| 11   | 2.8, 2.13                     |
+| 12   | 2.10                          |
+| 13   | 2.11, 2.12                    |
+| 14   | 3.1, 3.8                      |
+| 15   | 3.2, 3.4, 3.5, 3.6            |
+| 16   | 3.3, 3.7                      |
+| 17   | 3.9, 4.2, 4.8                 |
+| 18   | 4.1, 4.7                      |
+| 19   | 4.3, 4.4                      |
+| 20   | 4.5, 4.6                      |
 
 ## Milestones
 
-| ID | Phase | Exit condition (measurable) | Verify with |
-|---|---|---|---|
-| ME | Pre | `CLAUDE.md` and `AGENTS.md` improved (update); install/run notes exist; commands documented | `test -f CLAUDE.md && test -f AGENTS.md && test -f docs/dev-setup.md` |
-| M0 | P0 | Clean checkout → `npm ci && npm run build && npm test -- --ci` green in CI; git clean after build | CI run link; `npm run build && git status --porcelain` |
-| M1 | P1 | `npm audit --json` → 0 High/Critical in both lockfiles; W1/W2 landed | `npm audit --json \| jq '.metadata.vulnerabilities'` (both dirs) |
-| M2 | P2 | CI lanes on supported Node; actions on current majors; every major current or deferred with written rationale | `grep -rn 'node-version\|@v[4]' .github/`; M2 notes file |
-| M3 | P3 | Coverage tool reports a number ≥ target (baseline+20pp floor 60%); no ≥3× dup logic blocks; no `window.*` global calls; audit still 0 High/Critical | `npm run test:coverage -- --ci \| tail -20` |
-| M4 | P4 | UX findings closed; dashboard load ≤ ~200ms; no external network requests from extension pages except disclosed; docs match code | DevTools trace + network capture + manual Chrome pass |
+| ID  | Phase | Exit condition (measurable)                                                                                                                         | Verify with                                                           |
+| --- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| ME  | Pre   | `CLAUDE.md` and `AGENTS.md` improved (update); install/run notes exist; commands documented                                                         | `test -f CLAUDE.md && test -f AGENTS.md && test -f docs/dev-setup.md` |
+| M0  | P0    | Clean checkout → `npm ci && npm run build && npm test -- --ci` green in CI; git clean after build                                                   | CI run link; `npm run build && git status --porcelain`                |
+| M1  | P1    | `npm audit --json` → 0 High/Critical in both lockfiles; W1/W2 landed                                                                                | `npm audit --json \| jq '.metadata.vulnerabilities'` (both dirs)      |
+| M2  | P2    | CI lanes on supported Node; actions on current majors; every major current or deferred with written rationale                                       | `grep -rn 'node-version\|@v[4]' .github/`; M2 notes file              |
+| M3  | P3    | Coverage tool reports a number ≥ target (baseline+20pp floor 60%); no ≥3× dup logic blocks; no `window.*` global calls; audit still 0 High/Critical | `npm run test:coverage -- --ci \| tail -20`                           |
+| M4  | P4    | UX findings closed; dashboard load ≤ ~200ms; no external network requests from extension pages except disclosed; docs match code                    | DevTools trace + network capture + manual Chrome pass                 |
 
 ## Deferred and out of scope
 
-No finding is deferred. Two items are tracked as explicit decisions rather than work: whether Goals/achievements should be *wired* instead of deleted (task 3.4's decision gate), and the M3 coverage target is bound by measurement in 3.7's first criterion (baseline unknown at audit time because jest was absent locally, per the binding rule "measurement before improvement").
+No finding is deferred. Two items are tracked as explicit decisions rather than work: whether Goals/achievements should be _wired_ instead of deleted (task 3.4's decision gate), and the M3 coverage target is bound by measurement in 3.7's first criterion (baseline unknown at audit time because jest was absent locally, per the binding rule "measurement before improvement").
 
 ## Risks
 
-| Risk | Affects | Mitigation |
-|---|---|---|
-| W1 security patches with no local suite yet (RED until 0.1) could silently break behavior | Tasks 1.1–1.4 | 0.1 restores the suite first; all W1 tasks assert the recorded pass rate; CI is the second gate |
-| Vite major (8.x) may require changing the build config or plugin APIs | 2.8, then 2.10 | 2.8 is a spike with decision recorded; landing CI job from 0.4 contains the blast |
-| React 19 peer constraints could pull react-router/lightbox upgrades forward | 2.10, 2.11 | Ordering: router v7 spike after react; each major isolated and verified |
-| `npm audit fix` may introduce transitive overrides that are hard to remove | 1.1, 1.3, 3.8 | Overrides documented per PR; 3.8 converges through parents only |
-| Storage writer rewrite (3.1) touches the tracking hot path with few existing tests | 3.1, 3.2 | 1.5 adds the concurrency/legacy tests first; 3.1's ACs are test-driven |
-| Removing favicons changes dashboard look without design input | 4.3 | Replace with a neutral local icon first, then delete; preview in PR |
+| Risk                                                                                      | Affects        | Mitigation                                                                                      |
+| ----------------------------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------- |
+| W1 security patches with no local suite yet (RED until 0.1) could silently break behavior | Tasks 1.1–1.4  | 0.1 restores the suite first; all W1 tasks assert the recorded pass rate; CI is the second gate |
+| Vite major (8.x) may require changing the build config or plugin APIs                     | 2.8, then 2.10 | 2.8 is a spike with decision recorded; landing CI job from 0.4 contains the blast               |
+| React 19 peer constraints could pull react-router/lightbox upgrades forward               | 2.10, 2.11     | Ordering: router v7 spike after react; each major isolated and verified                         |
+| `npm audit fix` may introduce transitive overrides that are hard to remove                | 1.1, 1.3, 3.8  | Overrides documented per PR; 3.8 converges through parents only                                 |
+| Storage writer rewrite (3.1) touches the tracking hot path with few existing tests        | 3.1, 3.2       | 1.5 adds the concurrency/legacy tests first; 3.1's ACs are test-driven                          |
+| Removing favicons changes dashboard look without design input                             | 4.3            | Replace with a neutral local icon first, then delete; preview in PR                             |
 
 ## Notes for the executor
 

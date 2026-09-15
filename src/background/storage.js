@@ -389,8 +389,20 @@ export async function deleteDomainData(domain) {
  */
 export async function getSettings() {
   return new Promise((resolve) => {
-    chrome.storage.local.get(['settings'], (data) => {
-      resolve(data.settings || defaultSettings);
+    chrome.storage.local.get(['settings', 'colorBlindMode'], (data) => {
+      const settings = { ...(data.settings || defaultSettings) };
+      const hasHcKey = Boolean(
+        data.settings && Object.prototype.hasOwnProperty.call(data.settings, 'highContrastMode'),
+      );
+      // Legacy dashboard stored a top-level colorBlindMode flag.
+      if (!hasHcKey && data.colorBlindMode) {
+        settings.highContrastMode = true;
+        chrome.storage.local.set({ settings }, () => {
+          chrome.storage.local.remove('colorBlindMode', () => resolve(settings));
+        });
+        return;
+      }
+      resolve(settings);
     });
   });
 }

@@ -15,9 +15,14 @@ function makeChrome(visits = {}, limits = {}) {
           if (keys === null) res = this.data;
           else if (Array.isArray(keys)) {
             res = {};
-            keys.forEach((k) => { if (this.data[k] !== undefined) res[k] = this.data[k]; });
+            keys.forEach((k) => {
+              if (this.data[k] !== undefined) res[k] = this.data[k];
+            });
           } else if (typeof keys === 'string') res = { [keys]: this.data[keys] };
-          if (typeof cb === 'function') { cb(res); return; }
+          if (typeof cb === 'function') {
+            cb(res);
+            return;
+          }
           return Promise.resolve(res);
         },
         set(items, cb) {
@@ -25,7 +30,11 @@ function makeChrome(visits = {}, limits = {}) {
           if (typeof cb === 'function') cb();
           return Promise.resolve();
         },
-        clear(cb) { this.data = {}; if (typeof cb === 'function') cb(); return Promise.resolve(); },
+        clear(cb) {
+          this.data = {};
+          if (typeof cb === 'function') cb();
+          return Promise.resolve();
+        },
       },
     },
     runtime: { getURL: (p) => `chrome-extension://id/${p}` },

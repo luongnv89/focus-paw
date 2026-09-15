@@ -1,6 +1,7 @@
 import { getLimits, setLimitForDomain, normalizeLimitConfig } from '../background/storage.js';
 import { updateBlockingRules } from '../background/limits.js';
 import { validateDomain, validateLimitConfig } from '../common/limit-validation.js';
+import { svgIcon } from '../common/icons.js';
 
 /**
  * Ask the user for the optional <all_urls> host permission required for
@@ -33,6 +34,11 @@ async function renderRulesList() {
 
   rulesList.innerHTML = '';
 
+  const countChip = document.getElementById('rules-count');
+  if (countChip) {
+    countChip.textContent = String(entries.length);
+  }
+
   if (entries.length === 0) {
     emptyState.style.display = 'block';
     return;
@@ -52,7 +58,7 @@ async function renderRulesList() {
     ruleIcon.className = 'rule-icon';
     // Favicon removed for privacy — no third-party favicon fetches
     // (see PRIVACY.md "Third-Party Services" and issue #53 / F-SEC-001).
-    // The icon container is kept so existing layout/CSS still applies.
+    ruleIcon.appendChild(svgIcon('globe', { size: 18 }));
 
     const ruleDetails = document.createElement('div');
     ruleDetails.className = 'rule-details';
@@ -61,25 +67,22 @@ async function renderRulesList() {
     const badgesContainer = document.createElement('div');
     badgesContainer.className = 'rule-badges';
 
-    const createBadge = (label, cssText) => {
+    const createBadge = (label, extraClass = '') => {
       const badge = document.createElement('span');
-      badge.className = 'rule-badge';
+      badge.className = extraClass ? `rule-badge ${extraClass}` : 'rule-badge';
       badge.textContent = label;
-      if (cssText) badge.style.cssText = cssText;
       return badge;
     };
 
-    const mutedStyle = 'border-color: var(--color-text-muted); color: var(--color-text-muted);';
-    const successStyle = 'border-color: var(--color-success); color: var(--color-success);';
     if (!normalized.enabled) {
-      badgesContainer.appendChild(createBadge('Disabled', mutedStyle));
+      badgesContainer.appendChild(createBadge('Disabled', 'is-disabled'));
     } else {
-      badgesContainer.appendChild(createBadge('Active', successStyle));
+      badgesContainer.appendChild(createBadge('Active', 'is-active'));
       if (normalized.fiveHour.enabled) {
-        badgesContainer.appendChild(createBadge(`${normalized.fiveHour.limit} / 5h`, ''));
+        badgesContainer.appendChild(createBadge(`${normalized.fiveHour.limit} / 5h`));
       }
       if (normalized.daily.enabled) {
-        badgesContainer.appendChild(createBadge(`${normalized.daily.limit} / day`, ''));
+        badgesContainer.appendChild(createBadge(`${normalized.daily.limit} / day`));
       }
     }
 
@@ -90,27 +93,30 @@ async function renderRulesList() {
     ruleActions.className = 'rule-actions';
 
     const toggleTitle = normalized.enabled ? 'Disable' : 'Enable';
-    const toggleIcon = normalized.enabled ? '⏸️' : '▶️';
+    const toggleIcon = normalized.enabled ? 'pause' : 'play';
 
     const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'btn-icon toggle-btn';
+    toggleBtn.className = 'btn btn-ghost btn-icon-only toggle-btn';
     toggleBtn.title = toggleTitle;
+    toggleBtn.setAttribute('aria-label', `${toggleTitle} ${domain}`);
     toggleBtn.dataset.domain = domain;
-    toggleBtn.textContent = toggleIcon;
+    toggleBtn.appendChild(svgIcon(toggleIcon, { size: 16 }));
     toggleBtn.addEventListener('click', () => toggleRule(domain, normalized));
 
     const editBtn = document.createElement('button');
-    editBtn.className = 'btn-icon edit-btn';
+    editBtn.className = 'btn btn-ghost btn-icon-only edit-btn';
     editBtn.title = 'Edit';
+    editBtn.setAttribute('aria-label', `Edit ${domain}`);
     editBtn.dataset.domain = domain;
-    editBtn.textContent = '✏️';
+    editBtn.appendChild(svgIcon('pencil', { size: 16 }));
     editBtn.addEventListener('click', () => editRule(domain, normalized));
 
     const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'btn-icon delete-btn';
+    deleteBtn.className = 'btn btn-ghost btn-icon-only delete-btn';
     deleteBtn.title = 'Delete';
+    deleteBtn.setAttribute('aria-label', `Delete ${domain}`);
     deleteBtn.dataset.domain = domain;
-    deleteBtn.textContent = '🗑️';
+    deleteBtn.appendChild(svgIcon('trash', { size: 16 }));
     deleteBtn.addEventListener('click', () => deleteRule(domain));
 
     ruleActions.append(toggleBtn, editBtn, deleteBtn);

@@ -250,9 +250,7 @@ describe('Badge Module', () => {
       // Mock setBadgeBackgroundColor to throw an error
       const originalSetBadgeBackgroundColor = chrome.action.setBadgeBackgroundColor;
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-      chrome.action.setBadgeBackgroundColor = jest
-        .fn()
-        .mockRejectedValue(new Error('API error'));
+      chrome.action.setBadgeBackgroundColor = jest.fn().mockRejectedValue(new Error('API error'));
 
       await updateVisitBadge();
 

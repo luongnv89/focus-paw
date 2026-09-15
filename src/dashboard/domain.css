@@ -1,66 +1,210 @@
-.domain-detail-view {
-  background: var(--color-background);
+/* FocusPaw Domain Detail — "Obsidian instrument panel" (Phase 2)
+   Loaded after theme.css and shell.css; tokens come from src/common/theme.css. */
+
+body {
+  background: var(--bg-0);
 }
 
-.domain-detail-container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 32px 24px 64px;
+.page-title {
+  margin-bottom: 24px;
 }
 
-.domain-detail-header {
+/* ========================================
+   Stats — 2×2 grid of shared KPI tiles
+   ======================================== */
+
+.domain-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.domain-stats-grid .kpi-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.domain-stats-grid .kpi-value-text {
+  font-family: var(--font-sans);
+  font-size: var(--fs-15);
+  line-height: 1.4;
+  margin-top: 10px;
+}
+
+/* ========================================
+   Cards
+   ======================================== */
+
+.domain-limit-card,
+.domain-history-card {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.card-header {
+  margin-bottom: 16px;
+}
+
+.card-header h2,
+.history-header h2 {
+  font-size: var(--fs-15);
+  font-weight: 600;
+  color: var(--ink-1);
+  margin: 0 0 4px;
+}
+
+.card-subtitle {
+  font-size: var(--fs-13);
+  color: var(--ink-2);
+  margin: 0;
+}
+
+/* ========================================
+   Limit form
+   ======================================== */
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toggle-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 32px;
+  padding: 14px 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  color: var(--ink-1);
+  font-size: var(--fs-13);
 }
 
-.domain-detail-header h1 {
-  margin: 4px 0 0;
-  font-size: 28px;
-  color: var(--color-text-dark);
-}
-
-.domain-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.stat-card {
-  padding: 20px;
-  border-radius: 16px;
-  background: var(--color-card);
-  border: 1px solid var(--color-border-light);
-}
-
-.stat-label {
-  margin: 0;
-  font-size: 13px;
-  color: var(--color-text-muted);
-}
-
-.stat-value {
-  margin: 6px 0 0;
-  font-size: 28px;
+.toggle-row-info span {
   font-weight: 600;
-  color: var(--color-text-dark);
 }
 
-.domain-limit-card,
-.domain-history-card {
-  margin-bottom: 32px;
-  padding: 24px;
-  border-radius: 16px;
-  background: var(--color-card);
-  border: 1px solid var(--color-border-light);
+.muted-copy {
+  color: var(--ink-2);
+  font-size: var(--fs-12);
+  margin: 4px 0 0;
 }
+
+/* Custom token-styled toggle on the native checkbox (same ids/names kept) */
+.toggle-input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 44px;
+  height: 24px;
+  border-radius: var(--r-pill);
+  background: var(--line-2);
+  border: none;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+  transition: background var(--dur) var(--ease);
+}
+
+.toggle-input::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 2px;
+  top: 2px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform var(--dur) var(--ease);
+}
+
+.toggle-input:checked {
+  background: var(--accent);
+}
+
+.toggle-input:checked::before {
+  transform: translateX(20px);
+}
+
+.toggle-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.limit-type-section {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.limit-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 4px;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.limit-input-group label {
+  font-size: var(--fs-11);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--track-caps);
+  color: var(--ink-2);
+}
+
+.limit-input-group input {
+  width: 100%;
+  max-width: 200px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+  color: var(--ink-1);
+  font-size: var(--fs-14);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  transition: border-color var(--dur) var(--ease);
+}
+
+.limit-input-group input:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.limit-input-group input:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.form-error {
+  color: var(--bad);
+  font-size: var(--fs-12);
+  min-height: 16px;
+  margin: 0;
+}
+
+.save-limit-btn {
+  align-self: flex-start;
+}
+
+/* ========================================
+   History
+   ======================================== */
 
 .history-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 16px;
@@ -72,34 +216,63 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .history-item {
   display: flex;
   justify-content: space-between;
-  border: 1px solid var(--color-border-light);
-  border-radius: 12px;
-  padding: 12px 16px;
-  background: var(--color-surface);
+  align-items: center;
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  background: var(--bg-2);
+  font-size: var(--fs-13);
 }
 
 .history-item strong {
-  font-weight: 600;
-  color: var(--color-text-dark);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.history-item span {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-1);
 }
 
 .history-empty {
   margin: 0;
-  color: var(--color-text-muted);
+  color: var(--ink-3);
+  font-size: var(--fs-13);
+}
+
+/* ========================================
+   Toast (same look as the dashboard settings toast)
+   ======================================== */
+
+.settings-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg-1);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+  padding: 12px 20px;
+  color: var(--ink-1);
+  font-size: var(--fs-13);
+  font-weight: 500;
+  box-shadow: var(--shadow-2);
+  z-index: 10000;
+  display: none;
+  max-width: 300px;
+}
+
+.settings-toast.visible {
+  display: block;
 }
 
 @media (max-width: 640px) {
-  .domain-detail-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .history-header {
     flex-direction: column;
     align-items: flex-start;

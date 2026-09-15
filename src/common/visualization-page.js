@@ -71,6 +71,21 @@ function getTitleForRange(range) {
 }
 
 /**
+ * Show or hide a node. Chromium maps [hidden] to `display: none !important`,
+ * so toggling only `style.display` cannot reveal elements that use the
+ * HTML `hidden` attribute (popup empty-state/content/list/quick-limits).
+ * Keep `style.display` in sync for dashboard nodes that start as inline none.
+ * @param {HTMLElement|null} el
+ * @param {boolean} shown
+ * @param {string} [displayWhenShown='block']
+ */
+function setShown(el, shown, displayWhenShown = 'block') {
+  if (!el) return;
+  el.hidden = !shown;
+  el.style.display = shown ? displayWhenShown : 'none';
+}
+
+/**
  * Load previous period data for comparison
  * @param {string} range - Current time range
  * @returns {Promise<Object>} - Previous period aggregated data
@@ -205,12 +220,12 @@ function generateInsightsSummary(aggregatedData, limits, range, previousData = n
   // Limit status
   if (overLimitCount > 0) {
     const domainLabel = overLimitCount === 1 ? 'domain' : 'domains';
-    parts.push(`⚠️ You exceeded limits on ${overLimitCount} ${domainLabel}`);
+    parts.push(`You exceeded limits on ${overLimitCount} ${domainLabel}`);
   } else if (nearLimitCount > 0) {
     const domainLabel = nearLimitCount === 1 ? 'domain' : 'domains';
     parts.push(`You're approaching limits on ${nearLimitCount} ${domainLabel}`);
   } else if (Object.keys(limits).length > 0) {
-    parts.push('✓ All limits under control');
+    parts.push('All limits under control');
   }
 
   // Total domains
@@ -232,13 +247,13 @@ function generateInsightsSummary(aggregatedData, limits, range, previousData = n
     if (visitChange > 0) {
       const prefix = changePercent > 0 ? '+' : '';
       const warningText = [
-        `📈 ${visitChange} more visits (${prefix}${changePercent}%)`,
+        `${visitChange} more visits (${prefix}${changePercent}%)`,
         'than previous period',
       ].join(' ');
       parts.push(warningText);
     } else if (visitChange < 0) {
       const successText = [
-        `📉 ${Math.abs(visitChange)} fewer visits (${changePercent}%)`,
+        `${Math.abs(visitChange)} fewer visits (${changePercent}%)`,
         'than previous period',
       ].join(' ');
       parts.push(successText);
@@ -275,7 +290,7 @@ export function generateWeeklyInsights(weekData, limits) {
   const mostVisitedText = `You visited ${topDomain.domain} the most this week with ${topDomain.count} visits.`;
   insights.push({
     type: 'info',
-    title: '🎯 Most Visited',
+    title: 'Most Visited',
     text: mostVisitedText,
   });
 
@@ -295,13 +310,13 @@ export function generateWeeklyInsights(weekData, limits) {
     ].join(' ');
     insights.push({
       type: 'warning',
-      title: '⚠️ Limits Exceeded',
+      title: 'Limits Exceeded',
       text: limitTextParts,
     });
   } else if (Object.keys(limits).length > 0) {
     insights.push({
       type: 'success',
-      title: '✅ Great Self-Control',
+      title: 'Great Self-Control',
       text: 'You stayed within all your limits this week. Keep up the good work!',
     });
   }
@@ -312,7 +327,7 @@ export function generateWeeklyInsights(weekData, limits) {
   const activityText = `You switched focus ${totalVisits} times this week, averaging ${avgPerDay} switches/day.`;
   insights.push({
     type: 'info',
-    title: '📊 Activity Summary',
+    title: 'Activity Summary',
     text: activityText,
   });
 
@@ -328,7 +343,7 @@ export function generateWeeklyInsights(weekData, limits) {
       ].join(' ');
       insights.push({
         type: 'warning',
-        title: '💡 Recommendation',
+        title: 'Recommendation',
         text: recommendationText,
       });
     }
@@ -423,10 +438,10 @@ function wireVisualizationRender(ctx) {
       .slice(0, 5)
       .map(([d]) => d);
     if (topDomains.length === 0) {
-      panel.style.display = 'none';
+      setShown(panel, false);
       return;
     }
-    panel.style.display = 'block';
+    setShown(panel, true);
     list.innerHTML = '';
     const limits = await getLimits();
     const defaultConfig = createDefaultLimitConfig();
@@ -505,13 +520,13 @@ function wireVisualizationRender(ctx) {
       const aggregatedVisits = await loadAggregatedStats(range);
       const domains = Object.keys(aggregatedVisits);
       if (domains.length === 0) {
-        if (emptyState) emptyState.style.display = 'block';
-        if (content) content.style.display = 'none';
+        setShown(emptyState, true);
+        setShown(content, false);
         if (ctx.onDataLoaded) ctx.onDataLoaded({});
         return;
       }
-      if (emptyState) emptyState.style.display = 'none';
-      if (content) content.style.display = 'block';
+      setShown(emptyState, false);
+      setShown(content, true);
       if (ctx.onDataLoaded) ctx.onDataLoaded(aggregatedVisits);
       await renderQuickLimits(aggregatedVisits);
 
@@ -521,15 +536,25 @@ function wireVisualizationRender(ctx) {
       }
 
       if (isFeatureEnabled('RADIAL_GRAPH')) {
-        if (graphContainer) graphContainer.style.display = 'block';
-        if (domainListEl) domainListEl.style.display = 'none';
+        setShown(graphContainer, true);
+        setShown(domainListEl, false);
         const badges = await calculateFocusHeroBadges();
         const limits = await getLimits();
+        // Measure the container now that #content is displayed; the SVG uses a
+        // viewBox so it stays responsive afterwards — these dimensions only set
+        // the initial aspect ratio and the force-layout bounds.
+        const containerRect = graphContainer.getBoundingClientRect();
+        const graphWidth = containerRect.width > 0 ? containerRect.width : ctx.graphWidth;
+        const graphHeight = containerRect.height > 0 ? containerRect.height : ctx.graphHeight;
         ctx.cleanupGraph = renderRadialGraph(graphContainer, aggregatedVisits, {
-          width: ctx.graphWidth,
-          height: ctx.graphHeight,
+          width: graphWidth,
+          height: graphHeight,
           badges,
           limits,
+          onZoomChange: (k) => {
+            const el = document.getElementById('zoom-level');
+            if (el) el.textContent = `${Math.round(k * 100)}%`;
+          },
         });
         const summaryElement = document.getElementById('summary-content');
         if (summaryElement) {
@@ -549,8 +574,8 @@ function wireVisualizationRender(ctx) {
           setTimeout(() => summaryElement.classList.remove('updating'), 300);
         }
       } else if (graphContainer && domainListEl) {
-        graphContainer.style.display = 'none';
-        domainListEl.style.display = 'block';
+        setShown(graphContainer, false);
+        setShown(domainListEl, true);
         renderSimpleList(aggregatedVisits, domainListEl);
       }
     } catch (error) {
@@ -626,14 +651,14 @@ function wireVisualizationSettings(ctx) {
       const limitSpan = document.createElement('span');
       if (!normalized.enabled) {
         limitSpan.textContent = 'Disabled';
-        limitSpan.style.color = '#999';
+        limitSpan.classList.add('is-muted');
       } else {
         const parts = [];
         if (normalized.fiveHour.enabled) parts.push(`${normalized.fiveHour.limit} per 5h`);
         if (normalized.daily.enabled) parts.push(`${normalized.daily.limit} per day`);
         if (parts.length === 0) {
           limitSpan.textContent = 'No limits active';
-          limitSpan.style.color = '#999';
+          limitSpan.classList.add('is-muted');
         } else {
           limitSpan.textContent = parts.join(', ');
         }
@@ -685,9 +710,12 @@ function wireVisualizationSettings(ctx) {
 
   const showMainView = () => {
     if (!dom.settingsView || !dom.mainView) return;
+    if (dom.settingsView.hidden) return;
     dom.settingsView.hidden = true;
     dom.settingsView.setAttribute('aria-hidden', 'true');
-    dom.mainView.style.display = 'block';
+    // '' restores the stylesheet display (dashboard main view is flex, not block)
+    dom.mainView.style.display = '';
+    dom.settingsBtn?.focus();
   };
 
   // Settings/main view navigation
@@ -697,6 +725,14 @@ function wireVisualizationSettings(ctx) {
   if (dom.settingsBackBtn) {
     dom.settingsBackBtn.addEventListener('click', showMainView);
   }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (!dom.settingsView || dom.settingsView.hidden) return;
+    event.preventDefault();
+    event.stopPropagation();
+    showMainView();
+  });
 
   // Limit list interactions (toggle / remove / edit)
   if (dom.limitList) {
@@ -896,10 +932,10 @@ async function wireVisualizationActions(ctx, _options) {
       ctx.currentRange = range;
       document.querySelectorAll('.time-filter-btn').forEach((b) => {
         b.classList.remove('active');
-        b.setAttribute('aria-selected', 'false');
+        b.setAttribute('aria-pressed', 'false');
       });
       btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
+      btn.setAttribute('aria-pressed', 'true');
       await ctx.renderVisualization(range);
     });
   });
@@ -1063,6 +1099,20 @@ async function wireVisualizationActions(ctx, _options) {
 }
 
 /**
+ * Bind the graph zoom controls (#zoom-in/#zoom-out/#zoom-reset) once during
+ * setup. The buttons are optional — pages without a zoom bar skip silently.
+ * @param {Object} ctx - shared visualization context
+ */
+function bindZoomControls(ctx) {
+  const zoomInBtn = document.getElementById('zoom-in');
+  const zoomOutBtn = document.getElementById('zoom-out');
+  const zoomResetBtn = document.getElementById('zoom-reset');
+  if (zoomInBtn) zoomInBtn.addEventListener('click', () => ctx.cleanupGraph?.zoomIn());
+  if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => ctx.cleanupGraph?.zoomOut());
+  if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => ctx.cleanupGraph?.resetZoom());
+}
+
+/**
  * Wire up the visualization UI by composing the three single-purpose wirers.
  * Public entry point — external callers (dashboard, popup) keep using it.
  * @param {Object} options
@@ -1084,5 +1134,6 @@ export async function setupVisualizationPage(options = {}) {
   // then actions which consumes both and runs the initial render.
   wireVisualizationRender(ctx);
   wireVisualizationSettings(ctx);
+  bindZoomControls(ctx);
   await wireVisualizationActions(ctx, options);
 }

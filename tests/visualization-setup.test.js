@@ -10,9 +10,14 @@ function makeChrome(visits = {}, limits = {}) {
           if (keys === null) res = this.data;
           else if (Array.isArray(keys)) {
             res = {};
-            keys.forEach((k) => { if (this.data[k] !== undefined) res[k] = this.data[k]; });
+            keys.forEach((k) => {
+              if (this.data[k] !== undefined) res[k] = this.data[k];
+            });
           } else if (typeof keys === 'string') res = { [keys]: this.data[keys] };
-          if (typeof cb === 'function') { cb(res); return; }
+          if (typeof cb === 'function') {
+            cb(res);
+            return;
+          }
           return Promise.resolve(res);
         },
         set(items, cb) {
@@ -20,11 +25,18 @@ function makeChrome(visits = {}, limits = {}) {
           if (typeof cb === 'function') cb();
           return Promise.resolve();
         },
-        clear(cb) { this.data = {}; if (typeof cb === 'function') cb(); return Promise.resolve(); },
+        clear(cb) {
+          this.data = {};
+          if (typeof cb === 'function') cb();
+          return Promise.resolve();
+        },
       },
     },
     runtime: { getURL: (p) => `chrome-extension://id/${p}` },
-    declarativeNetRequest: { updateDynamicRules: jest.fn(async () => {}), getDynamicRules: jest.fn(async () => []) },
+    declarativeNetRequest: {
+      updateDynamicRules: jest.fn(async () => {}),
+      getDynamicRules: jest.fn(async () => []),
+    },
     notifications: { create: jest.fn() },
   };
   global.chrome.action = { setBadgeText: async () => {}, setBadgeBackgroundColor: async () => {} };
@@ -52,16 +64,16 @@ describe('visualization-page setup', () => {
       <div id="settings-toast"></div>
       <button id="reset-data-btn">Reset</button>
       <div id="graph-container"></div>
-      <div id="domain-list"></div>
-      <div id="empty-state" style="display:none"></div>
-      <div id="content" style="display:none"></div>
+      <div id="domain-list" hidden></div>
+      <div id="empty-state" hidden></div>
+      <div id="content" hidden></div>
       <div id="stats-title"></div>
       <div id="summary-content"></div>
       <input type="checkbox" id="comparison-toggle-input" />
       <button class="time-filter-btn" data-range="today"></button>
       <button class="time-filter-btn" data-range="week"></button>
       <button id="refresh-btn"></button>
-      <div id="quick-limits-panel" style="display:none"><ul id="quick-limits-list"></ul></div>
+      <div id="quick-limits-panel" hidden><ul id="quick-limits-list"></ul></div>
       <button id="export-json-btn"></button>
       <button id="export-csv-btn"></button>
     `;
@@ -79,19 +91,56 @@ describe('visualization-page setup', () => {
 
   test('setupVisualizationPage renders without throwing (empty visits)', async () => {
     makeChrome({}, {});
-    await expect(setupVisualizationPage({ defaultRange: 'today', fullPage: false })).resolves.toBeUndefined();
+    await expect(
+      setupVisualizationPage({ defaultRange: 'today', fullPage: false }),
+    ).resolves.toBeUndefined();
     // After setup, loading should be hidden
     const loading = document.getElementById('loading');
     expect(loading.style.display).toBe('none');
+  });
+
+  test('clears hidden on empty-state so Chromium [hidden] display:none !important does not win', async () => {
+    makeChrome({}, {});
+    await setupVisualizationPage({ defaultRange: 'today', fullPage: false });
+    const emptyState = document.getElementById('empty-state');
+    const content = document.getElementById('content');
+    expect(emptyState.hidden).toBe(false);
+    expect(emptyState.style.display).toBe('block');
+    expect(content.hidden).toBe(true);
+    expect(content.style.display).toBe('none');
   });
 
   test('setupVisualizationPage handles visits data', async () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    makeChrome({ [todayKey]: { 'example.com': { count: 5, lastVisit: Date.now(), subpaths: {} } } }, {});
+    makeChrome(
+      { [todayKey]: { 'example.com': { count: 5, lastVisit: Date.now(), subpaths: {} } } },
+      {},
+    );
     await setupVisualizationPage({ defaultRange: 'today' });
     // Should have rendered content or empty-state correctly without throwing
     expect(document.getElementById('loading').style.display).toBe('none');
+    const emptyState = document.getElementById('empty-state');
+    const content = document.getElementById('content');
+    expect(content.hidden).toBe(false);
+    expect(content.style.display).toBe('block');
+    expect(emptyState.hidden).toBe(true);
+    expect(emptyState.style.display).toBe('none');
+  });
+
+  test('Escape closes settings and restores focus to the settings button', async () => {
+    makeChrome({}, {});
+    await setupVisualizationPage({ defaultRange: 'today', fullPage: false });
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsView = document.getElementById('settings-view');
+    settingsBtn.click();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 20);
+    });
+    expect(settingsView.hidden).toBe(false);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(settingsView.hidden).toBe(true);
+    expect(document.activeElement).toBe(settingsBtn);
   });
 });

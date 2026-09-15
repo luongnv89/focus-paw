@@ -6,7 +6,9 @@ describe('countdown-toast content script', () => {
       runtime: {
         onMessage: {
           listeners: [],
-          addListener(fn) { this.listeners.push(fn); },
+          addListener(fn) {
+            this.listeners.push(fn);
+          },
         },
       },
     };
@@ -40,13 +42,25 @@ describe('countdown-toast content script', () => {
     delete window.focusBearToastInjected;
     document.body.innerHTML = '';
     global.chrome.runtime.onMessage.listeners = [];
-    global.chrome.runtime.onMessage.addListener = function (fn) { this.listeners.push(fn); };
+    global.chrome.runtime.onMessage.addListener = function (fn) {
+      this.listeners.push(fn);
+    };
     // Re-create container injection expectation
     await import('../src/content/countdown-toast.js');
     const listener = global.chrome.runtime.onMessage.listeners[0];
     expect(listener).toBeDefined();
     const sendResponse = jest.fn();
-    const result = listener({ type: 'SHOW_COUNTDOWN_TOAST', domain: 'example.com', remaining: 3, limit: 10, limitType: 'daily' }, {}, sendResponse);
+    const result = listener(
+      {
+        type: 'SHOW_COUNTDOWN_TOAST',
+        domain: 'example.com',
+        remaining: 3,
+        limit: 10,
+        limitType: 'daily',
+      },
+      {},
+      sendResponse,
+    );
     expect(sendResponse).toHaveBeenCalledWith({ success: true });
     expect(result).toBe(false);
     const container = document.getElementById('focuspaw-toast-container');
@@ -61,10 +75,22 @@ describe('countdown-toast content script', () => {
     delete window.focusBearToastInjected;
     document.body.innerHTML = '';
     global.chrome.runtime.onMessage.listeners = [];
-    global.chrome.runtime.onMessage.addListener = function (fn) { this.listeners.push(fn); };
+    global.chrome.runtime.onMessage.addListener = function (fn) {
+      this.listeners.push(fn);
+    };
     await import('../src/content/countdown-toast.js');
     const listener = global.chrome.runtime.onMessage.listeners[0];
-    listener({ type: 'SHOW_COUNTDOWN_TOAST', domain: 'example.com', remaining: 0, limit: 10, limitType: 'daily' }, {}, jest.fn());
+    listener(
+      {
+        type: 'SHOW_COUNTDOWN_TOAST',
+        domain: 'example.com',
+        remaining: 0,
+        limit: 10,
+        limitType: 'daily',
+      },
+      {},
+      jest.fn(),
+    );
     const toast = document.getElementById('focuspaw-toast-container').children[0];
     expect(toast.className).toContain('focuspaw-toast-danger');
   });
@@ -74,7 +100,9 @@ describe('countdown-toast content script', () => {
     delete window.focusBearToastInjected;
     document.body.innerHTML = '';
     global.chrome.runtime.onMessage.listeners = [];
-    global.chrome.runtime.onMessage.addListener = function (fn) { this.listeners.push(fn); };
+    global.chrome.runtime.onMessage.addListener = function (fn) {
+      this.listeners.push(fn);
+    };
     await import('../src/content/countdown-toast.js');
     const listener = global.chrome.runtime.onMessage.listeners[0];
     const sendResponse = jest.fn();

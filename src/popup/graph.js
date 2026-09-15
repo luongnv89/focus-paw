@@ -43,12 +43,16 @@ export function renderRadialGraph(container, data, options = {}) {
     return;
   }
 
-  // Create SVG
+  // Create SVG — responsive: viewBox keeps the coordinate space, CSS sizes it
+  // to the container so the graph rescales without re-rendering.
   const svg = d3
     .select(container)
     .append('svg')
-    .attr('width', width)
-    .attr('height', height)
+    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('preserveAspectRatio', 'xMidYMid meet')
+    .style('width', '100%')
+    .style('height', '100%')
+    .style('display', 'block')
     .attr('role', 'img')
     .attr('aria-label', 'Topology graph showing website activity');
 
@@ -62,10 +66,12 @@ export function renderRadialGraph(container, data, options = {}) {
     .attr('class', 'graph-tooltip')
     .style('position', 'absolute')
     .style('visibility', 'hidden')
-    .style('background', 'rgba(0, 0, 0, 0.85)')
-    .style('color', '#fff')
+    .style('background', 'var(--bg-2)')
+    .style('color', 'var(--ink-1)')
+    .style('border', '1px solid var(--line-2)')
     .style('padding', '8px 12px')
     .style('border-radius', '8px')
+    .style('box-shadow', 'var(--shadow-2)')
     .style('font-size', '12px')
     .style('pointer-events', 'none')
     .style('z-index', '1000')
@@ -74,31 +80,37 @@ export function renderRadialGraph(container, data, options = {}) {
   // Back Button
   const backBtn = document.createElement('button');
   backBtn.className = 'graph-back-btn';
-  backBtn.textContent = '← Back to Universe';
+  const backIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  backIcon.setAttribute('width', '14');
+  backIcon.setAttribute('height', '14');
+  backIcon.setAttribute('aria-hidden', 'true');
+  const backIconUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+  backIconUse.setAttribute('href', '../../assets/icons.svg#i-arrow-left');
+  backIcon.appendChild(backIconUse);
+  backBtn.append(backIcon, document.createTextNode('Back to Universe'));
   backBtn.style.position = 'absolute';
   backBtn.style.top = '10px';
   backBtn.style.left = '10px';
   backBtn.style.zIndex = '100';
-  backBtn.style.padding = '8px 12px';
-  backBtn.style.background = 'rgba(255, 255, 255, 0.9)';
-  backBtn.style.border = '1px solid #ddd';
-  backBtn.style.borderRadius = '20px';
+  backBtn.style.display = 'none'; // Hidden by default
+  backBtn.style.alignItems = 'center';
+  backBtn.style.gap = '6px';
+  backBtn.style.padding = '6px 12px';
+  backBtn.style.background = 'var(--bg-2)';
+  backBtn.style.color = 'var(--ink-1)';
+  backBtn.style.border = '1px solid var(--line-2)';
+  backBtn.style.borderRadius = '10px';
   backBtn.style.cursor = 'pointer';
   backBtn.style.fontSize = '12px';
   backBtn.style.fontWeight = '600';
-  backBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-  backBtn.style.display = 'none'; // Hidden by default
-  backBtn.style.transition = 'all 0.2s ease';
+  backBtn.style.fontFamily = 'inherit';
+  backBtn.style.transition = 'background 160ms ease';
 
   backBtn.onmouseenter = () => {
-    backBtn.style.background = '#fff';
-    backBtn.style.transform = 'translateY(-1px)';
-    backBtn.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+    backBtn.style.background = 'var(--bg-3)';
   };
   backBtn.onmouseleave = () => {
-    backBtn.style.background = 'rgba(255, 255, 255, 0.9)';
-    backBtn.style.transform = 'translateY(0)';
-    backBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    backBtn.style.background = 'var(--bg-2)';
   };
 
   backBtn.onclick = () => {
@@ -106,7 +118,9 @@ export function renderRadialGraph(container, data, options = {}) {
     window.dispatchEvent(new CustomEvent('domainDrilldownExit'));
   };
 
-  container.style.position = 'relative'; // Ensure container is relative for absolute positioning
+  // Container is already positioned by CSS (popup: relative, dashboard: absolute
+  // inset-0 inside .graph-stage) — no inline override needed for the absolutely
+  // positioned tooltip/back button children.
   container.appendChild(backBtn);
 
   let simulation = null;
@@ -119,7 +133,7 @@ export function renderRadialGraph(container, data, options = {}) {
 
     // Handle Back Button visibility
     if (viewState.type === 'subpaths') {
-      backBtn.style.display = 'block';
+      backBtn.style.display = 'inline-flex';
     } else {
       backBtn.style.display = 'none';
     }
@@ -234,7 +248,7 @@ export function renderRadialGraph(container, data, options = {}) {
       .data(links)
       .enter()
       .append('line')
-      .attr('stroke', '#e0e0e0')
+      .attr('stroke', 'var(--line-2)')
       .attr('stroke-width', 1.5)
       .attr('opacity', 0.6);
 
@@ -255,52 +269,64 @@ export function renderRadialGraph(container, data, options = {}) {
       .append('circle')
       .attr('r', (d) => d.r)
       .attr('fill', (d) => {
-        if (d.group === 'center') return '#333';
+        if (d.group === 'center') return 'var(--bg-3)';
         if (d.group === 'center-domain') return d.categoryColor;
         if (d.group === 'domain') return d.categoryColor;
-        return '#888'; // subpath default
+        return 'var(--ink-3)'; // subpath default
       })
-      .attr('stroke', '#fff')
+      .attr('stroke', (d) => (d.group === 'center' ? 'var(--line-2)' : 'var(--bg-1)'))
       .attr('stroke-width', 2)
       .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))');
 
-    // Count Label (inside circle)
+    // Count Label (inside circle). Same paint-order stroke as domain labels so
+    // numbers stay AA on muted CATEGORY_PALETTE fills (white-on-fill failed 1.4.3).
     node
       .filter((d) => d.group !== 'center') // Don't show count for "You" node
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', '.3em')
-      .attr('fill', 'white')
+      .attr('fill', 'var(--ink-1)')
+      .attr('stroke', 'var(--bg-1)')
+      .attr('stroke-width', 3)
+      .attr('stroke-linejoin', 'round')
+      .style('paint-order', 'stroke')
       .attr('font-size', (d) => `${Math.min(d.r / 1.5, 12)}px`)
       .attr('font-weight', 700)
       .attr('pointer-events', 'none')
-      .style('text-shadow', '0 1px 2px rgba(0,0,0,0.3)')
       .style('display', (d) => (d.r > 12 ? 'block' : 'none'))
       .text((d) => d.count);
 
-    // Labels
+    // Labels — below the bubble, truncated at 14 chars (full domain stays in the
+    // tooltip); paint-order stroke keeps text legible over links/bubbles.
     node
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', (d) => d.r + 15)
-      .attr('fill', '#555')
+      .attr('fill', 'var(--ink-2)')
+      .attr('stroke', 'var(--bg-1)')
+      .attr('stroke-width', 2)
+      .attr('stroke-linejoin', 'round')
+      .style('paint-order', 'stroke')
       .attr('font-size', '11px')
       .attr('font-weight', 600)
       .attr('pointer-events', 'none')
       .text((d) => {
         if (d.group === 'center') return 'You';
-        if (d.id.length > 15) return `${d.id.substring(0, 13)}...`;
+        if (d.id.length > 14) return `${d.id.slice(0, 14)}…`;
         return d.id;
       });
 
-    // Badges
+    // Badges — trophy icon above the node circle
     node
       .filter((d) => badges[d.id])
-      .append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', (d) => -d.r - 5)
-      .attr('font-size', '14px')
-      .text('🏆');
+      .append('use')
+      .attr('href', '../../assets/icons.svg#i-trophy')
+      .attr('width', 14)
+      .attr('height', 14)
+      .attr('x', -7)
+      .attr('y', (d) => -d.r - 18)
+      .attr('color', 'var(--warn)')
+      .attr('pointer-events', 'none');
 
     // --- INTERACTIONS ---
     node
@@ -325,7 +351,7 @@ export function renderRadialGraph(container, data, options = {}) {
           tooltip.append('span').text(' visits');
           if (badges[d.id]) {
             tooltip.append('br');
-            tooltip.append('span').text(`\u{1F3C6} Focus Hero (${badges[d.id].streak} days!)`);
+            tooltip.append('span').text(`Focus Hero (${badges[d.id].streak} days!)`);
           }
         } else if (d.group === 'subpath') {
           tooltip.append('strong').text(d.id);
@@ -409,6 +435,7 @@ export function renderRadialGraph(container, data, options = {}) {
     .scaleExtent([0.1, 4])
     .on('zoom', (event) => {
       gZoom.attr('transform', event.transform);
+      options.onZoomChange?.(event.transform.k);
     });
 
   svg.call(zoomBehavior);
@@ -418,10 +445,16 @@ export function renderRadialGraph(container, data, options = {}) {
   const graphRenderTime = Math.round(graphPerfEnd - graphPerfStart);
   console.log(`[FocusPaw Performance] Graph init time: ${graphRenderTime}ms`);
 
-  // Return cleanup function
-  return () => {
+  // Return cleanup function with zoom controls attached
+  const cleanup = () => {
     if (simulation) simulation.stop();
     tooltip.remove();
     backBtn.remove();
   };
+  cleanup.zoomIn = () => svg.transition().duration(160).call(zoomBehavior.scaleBy, 1.25);
+  cleanup.zoomOut = () => svg.transition().duration(160).call(zoomBehavior.scaleBy, 0.8);
+  cleanup.resetZoom = () => {
+    svg.transition().duration(200).call(zoomBehavior.transform, d3.zoomIdentity);
+  };
+  return cleanup;
 }

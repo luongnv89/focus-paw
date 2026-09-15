@@ -4,13 +4,13 @@
  */
 
 export const CATEGORY_PALETTE = {
-  social: '#ff6b6b', // Red/Orange for distractions
-  entertainment: '#ffa500', // Orange
-  productivity: '#4cc9f0', // Blue
-  development: '#4895ef', // Darker Blue
-  news: '#b5179e', // Purple
-  shopping: '#f72585', // Pink
-  other: '#a0a0a0', // Gray
+  social: '#d9636c', // Muted red for distractions
+  entertainment: '#d9953f', // Muted amber
+  productivity: '#4aa3a2', // Muted teal
+  development: '#5b8def', // Muted blue
+  news: '#9b6dd6', // Muted purple
+  shopping: '#c96aa8', // Muted pink
+  other: '#6e6e6e', // Muted gray
 };
 
 export const CATEGORY_CONFIG = {

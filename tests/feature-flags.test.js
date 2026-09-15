@@ -1,4 +1,9 @@
-import { FEATURES, isFeatureEnabled, getEnabledFeatures, getAllFeatures } from '../src/common/feature-flags.js';
+import {
+  FEATURES,
+  isFeatureEnabled,
+  getEnabledFeatures,
+  getAllFeatures,
+} from '../src/common/feature-flags.js';
 
 describe('feature-flags', () => {
   test('FEATURES contains RADIAL_GRAPH', () => {

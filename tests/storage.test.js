@@ -47,6 +47,13 @@ global.chrome = {
         Object.assign(this.data, items);
         if (callback) callback();
       },
+      remove(keys, callback) {
+        const list = Array.isArray(keys) ? keys : [keys];
+        list.forEach((key) => {
+          delete this.data[key];
+        });
+        if (callback) callback();
+      },
       clear(callback) {
         this.data = {};
         if (callback) callback();
@@ -67,7 +74,7 @@ describe('Storage Module', () => {
       expect(dateKey).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
-    test('returns today\'s date', () => {
+    test("returns today's date", () => {
       expect(getTodayKey()).toMatch(/\d{4}-\d{2}-\d{2}/);
     });
   });
@@ -146,14 +153,14 @@ describe('Storage Module', () => {
       };
     });
 
-    test('aggregates today\'s visits', async () => {
+    test("aggregates today's visits", async () => {
       const stats = await getAggregatedStats('today');
       expect(stats['example.com'].count).toBe(5);
       expect(stats['twitter.com'].count).toBe(10);
       expect(stats['facebook.com']).toBeUndefined();
     });
 
-    test('aggregates week\'s visits', async () => {
+    test("aggregates week's visits", async () => {
       const stats = await getAggregatedStats('week');
       expect(stats['example.com'].count).toBe(10); // 5 + 3 + 2
       expect(stats['twitter.com'].count).toBe(10);
@@ -510,6 +517,22 @@ describe('Storage Module', () => {
     test('returns default settings when none exist', async () => {
       const settings = await getSettings();
       expect(settings.onboardingComplete).toBe(false);
+    });
+
+    test('migrates legacy colorBlindMode to highContrastMode once', async () => {
+      chrome.storage.local.data.colorBlindMode = true;
+      const settings = await getSettings();
+      expect(settings.highContrastMode).toBe(true);
+      expect(chrome.storage.local.data.settings.highContrastMode).toBe(true);
+      expect(chrome.storage.local.data.colorBlindMode).toBeUndefined();
+    });
+
+    test('does not override an explicit highContrastMode from colorBlindMode', async () => {
+      chrome.storage.local.data.settings = { highContrastMode: false };
+      chrome.storage.local.data.colorBlindMode = true;
+      const settings = await getSettings();
+      expect(settings.highContrastMode).toBe(false);
+      expect(chrome.storage.local.data.colorBlindMode).toBe(true);
     });
   });
 

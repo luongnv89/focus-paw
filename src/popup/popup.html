@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FocusPaw</title>
+    <link rel="stylesheet" href="../common/theme.css" />
     <link rel="stylesheet" href="popup.css" />
     <script src="../vendor/d3.min.js"></script>
   </head>
@@ -18,56 +19,38 @@
           </picture>
           <h1>FocusPaw</h1>
         </div>
-        <div style="display: flex; gap: 8px">
+        <div class="popup-actions">
           <a
             href="../dashboard/blocking.html"
             target="_blank"
             id="blocking-btn"
+            class="btn btn-ghost"
             aria-label="Blocking Rules"
             title="Blocking Rules"
-            style="
-              text-decoration: none;
-              font-size: 14px;
-              padding: 6px 10px;
-              border-radius: 8px;
-              border: 1px solid var(--color-border);
-              background: var(--color-card);
-              color: var(--color-text-dark);
-              display: inline-flex;
-              align-items: center;
-              gap: 6px;
-            "
-            ><span aria-hidden="true" style="font-size: 16px">🛡️</span>
-            <span class="icon-label">Blocks</span></a
           >
+            <svg class="icon" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-shield"></use>
+            </svg>
+            <span class="icon-label">Blocks</span>
+          </a>
           <a
             href="../help/help.html"
             target="_blank"
             id="help-btn"
+            class="btn btn-ghost"
             aria-label="Help & FAQ"
             title="Help & FAQ"
-            style="
-              text-decoration: none;
-              font-size: 14px;
-              padding: 6px 10px;
-              border-radius: 8px;
-              border: 1px solid var(--color-border);
-              background: var(--color-card);
-              color: var(--color-text-dark);
-              display: inline-flex;
-              align-items: center;
-              gap: 6px;
-            "
-            ><span aria-hidden="true" style="font-size: 16px">❓</span>
-            <span class="icon-label">Help</span></a
           >
-          <button
-            id="settings-btn"
-            aria-label="Settings"
-            title="Settings"
-            style="display: inline-flex; align-items: center; gap: 6px"
-          >
-            <span aria-hidden="true">⚙️</span> <span class="icon-label">Settings</span>
+            <svg class="icon" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-help-circle"></use>
+            </svg>
+            <span class="icon-label">Help</span>
+          </a>
+          <button id="settings-btn" class="btn btn-ghost" aria-label="Settings" title="Settings">
+            <svg class="icon" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-settings"></use>
+            </svg>
+            <span class="icon-label">Settings</span>
           </button>
         </div>
       </header>
@@ -75,64 +58,45 @@
       <main id="main-view" role="main">
         <div id="loading" role="status" aria-live="polite">Loading...</div>
 
-        <div id="empty-state" style="display: none" role="status">
+        <div id="empty-state" hidden role="status">
           <div class="empty-illustration" role="img" aria-label="Bear mascot">🐻</div>
           <p>Welcome to FocusPaw!</p>
           <p>Start browsing and we'll track your attention.</p>
         </div>
 
-        <div id="content" style="display: none">
+        <div id="content" hidden>
           <div class="stats-header">
             <h2 id="stats-title">Today's Focus Switches</h2>
             <button
               id="refresh-btn"
+              class="btn btn-ghost"
               aria-label="Refresh data"
               title="Refresh data"
-              style="display: inline-flex; align-items: center; gap: 6px"
             >
-              <span aria-hidden="true">🔄</span> <span class="icon-label">Refresh</span>
+              <svg class="icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-refresh-cw"></use>
+              </svg>
+              <span class="icon-label">Refresh</span>
             </button>
           </div>
 
-          <div class="time-filter" role="tablist" aria-label="Time range filter">
-            <button
-              class="time-filter-btn active"
-              data-range="today"
-              role="tab"
-              aria-selected="true"
-              aria-controls="graph-container"
-            >
+          <div class="time-filter" role="group" aria-label="Time range filter">
+            <button class="time-filter-btn active" data-range="today" aria-pressed="true">
               Today
             </button>
-            <button
-              class="time-filter-btn"
-              data-range="week"
-              role="tab"
-              aria-selected="false"
-              aria-controls="graph-container"
-            >
-              Week
-            </button>
-            <button
-              class="time-filter-btn"
-              data-range="month"
-              role="tab"
-              aria-selected="false"
-              aria-controls="graph-container"
-            >
-              Month
-            </button>
+            <button class="time-filter-btn" data-range="week" aria-pressed="false">Week</button>
+            <button class="time-filter-btn" data-range="month" aria-pressed="false">Month</button>
           </div>
 
-          <div id="graph-container" class="graph-container" role="tabpanel">
+          <div id="graph-container" class="graph-container">
             <!-- D3.js graph will be rendered here -->
           </div>
 
-          <div id="domain-list" class="domain-list" style="display: none">
+          <div id="domain-list" class="domain-list" hidden>
             <!-- Fallback domain list (if graph disabled) -->
           </div>
 
-          <div id="quick-limits-panel" class="quick-limits-panel" style="display: none">
+          <div id="quick-limits-panel" class="quick-limits-panel" hidden>
             <div class="quick-limits-header">
               <h3>Quick Limits</h3>
               <p class="muted-copy">Set limits for your most visited sites</p>
@@ -147,12 +111,14 @@
           <button
             id="settings-back-btn"
             class="pill-button pill-button-secondary"
-            aria-label="Back to dashboard"
+            aria-label="Back to overview"
           >
-            ← Back
+            <svg class="icon" aria-hidden="true">
+              <use href="../../assets/icons.svg#i-arrow-left"></use>
+            </svg>
+            Back
           </button>
           <div>
-            <p class="eyebrow">Control center</p>
             <h2>FocusPaw Settings</h2>
           </div>
         </div>
@@ -185,8 +151,11 @@
                 Export as CSV
               </button>
             </div>
-            <p class="muted-copy" style="margin-top: 12px; font-size: 12px">
-              🔒 Your data never leaves your device unless you share it.
+            <p class="muted-copy privacy-note">
+              <svg class="icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-lock"></use>
+              </svg>
+              Your data never leaves your device unless you share it.
             </p>
           </article>
 
