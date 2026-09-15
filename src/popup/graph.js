@@ -278,17 +278,21 @@ export function renderRadialGraph(container, data, options = {}) {
       .attr('stroke-width', 2)
       .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))');
 
-    // Count Label (inside circle)
+    // Count Label (inside circle). Same paint-order stroke as domain labels so
+    // numbers stay AA on muted CATEGORY_PALETTE fills (white-on-fill failed 1.4.3).
     node
       .filter((d) => d.group !== 'center') // Don't show count for "You" node
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', '.3em')
-      .attr('fill', 'white')
+      .attr('fill', 'var(--ink-1)')
+      .attr('stroke', 'var(--bg-1)')
+      .attr('stroke-width', 3)
+      .attr('stroke-linejoin', 'round')
+      .style('paint-order', 'stroke')
       .attr('font-size', (d) => `${Math.min(d.r / 1.5, 12)}px`)
       .attr('font-weight', 700)
       .attr('pointer-events', 'none')
-      .style('text-shadow', '0 1px 2px rgba(0,0,0,0.3)')
       .style('display', (d) => (d.r > 12 ? 'block' : 'none'))
       .text((d) => d.count);
 
