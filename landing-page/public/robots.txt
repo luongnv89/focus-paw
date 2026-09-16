@@ -1,8 +1,14 @@
 # FocusPaw — robots.txt
 # All crawlers welcome, including AI systems.
+# Content Signals: usage preferences for AI systems
+# (https://contentsignals.org/ — IETF draft-romm-aipref-contentsignals).
+# ai-train=no: do not use site content for model training.
+# search=yes: allow use in AI search / retrieval results.
+# ai-input=no: do not use site content as direct model input.
 
 User-agent: *
 Allow: /
+Content-Signal: ai-train=no, search=yes, ai-input=no
 
 # AI training crawlers
 User-agent: GPTBot
