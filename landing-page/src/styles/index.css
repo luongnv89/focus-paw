@@ -2,23 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Inter Variable Font */
-@font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-Variable.woff2') format('woff2-variations');
-  font-weight: 100 900;
-  font-display: optional;
-  font-style: normal;
-}
+/* Editorial type is loaded via <link> in index.html (Fraunces + Instrument Sans + IBM Plex Mono) */
 
-/* CSS Custom Properties for FocusPaw theme */
+/* CSS Custom Properties for FocusPaw editorial theme (strict 4-color palette) */
 :root {
-  --color-dark-bg: #060606;
-  --color-dark-card: #0d0d0d;
-  --color-dark-border: #1a1a1a;
-  --color-accent: #1bff6e;
-  --color-primary: #0e75b6;
-  --color-secondary: #6c5ce7;
+  --color-dark-bg: #000000;
+  --color-dark-card: #000000;
+  --color-dark-border: #6b7280;
+  --color-accent: #22c55e;
   --header-height: 72px;
 }
 
@@ -29,17 +20,16 @@ html {
 }
 
 body {
-  font-family:
-    'Inter',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    'Roboto',
-    sans-serif;
+  font-family: 'Instrument Sans', Georgia, serif;
   background-color: var(--color-dark-bg);
   color: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.font-display {
+  font-family: 'Fraunces', Georgia, serif;
+  font-optical-sizing: auto;
 }
 
 /* Scroll margin for anchor targets */
@@ -78,6 +68,21 @@ body {
   border-width: 0;
 }
 
+::selection {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* Film-grain atmosphere (pure CSS/SVG, no extra palette) */
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
 /* Custom scrollbar for webkit browsers */
 ::-webkit-scrollbar {
   width: 8px;
@@ -88,27 +93,61 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-dark-border);
+  background: #6b7280;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #333;
+  background: #ffffff;
 }
 
-/* Button base styles */
+/* Button base styles — Bright Green is text/border/line highlight only, never a background */
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-200;
-    @apply bg-accent text-dark-bg hover:bg-accent/90 focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-dark-bg;
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold transition-all duration-200;
+    @apply bg-white text-black hover:opacity-85 focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-black;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-200;
-    @apply border border-accent text-accent hover:bg-accent/10 focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-dark-bg;
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold transition-all duration-200;
+    @apply border border-white/30 text-white hover:border-accent hover:text-accent focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-black;
   }
 
   .card {
-    @apply bg-dark-card border border-dark-border rounded-xl p-6;
+    @apply bg-black border border-white/15 rounded-2xl p-6 shadow-[0_1px_0_rgba(255,255,255,0.06),0_24px_60px_-32px_rgba(0,0,0,0.9)];
+  }
+
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.22em] text-white/60;
+  }
+
+  .hairline {
+    @apply border-white/10;
+  }
+
+  /* Single orchestrated entrance: staggered reveals on page load */
+  .reveal {
+    opacity: 0;
+    animation: slideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .reveal-1 {
+    animation-delay: 0.05s;
+  }
+
+  .reveal-2 {
+    animation-delay: 0.15s;
+  }
+
+  .reveal-3 {
+    animation-delay: 0.25s;
+  }
+
+  .reveal-4 {
+    animation-delay: 0.35s;
+  }
+
+  .reveal-5 {
+    animation-delay: 0.45s;
   }
 }

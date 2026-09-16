@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Zap } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { navigationContent } from '../data/navigation';
 
 function Header() {
@@ -18,7 +18,7 @@ function Header() {
       if (isMobile) {
         if (currentScrollY > lastScrollY && currentScrollY > 100) {
           setIsVisible(false);
-          setIsMobileMenuOpen(false); // Close menu when hiding
+          setIsMobileMenuOpen(false);
         } else {
           setIsVisible(true);
         }
@@ -52,7 +52,7 @@ function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-dark-bg/95 backdrop-blur-sm border-b border-dark-border transition-transform duration-300 ${
+      className={`sticky top-0 z-50 bg-black/95 backdrop-blur-sm border-b border-white/10 transition-transform duration-300 ${
         isVisible ? 'translate-y-0' : '-translate-y-full'
       }`}
       style={{ height: 'var(--header-height)' }}
@@ -62,27 +62,35 @@ function Header() {
           className="flex items-center justify-between h-full"
           aria-label="Main navigation"
         >
-          {/* Logo */}
+          {/* Masthead: serif wordmark + mono issue tag */}
           <Link
             to="/"
-            className="flex items-center gap-2 text-xl font-bold text-white hover:text-accent transition-colors"
+            className="flex items-baseline gap-3 text-white hover:text-white transition-colors"
             aria-label="FocusPaw home"
           >
-            <Zap className="w-6 h-6 text-accent" aria-hidden="true" />
-            <span>{navigationContent.logo.text}</span>
+            <span className="font-display text-2xl font-semibold tracking-tight">
+              FocusPaw
+            </span>
+            <span className="hidden sm:inline font-mono text-[11px] uppercase tracking-[0.22em] text-white/60">
+              Vol. 01 — Focus
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navigationContent.links.map((link) =>
-              link.external ? (
+            {navigationContent.links.map((link, i) => {
+              const number = String(i + 1).padStart(2, '0');
+              const linkClass =
+                'font-mono text-xs uppercase tracking-[0.18em] text-white/65 hover:text-accent transition-colors';
+              return link.external ? (
                 <a
                   key={link.id}
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-accent transition-colors"
+                  className={linkClass}
                 >
+                  <span className="text-accent mr-1.5">{number}</span>
                   {link.label}
                 </a>
               ) : link.href.startsWith('#') ? (
@@ -90,27 +98,25 @@ function Header() {
                   key={link.id}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className="text-gray-300 hover:text-accent transition-colors"
+                  className={linkClass}
                 >
+                  <span className="text-accent mr-1.5">{number}</span>
                   {link.label}
                 </a>
               ) : (
-                <Link
-                  key={link.id}
-                  to={link.href}
-                  className="text-gray-300 hover:text-accent transition-colors"
-                >
+                <Link key={link.id} to={link.href} className={linkClass}>
+                  <span className="text-accent mr-1.5">{number}</span>
                   {link.label}
                 </Link>
-              )
-            )}
+              );
+            })}
 
-            {/* CTA Button */}
+            {/* CTA Button — white pill, green never a background */}
             <a
               href={navigationContent.ctaButton.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-primary text-sm"
+              className="btn-primary text-sm !px-5 !py-2.5"
               aria-label={navigationContent.ctaButton.ariaLabel}
             >
               {navigationContent.ctaButton.text}
@@ -121,7 +127,7 @@ function Header() {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-gray-300 hover:text-accent transition-colors"
+            className="md:hidden p-2 text-white hover:text-accent transition-colors"
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
             aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
@@ -138,7 +144,7 @@ function Header() {
       {/* Mobile Menu */}
       <div
         id="mobile-menu"
-        className={`md:hidden absolute top-full left-0 right-0 bg-dark-bg border-b border-dark-border transition-all duration-300 ${
+        className={`md:hidden absolute top-full left-0 right-0 bg-black border-b border-white/10 transition-all duration-300 ${
           isMobileMenuOpen
             ? 'opacity-100 visible'
             : 'opacity-0 invisible pointer-events-none'
@@ -153,7 +159,7 @@ function Header() {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block py-2 text-gray-300 hover:text-accent transition-colors"
+                className="block py-2 text-white/70 hover:text-accent transition-colors"
                 tabIndex={isMobileMenuOpen ? 0 : -1}
               >
                 {link.label}
@@ -163,7 +169,7 @@ function Header() {
                 key={link.id}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="block py-2 text-gray-300 hover:text-accent transition-colors"
+                className="block py-2 text-white/70 hover:text-accent transition-colors"
                 tabIndex={isMobileMenuOpen ? 0 : -1}
               >
                 {link.label}
@@ -172,7 +178,7 @@ function Header() {
               <Link
                 key={link.id}
                 to={link.href}
-                className="block py-2 text-gray-300 hover:text-accent transition-colors"
+                className="block py-2 text-white/70 hover:text-accent transition-colors"
                 tabIndex={isMobileMenuOpen ? 0 : -1}
               >
                 {link.label}

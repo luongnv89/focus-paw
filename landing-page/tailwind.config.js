@@ -5,29 +5,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        // FocusPaw dark theme
+        // Strict editorial palette: Black / White / Gray / Bright Green
         dark: {
-          bg: '#060606',
-          card: '#0d0d0d',
-          border: '#1a1a1a',
+          bg: '#000000',
+          card: '#000000',
+          border: '#6B7280',
         },
-        // Brand colors
-        primary: '#0E75B6', // Paw Blue
-        secondary: '#6C5CE7', // Focus Purple
-        accent: '#1bff6e', // Bright Green (main accent)
-        success: '#55EFC4', // Success Green
-        warning: '#FF9F43', // Warning Orange
-        danger: '#D63031', // Alert Red
+        // Brand accents — Bright Green is highlight-only (text/border/line)
+        primary: '#FFFFFF',
+        secondary: '#6B7280',
+        accent: '#22C55E',
+        success: '#22C55E',
+        warning: '#F59E0B',
+        danger: '#EF4444',
       },
       fontFamily: {
-        sans: [
-          'Inter',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'Segoe UI',
-          'Roboto',
-          'sans-serif',
-        ],
+        display: ['Fraunces', 'Georgia', 'serif'],
+        sans: ['"Instrument Sans"', 'Georgia', 'serif'],
+        mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',

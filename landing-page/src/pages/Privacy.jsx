@@ -11,7 +11,7 @@ function renderContent(content) {
   // Handle inline code
   rendered = rendered.replace(
     /`([^`]+)`/g,
-    '<code class="bg-dark-border px-1 py-0.5 rounded text-accent text-sm">$1</code>'
+    '<code class="border border-white/15 px-1 py-0.5 rounded text-accent text-sm">$1</code>'
   );
 
   // Handle links
@@ -37,7 +37,7 @@ function renderContent(content) {
     } else {
       if (inList) {
         result.push(
-          `<ul class="list-disc list-inside space-y-1 text-gray-400">${listItems
+          `<ul class="list-disc list-inside space-y-1 text-white/60">${listItems
             .map((item) => `<li>${item}</li>`)
             .join('')}</ul>`
         );
@@ -49,7 +49,7 @@ function renderContent(content) {
         const text = trimmed.replace(/^\d+\.\s/, '');
         if (index > 0 && !lines[index - 1].trim().match(/^\d+\.\s/)) {
           result.push(
-            '<ol class="list-decimal list-inside space-y-1 text-gray-400">'
+            '<ol class="list-decimal list-inside space-y-1 text-white/60">'
           );
         }
         result.push(`<li>${text}</li>`);
@@ -60,14 +60,14 @@ function renderContent(content) {
           result.push('</ol>');
         }
       } else if (trimmed) {
-        result.push(`<p class="text-gray-400 leading-relaxed">${trimmed}</p>`);
+        result.push(`<p class="text-white/60 leading-relaxed">${trimmed}</p>`);
       }
     }
   });
 
   if (inList) {
     result.push(
-      `<ul class="list-disc list-inside space-y-1 text-gray-400">${listItems
+      `<ul class="list-disc list-inside space-y-1 text-white/60">${listItems
         .map((item) => `<li>${item}</li>`)
         .join('')}</ul>`
     );
@@ -117,13 +117,13 @@ function renderTable(content) {
         <div dangerouslySetInnerHTML={{ __html: renderContent(beforeTable) }} />
       )}
       <div className="overflow-x-auto">
-        <table className="min-w-full border border-dark-border rounded-lg overflow-hidden">
-          <thead className="bg-dark-card">
+        <table className="min-w-full border border-white/15 rounded-lg overflow-hidden">
+          <thead className="bg-black">
             <tr>
               {header?.map((cell, i) => (
                 <th
                   key={i}
-                  className="px-4 py-3 text-left text-sm font-semibold text-white border-b border-dark-border"
+                  className="px-4 py-3 text-left text-sm font-semibold text-white border-b border-white/15"
                 >
                   {cell}
                 </th>
@@ -132,11 +132,11 @@ function renderTable(content) {
           </thead>
           <tbody>
             {body.map((row, i) => (
-              <tr key={i} className="border-b border-dark-border last:border-0">
+              <tr key={i} className="border-b border-white/15 last:border-0">
                 {row.map((cell, j) => (
                   <td
                     key={j}
-                    className="px-4 py-3 text-sm text-gray-400"
+                    className="px-4 py-3 text-sm text-white/60"
                     dangerouslySetInnerHTML={{ __html: renderContent(cell) }}
                   />
                 ))}
@@ -164,7 +164,7 @@ function Privacy() {
         {/* Back link */}
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-accent transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-white/60 hover:text-accent transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" aria-hidden="true" />
           Back to Home
@@ -172,14 +172,14 @@ function Privacy() {
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full border border-white/15 flex items-center justify-center">
             <Shield className="w-6 h-6 text-accent" aria-hidden="true" />
           </div>
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold text-white">
               {privacyPolicyContent.title}
             </h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-white/60 text-sm mt-1">
               Last Updated: {privacyPolicyContent.lastUpdated}
             </p>
           </div>
@@ -202,13 +202,13 @@ function Privacy() {
               {privacyPolicyContent.summary.title}
             </h2>
             <div className="overflow-x-auto">
-              <table className="min-w-full border border-dark-border rounded-lg overflow-hidden">
-                <thead className="bg-dark-card">
+              <table className="min-w-full border border-white/15 rounded-lg overflow-hidden">
+                <thead className="bg-black">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-white border-b border-dark-border">
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-white border-b border-white/15">
                       Question
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-white border-b border-dark-border">
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-white border-b border-white/15">
                       Answer
                     </th>
                   </tr>
@@ -217,9 +217,9 @@ function Privacy() {
                   {privacyPolicyContent.summary.items.map((item, i) => (
                     <tr
                       key={i}
-                      className="border-b border-dark-border last:border-0"
+                      className="border-b border-white/15 last:border-0"
                     >
-                      <td className="px-4 py-3 text-sm text-gray-400">
+                      <td className="px-4 py-3 text-sm text-white/60">
                         {item.question}
                       </td>
                       <td className="px-4 py-3 text-sm text-accent font-medium">
@@ -233,8 +233,8 @@ function Privacy() {
           </section>
 
           {/* Footer message */}
-          <div className="text-center pt-8 border-t border-dark-border">
-            <p className="text-gray-400">
+          <div className="text-center pt-8 border-t border-white/15">
+            <p className="text-white/60">
               <strong className="text-white">FocusPaw</strong> — Track your
               focus, privacy-first.
             </p>
