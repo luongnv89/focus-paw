@@ -675,6 +675,17 @@ main {
   gap: 8px;
 }
 
+/* Inline main-view feedback for quick-limits actions; the settings toast is
+   unavailable here because it lives inside the hidden settings view. */
+.quick-limits-status {
+  margin: 12px 0 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--color-card);
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border);
+}
+
 .quick-limit-item {
   display: flex;
   justify-content: space-between;

@@ -99,7 +99,7 @@ describe('dashboard/blocking', () => {
     expect(document.getElementById('rules-list').textContent).toContain('Disabled');
   });
 
-  test('shows inline error when host permission is denied while enabling a rule', async () => {
+  test('shows inline error on denied enable and clears it on a successful retry', async () => {
     makeChrome({}, { 'example.com': createDefaultLimitConfig({ enabled: false }) });
     global.chrome.permissions = { contains: async () => false, request: async () => false };
     await import('../src/dashboard/blocking.js');
@@ -109,8 +109,18 @@ describe('dashboard/blocking', () => {
     expect(toggleBtn).not.toBeNull();
     toggleBtn.click();
     await new Promise((r) => setTimeout(r, 50));
-    expect(document.getElementById('limit-error').textContent).toBe(
-      'Website access is required to enable blocking.',
-    );
+    const errorEl = document.getElementById('limit-error');
+    expect(errorEl.textContent).toBe('Website access is required to enable blocking.');
+
+    // Retry with the host permission granted: the stale error must be cleared
+    // and the rule must show Active.
+    global.chrome.permissions.contains = async () => true;
+    global.chrome.permissions.request = async () => true;
+    const retriedToggleBtn = document.querySelector('.toggle-btn');
+    expect(retriedToggleBtn).not.toBeNull();
+    retriedToggleBtn.click();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(errorEl.textContent).toBe('');
+    expect(document.getElementById('rules-list').textContent).toContain('Active');
   });
 });

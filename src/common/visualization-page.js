@@ -381,6 +381,7 @@ function buildVisualizationContext(options) {
       settingsBtn: document.getElementById('settings-btn'),
       settingsBackBtn: document.getElementById('settings-back-btn'),
       settingsToast: document.getElementById('settings-toast'),
+      quickLimitsStatus: document.getElementById('quick-limits-status'),
       limitForm: document.getElementById('limit-form'),
       limitErrorEl: document.getElementById('limit-error'),
       limitList: document.getElementById('limit-list'),
@@ -974,7 +975,25 @@ async function wireVisualizationActions(ctx, _options) {
     });
   }
 
-  // Quick-limits panel interactions
+  // Quick-limits panel interactions. The panel lives in the main view, so its
+  // denial feedback is rendered inline there: #settings-toast sits inside the
+  // hidden #settings-view and would be neither visible nor announced.
+  const quickLimitsStatusEl = dom.quickLimitsStatus;
+  const clearQuickLimitsStatus = () => {
+    if (!quickLimitsStatusEl) return;
+    if (ctx.quickLimitsStatusTimeout) clearTimeout(ctx.quickLimitsStatusTimeout);
+    quickLimitsStatusEl.hidden = true;
+    quickLimitsStatusEl.textContent = '';
+  };
+  const showQuickLimitsStatus = (message) => {
+    if (!quickLimitsStatusEl) return;
+    // Unhide before writing so the aria-live region is displayable when the
+    // message lands (live regions inside display:none never announce).
+    quickLimitsStatusEl.hidden = false;
+    quickLimitsStatusEl.textContent = message;
+    if (ctx.quickLimitsStatusTimeout) clearTimeout(ctx.quickLimitsStatusTimeout);
+    ctx.quickLimitsStatusTimeout = setTimeout(clearQuickLimitsStatus, 3500);
+  };
   const quickLimitsList = document.getElementById('quick-limits-list');
   if (quickLimitsList) {
     quickLimitsList.addEventListener('click', async (event) => {
@@ -982,6 +1001,8 @@ async function wireVisualizationActions(ctx, _options) {
       if (!domain || !action) return;
       if (action === 'quick-toggle') {
         const desiredState = event.target.checked;
+        // Reset any earlier denial feedback before a fresh attempt.
+        clearQuickLimitsStatus();
         try {
           const limits = await getLimits();
           let limitConfig = limits[domain] ? normalizeLimitConfig(limits[domain]) : null;
@@ -992,7 +1013,7 @@ async function wireVisualizationActions(ctx, _options) {
           }
           if (desiredState && !(await ensureBlockingHostPermission())) {
             event.target.checked = false;
-            ctx.showSettingsToast('Website access is required to enable blocking.');
+            showQuickLimitsStatus('Website access is required to enable blocking.');
             return;
           }
           limitConfig.enabled = desiredState;

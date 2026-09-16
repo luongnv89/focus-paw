@@ -47,36 +47,42 @@ describe('visualization-page setup', () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <div id="loading">Loading</div>
-      <div id="main-view"></div>
-      <div id="settings-view" hidden></div>
+      <main id="main-view">
+        <div id="empty-state" hidden></div>
+        <div id="content" hidden>
+          <div id="stats-title"></div>
+          <button class="time-filter-btn" data-range="today"></button>
+          <button class="time-filter-btn" data-range="week"></button>
+          <button id="refresh-btn"></button>
+          <div id="graph-container"></div>
+          <div id="domain-list" hidden></div>
+          <div id="quick-limits-panel" hidden>
+            <ul id="quick-limits-list"></ul>
+            <p id="quick-limits-status" role="status" aria-live="polite" hidden></p>
+          </div>
+        </div>
+      </main>
       <button id="settings-btn"></button>
-      <button id="settings-back-btn"></button>
-      <form id="limit-form">
-        <input name="domain" />
-        <input name="enabled" type="checkbox" />
-        <input name="fiveHourEnabled" type="checkbox" />
-        <input name="fiveHourLimit" value="10" />
-        <input name="dailyEnabled" type="checkbox" />
-        <input name="dailyLimit" value="20" />
-      </form>
-      <div id="limit-error"></div>
-      <ul id="limit-list"></ul>
-      <div id="limits-empty" hidden></div>
-      <div id="settings-toast"></div>
-      <button id="reset-data-btn">Reset</button>
-      <div id="graph-container"></div>
-      <div id="domain-list" hidden></div>
-      <div id="empty-state" hidden></div>
-      <div id="content" hidden></div>
-      <div id="stats-title"></div>
+      <section id="settings-view" hidden aria-hidden="true">
+        <button id="settings-back-btn"></button>
+        <form id="limit-form">
+          <input name="domain" />
+          <input name="enabled" type="checkbox" />
+          <input name="fiveHourEnabled" type="checkbox" />
+          <input name="fiveHourLimit" value="10" />
+          <input name="dailyEnabled" type="checkbox" />
+          <input name="dailyLimit" value="20" />
+        </form>
+        <div id="limit-error"></div>
+        <ul id="limit-list"></ul>
+        <div id="limits-empty" hidden></div>
+        <button id="reset-data-btn">Reset</button>
+        <button id="export-json-btn"></button>
+        <button id="export-csv-btn"></button>
+        <div id="settings-toast" aria-live="polite"></div>
+      </section>
       <div id="summary-content"></div>
       <input type="checkbox" id="comparison-toggle-input" />
-      <button class="time-filter-btn" data-range="today"></button>
-      <button class="time-filter-btn" data-range="week"></button>
-      <button id="refresh-btn"></button>
-      <div id="quick-limits-panel" hidden><ul id="quick-limits-list"></ul></div>
-      <button id="export-json-btn"></button>
-      <button id="export-csv-btn"></button>
     `;
     window.d3 = undefined;
     jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -153,7 +159,7 @@ describe('visualization-page setup', () => {
     expect(document.getElementById('loading').style.display).toBe('none');
   });
 
-  test('quick-limits toggle reverts and shows toast when host permission is denied', async () => {
+  test('quick-limits toggle reverts and shows inline main-view status when permission denied', async () => {
     const todayKey = getTodayKey();
     makeChrome(
       { [todayKey]: { 'example.com': { count: 5, lastVisit: Date.now(), subpaths: {} } } },
@@ -168,8 +174,14 @@ describe('visualization-page setup', () => {
       setTimeout(resolve, 20);
     });
     expect(toggle.checked).toBe(false);
-    expect(document.getElementById('settings-toast').textContent).toBe(
-      'Website access is required to enable blocking.',
-    );
+    // Denial feedback must land in the main view, next to the quick-limits
+    // panel, and be unhidden: the settings toast lives inside the hidden
+    // settings view and can neither display nor announce from there.
+    const status = document.getElementById('quick-limits-status');
+    expect(status).not.toBeNull();
+    expect(document.getElementById('main-view').contains(status)).toBe(true);
+    expect(status.hidden).toBe(false);
+    expect(status.textContent).toBe('Website access is required to enable blocking.');
+    expect(document.getElementById('settings-toast').textContent).toBe('');
   });
 });

@@ -182,9 +182,12 @@ function setupForm() {
 }
 
 async function toggleRule(domain, currentConfig) {
+  // Reset any earlier denial feedback so a successful retry does not leave a
+  // stale error on screen (mirrors the limit form's submit handler).
+  const errorEl = document.getElementById('limit-error');
+  errorEl.textContent = '';
   const newConfig = { ...currentConfig, enabled: !currentConfig.enabled };
   if (newConfig.enabled && !(await ensureBlockingHostPermission())) {
-    const errorEl = document.getElementById('limit-error');
     errorEl.textContent = 'Website access is required to enable blocking.';
     return;
   }
