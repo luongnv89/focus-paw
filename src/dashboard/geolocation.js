@@ -1,20 +1,33 @@
 /**
  * Opt-in HTTPS hostname geolocation for the dashboard Map view.
  * Default path is local-only; lookups run only when settings.geoLookupEnabled is true.
- * Provider: ipwho.is (HTTPS JSON). Never uses HTTP ip-api or device geolocation.
+ * Flow: Cloudflare DoH (application/dns-json) → IPv4 → ipwho.is/{ip}.
+ * Never uses HTTP ip-api, hostname paths on ipwho.is, or device geolocation.
  */
 
 import { GEO_CACHE_TTL_MS, getGeoLookupCache, putGeoLookupEntries } from '../background/storage.js';
 
 export const GEO_LOOKUP_ORIGIN = 'https://ipwho.is';
-export const GEO_LOOKUP_ORIGINS = ['https://ipwho.is/*'];
+export const DNS_LOOKUP_ORIGIN = 'https://cloudflare-dns.com';
+export const GEO_LOOKUP_ORIGINS = ['https://cloudflare-dns.com/*', 'https://ipwho.is/*'];
 export const LOOKUP_MIN_INTERVAL_MS = 400;
 export const LOOKUP_MAX_PER_PASS = 20;
+
+const IPV4_OCTET = '(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)';
+const IPV4_RE = new RegExp(`^(?:${IPV4_OCTET}\\.){3}${IPV4_OCTET}$`);
 
 function delay(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
+
+/**
+ * @param {unknown} value
+ * @returns {boolean}
+ */
+export function isIpv4Address(value) {
+  return typeof value === 'string' && IPV4_RE.test(value.trim());
 }
 
 /**
@@ -30,12 +43,36 @@ export function isValidLookupDomain(domain) {
 }
 
 /**
+ * ipwho.is is IP-only. Hostnames must not be interpolated into this path.
+ * @param {string} ip
+ * @returns {string|null}
+ */
+export function buildGeoLookupUrl(ip) {
+  if (!isIpv4Address(ip)) return null;
+  return `${GEO_LOOKUP_ORIGIN}/${ip.trim()}`;
+}
+
+/**
+ * Cloudflare DNS-over-HTTPS JSON (application/dns-json).
  * @param {string} domain
  * @returns {string|null}
  */
-export function buildGeoLookupUrl(domain) {
+export function buildDnsLookupUrl(domain) {
   if (!isValidLookupDomain(domain)) return null;
-  return `${GEO_LOOKUP_ORIGIN}/${encodeURIComponent(domain.trim().toLowerCase())}`;
+  const name = encodeURIComponent(domain.trim().toLowerCase());
+  return `${DNS_LOOKUP_ORIGIN}/dns-query?name=${name}&type=A`;
+}
+
+/**
+ * @param {Object|null} payload
+ * @returns {string|null}
+ */
+export function parseDnsJsonARecord(payload) {
+  if (!payload || payload.Status !== 0 || !Array.isArray(payload.Answer)) return null;
+  const record = payload.Answer.find((rr) => rr && rr.type === 1 && typeof rr.data === 'string');
+  if (!record) return null;
+  const ip = record.data.trim();
+  return isIpv4Address(ip) ? ip : null;
 }
 
 /**
@@ -52,17 +89,23 @@ export function parseIpwhoResponse(payload) {
   return { lat, lon, country };
 }
 
+function emptyLookupResult() {
+  return { location: null, cacheNegative: false };
+}
+
 /**
+ * Resolve hostname → IPv4 via DoH, then GET ipwho.is/{ip}.
+ * HTTP 404 is a 7-day negative only when the ipwho query was a well-formed IP.
  * @param {string} domain
  * @param {Object} [options]
- * @returns {Promise<{lat:number,lon:number,country:string}|null>}
+ * @returns {Promise<{location:{lat:number,lon:number,country:string}|null, cacheNegative:boolean}>}
  */
 export async function lookupDomainLocation(
   domain,
   { fetchImpl = globalThis.fetch, timeoutMs = 8000 } = {},
 ) {
-  const url = buildGeoLookupUrl(domain);
-  if (!url || typeof fetchImpl !== 'function') return null;
+  const dnsUrl = buildDnsLookupUrl(domain);
+  if (!dnsUrl || typeof fetchImpl !== 'function') return emptyLookupResult();
 
   const controller = typeof AbortController === 'function' ? new AbortController() : null;
   let timer = null;
@@ -70,16 +113,36 @@ export async function lookupDomainLocation(
     timer = setTimeout(() => controller.abort(), timeoutMs);
   }
 
-  try {
-    const res = await fetchImpl(url, {
+  async function request(url, headers) {
+    return fetchImpl(url, {
       method: 'GET',
       signal: controller ? controller.signal : undefined,
+      headers,
     });
-    if (!res || !res.ok) return null;
-    const payload = await res.json();
-    return parseIpwhoResponse(payload);
+  }
+
+  try {
+    const dnsRes = await request(dnsUrl, { Accept: 'application/dns-json' });
+    if (!dnsRes || !dnsRes.ok) return emptyLookupResult();
+    const dnsPayload = await dnsRes.json();
+    const ip = parseDnsJsonARecord(dnsPayload);
+    const geoUrl = buildGeoLookupUrl(ip);
+    if (!geoUrl) return emptyLookupResult();
+
+    const geoRes = await request(geoUrl);
+    if (!geoRes) return emptyLookupResult();
+    if (!geoRes.ok) {
+      return {
+        location: null,
+        cacheNegative: geoRes.status === 404 && isIpv4Address(ip),
+      };
+    }
+    const payload = await geoRes.json();
+    const location = parseIpwhoResponse(payload);
+    if (location) return { location, cacheNegative: false };
+    return { location: null, cacheNegative: true };
   } catch {
-    return null;
+    return emptyLookupResult();
   } finally {
     if (timer) clearTimeout(timer);
   }
@@ -147,27 +210,26 @@ export async function resolveDomainLocations(
       await sleep(intervalMs);
     }
     const domain = batch[i];
-    const loc = await lookupDomainLocation(domain, { fetchImpl });
+    const result = await lookupDomainLocation(domain, { fetchImpl });
     const fetchedAt = Date.now();
-    let entry = {
-      lat: null,
-      lon: null,
-      country: '',
-      fetchedAt,
-      ok: false,
-    };
-    if (loc) {
-      entry = {
-        lat: loc.lat,
-        lon: loc.lon,
-        country: loc.country,
+    if (result.location) {
+      const entry = {
+        lat: result.location.lat,
+        lon: result.location.lon,
+        country: result.location.country,
         fetchedAt,
         ok: true,
       };
-    }
-    fresh[domain] = entry;
-    if (entry.ok) {
+      fresh[domain] = entry;
       locations[domain] = entry;
+    } else if (result.cacheNegative) {
+      fresh[domain] = {
+        lat: null,
+        lon: null,
+        country: '',
+        fetchedAt,
+        ok: false,
+      };
     }
   }
   /* eslint-enable no-await-in-loop */
@@ -185,7 +247,7 @@ export async function resolveDomainLocations(
 }
 
 /**
- * Request optional host access for the lookup origin. Does not add required host_permissions.
+ * Request optional host access for lookup origins. Does not add required host_permissions.
  * @returns {Promise<boolean>}
  */
 export async function requestGeoLookupPermission() {

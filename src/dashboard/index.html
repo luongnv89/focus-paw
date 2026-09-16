@@ -360,8 +360,9 @@
                   <h4 class="map-overlay-title">Location lookup is off</h4>
                   <p class="map-overlay-copy">
                     This world outline is stored on your device. Website pins appear only after you
-                    turn on location lookup in Settings. That sends hostnames to ipwho.is over
-                    HTTPS. Off by default. No street maps. No GPS.
+                    turn on location lookup in Settings. That resolves hostnames with Cloudflare
+                    DNS-over-HTTPS, then looks up the IP on ipwho.is over HTTPS. Off by default. No
+                    street maps. No GPS.
                   </p>
                   <button type="button" id="map-open-settings" class="btn btn-primary">
                     Open Settings
@@ -376,7 +377,6 @@
                     type="button"
                     id="map-clear-cache"
                     class="btn btn-ghost"
-                    aria-label="Clear saved website coordinates from this device"
                     title="Clear location cache"
                   >
                     <svg class="icon" aria-hidden="true">
@@ -400,10 +400,11 @@
                     id="map-zoom-reset"
                     class="btn btn-ghost"
                     title="Reset map zoom"
-                    aria-label="Reset map zoom"
+                    aria-describedby="map-zoom-reset-hint"
                   >
                     <span id="map-zoom-level" class="tnum">100%</span>
                   </button>
+                  <span id="map-zoom-reset-hint" hidden>Reset map zoom</span>
                   <button
                     id="map-zoom-in"
                     class="btn btn-ghost btn-icon-only"
@@ -643,8 +644,9 @@
                 <div class="settings-item-info">
                   <label for="geo-lookup-toggle">Look up website locations</label>
                   <p class="settings-item-desc">
-                    Send tracked hostnames to ipwho.is over HTTPS so Map can place pins. Results
-                    stay in local cache for about 7 days. No OpenStreetMap tiles. No device GPS.
+                    Resolve tracked hostnames with Cloudflare DNS-over-HTTPS, then look up the IP on
+                    ipwho.is over HTTPS so Map can place pins. Results stay in local cache for about
+                    7 days. No OpenStreetMap tiles. No device GPS.
                   </p>
                 </div>
                 <label class="toggle-switch">

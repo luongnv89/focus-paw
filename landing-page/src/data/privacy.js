@@ -84,7 +84,7 @@ export const privacyPolicyContent = {
       title: 'Third-Party Services',
       content: `FocusPaw does not use analytics or advertising networks. The Map view draws a bundled Natural Earth–style GeoJSON atlas and does **not** load OpenStreetMap, Carto, MapLibre, or other street tiles.
 
-**Optional location lookup (off by default):** if you enable "Look up website locations" in Settings, the extension may request optional host access and send tracked hostnames to \`https://ipwho.is/{hostname}\` over HTTPS to estimate where a site is hosted. Responses are cached locally for about 7 days, with a size cap. You can clear that cache from the Map view. Device GPS / the Chrome \`geolocation\` permission are not used.`,
+**Optional location lookup (off by default):** if you enable "Look up website locations" in Settings, the extension may request optional host access to resolve tracked hostnames via Cloudflare DNS-over-HTTPS (\`https://cloudflare-dns.com/dns-query\`, \`application/dns-json\`) and then look up the resulting IP at \`https://ipwho.is/{ip}\` over HTTPS to estimate where a site is hosted. Hostnames are never sent as the ipwho.is path. Responses are cached locally for about 7 days, with a size cap. You can clear that cache from the Map view. Device GPS / the Chrome \`geolocation\` permission are not used.`,
     },
     {
       id: 'children',
@@ -118,7 +118,8 @@ export const privacyPolicyContent = {
       { question: 'Do you collect personal data?', answer: 'No' },
       {
         question: 'Do you send data to servers?',
-        answer: 'Only if you opt in to Map location lookup (ipwho.is, HTTPS)',
+        answer:
+          'Only if you opt in to Map location lookup (Cloudflare DNS + ipwho.is, HTTPS)',
       },
       { question: 'Do you use analytics?', answer: 'No' },
       { question: 'Do you sell data?', answer: 'No' },

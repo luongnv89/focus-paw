@@ -40,6 +40,9 @@ describe('Smoke: popup load', () => {
     expect(document.getElementById('map-geo-overlay')).not.toBeNull();
     expect(document.getElementById('map-clear-cache')).not.toBeNull();
     expect(document.getElementById('geo-lookup-toggle')).not.toBeNull();
+    expect(document.getElementById('map-clear-cache').getAttribute('aria-label')).toBeNull();
+    expect(document.getElementById('map-zoom-reset').getAttribute('aria-label')).toBeNull();
+    expect(document.getElementById('map-zoom-reset').textContent).toMatch(/100%/);
   });
 
   test('popup.html stays radial-graph only (no Map tab)', () => {

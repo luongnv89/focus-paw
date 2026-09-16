@@ -303,8 +303,6 @@ export async function renderMapView(
     .append('svg')
     .attr('viewBox', `0 0 ${width} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet')
-    .attr('role', 'img')
-    .attr('aria-label', 'World map of tracked websites')
     .classed('map-svg', true);
 
   const gZoom = svg.append('g').attr('class', 'map-zoom-group');

@@ -16,8 +16,13 @@ import {
 } from '../src/background/storage.js';
 import {
   GEO_LOOKUP_ORIGIN,
+  DNS_LOOKUP_ORIGIN,
+  GEO_LOOKUP_ORIGINS,
   isValidLookupDomain,
+  isIpv4Address,
   buildGeoLookupUrl,
+  buildDnsLookupUrl,
+  parseDnsJsonARecord,
   parseIpwhoResponse,
   resolveDomainLocations,
   requestGeoLookupPermission,
@@ -91,6 +96,37 @@ function mockChrome({ settings = {}, geoLookupCache = {}, grantPermission = true
   };
 }
 
+function mockLookupFetch({
+  ip = '93.184.216.34',
+  geo = { success: true, latitude: 5, longitude: 6, country: 'FR' },
+  dohOk = true,
+  dohStatus = 200,
+  ipwhoOk = true,
+  ipwhoStatus = 200,
+} = {}) {
+  return jest.fn(async (url) => {
+    const href = String(url);
+    if (href.includes('cloudflare-dns.com')) {
+      return {
+        ok: dohOk,
+        status: dohStatus,
+        json: async () => ({
+          Status: 0,
+          Answer: [{ type: 1, data: ip }],
+        }),
+      };
+    }
+    if (href.includes('ipwho.is')) {
+      return {
+        ok: ipwhoOk,
+        status: ipwhoStatus,
+        json: async () => geo,
+      };
+    }
+    throw new Error(`unexpected lookup url ${href}`);
+  });
+}
+
 function mountMapDom() {
   document.body.innerHTML = `
     <div id="viz-tablist" role="tablist">
@@ -151,6 +187,17 @@ describe('map-view', () => {
       expect(src).not.toMatch(/innerHTML/);
     });
 
+    test('atlas SVG is not role=img while pin groups stay focusable', () => {
+      const src = fs.readFileSync(path.join(process.cwd(), 'src/dashboard/map-view.js'), 'utf8');
+      const svgStart = src.indexOf(".append('svg')");
+      const svgEnd = src.indexOf("classed('map-svg'");
+      expect(svgStart).toBeGreaterThan(-1);
+      expect(svgEnd).toBeGreaterThan(svgStart);
+      const svgSetup = src.slice(svgStart, svgEnd);
+      expect(svgSetup).not.toMatch(/\.attr\(['"]role['"],\s*['"]img['"]\)/);
+      expect(src).toMatch(/\.attr\('tabindex',\s*'0'\)/);
+    });
+
     test('bundled GeoJSON is a compact FeatureCollection', () => {
       const atlasPath = path.join(process.cwd(), 'src/dashboard/world-110m.geojson');
       const raw = fs.readFileSync(atlasPath, 'utf8');
@@ -208,8 +255,31 @@ describe('map-view', () => {
       expect(isValidLookupDomain('http://example.com')).toBe(false);
       expect(isValidLookupDomain('example.com/path')).toBe(false);
       expect(isValidLookupDomain('localhost')).toBe(false);
-      expect(buildGeoLookupUrl('Example.COM')).toBe(`${GEO_LOOKUP_ORIGIN}/example.com`);
+      expect(buildDnsLookupUrl('Example.COM')).toBe(
+        `${DNS_LOOKUP_ORIGIN}/dns-query?name=example.com&type=A`,
+      );
+      expect(buildDnsLookupUrl('http://evil')).toBeNull();
+    });
+
+    test('ipwho URL is IPv4-only and never interpolates a hostname', () => {
+      expect(isIpv4Address('93.184.216.34')).toBe(true);
+      expect(buildGeoLookupUrl('93.184.216.34')).toBe(`${GEO_LOOKUP_ORIGIN}/93.184.216.34`);
+      expect(buildGeoLookupUrl('example.com')).toBeNull();
+      expect(buildGeoLookupUrl('Example.COM')).toBeNull();
       expect(buildGeoLookupUrl('http://evil')).toBeNull();
+    });
+
+    test('parseDnsJsonARecord reads the first A record', () => {
+      expect(
+        parseDnsJsonARecord({
+          Status: 0,
+          Answer: [
+            { type: 5, data: 'example.net' },
+            { type: 1, data: '1.2.3.4' },
+          ],
+        }),
+      ).toBe('1.2.3.4');
+      expect(parseDnsJsonARecord({ Status: 3, Answer: [] })).toBeNull();
     });
 
     test('parseIpwhoResponse requires finite coordinates', () => {
@@ -255,10 +325,7 @@ describe('map-view', () => {
     });
 
     test('expired cache entries are fetched again', async () => {
-      const fetchImpl = jest.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ success: true, latitude: 5, longitude: 6, country: 'FR' }),
-      });
+      const fetchImpl = mockLookupFetch();
       const now = 1_700_000_000_000;
       const putEntries = jest.fn().mockResolvedValue({});
       const result = await resolveDomainLocations(['example.com'], {
@@ -276,15 +343,14 @@ describe('map-view', () => {
         }),
         putEntries,
       });
-      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(fetchImpl).toHaveBeenCalledTimes(2);
       expect(result.locations['example.com'].lat).toBe(5);
       expect(putEntries).toHaveBeenCalled();
     });
 
     test('rate-limits lookups per pass', async () => {
-      const fetchImpl = jest.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ success: true, latitude: 1, longitude: 1, country: 'X' }),
+      const fetchImpl = mockLookupFetch({
+        geo: { success: true, latitude: 1, longitude: 1, country: 'X' },
       });
       const result = await resolveDomainLocations(['a.com', 'b.com', 'c.com'], {
         enabled: true,
@@ -295,8 +361,62 @@ describe('map-view', () => {
         putEntries: jest.fn().mockResolvedValue({}),
       });
       expect(result.fetched).toBe(1);
-      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(fetchImpl).toHaveBeenCalledTimes(2);
       expect(LOOKUP_MAX_PER_PASS).toBeGreaterThan(0);
+    });
+
+    test('DoH then ipwho.is/{ip}; domain is never the ipwho path', async () => {
+      const fetchImpl = mockLookupFetch({ ip: '93.184.216.34' });
+      const putEntries = jest.fn().mockResolvedValue({});
+      await resolveDomainLocations(['example.com'], {
+        enabled: true,
+        fetchImpl,
+        intervalMs: 0,
+        getCache: async () => ({}),
+        putEntries,
+      });
+      const urls = fetchImpl.mock.calls.map((call) => String(call[0]));
+      expect(urls[0]).toBe(`${DNS_LOOKUP_ORIGIN}/dns-query?name=example.com&type=A`);
+      expect(fetchImpl.mock.calls[0][1].headers.Accept).toBe('application/dns-json');
+      expect(urls[1]).toBe(`${GEO_LOOKUP_ORIGIN}/93.184.216.34`);
+      expect(urls.some((url) => /ipwho\.is\/example\.com/i.test(url))).toBe(false);
+    });
+
+    test('HTTP 404 on DoH is not stored as a 7-day negative hit', async () => {
+      const fetchImpl = mockLookupFetch({ dohOk: false, dohStatus: 404 });
+      const putEntries = jest.fn().mockResolvedValue({});
+      const result = await resolveDomainLocations(['example.com'], {
+        enabled: true,
+        fetchImpl,
+        intervalMs: 0,
+        getCache: async () => ({}),
+        putEntries,
+      });
+      expect(result.locations).toEqual({});
+      expect(putEntries).not.toHaveBeenCalled();
+      expect(fetchImpl.mock.calls).toHaveLength(1);
+      expect(String(fetchImpl.mock.calls[0][0])).toContain('cloudflare-dns.com');
+    });
+
+    test('HTTP 404 from ipwho.is/{ip} is cached as a negative hit', async () => {
+      const fetchImpl = mockLookupFetch({
+        ip: '8.8.8.8',
+        ipwhoOk: false,
+        ipwhoStatus: 404,
+      });
+      const putEntries = jest.fn().mockResolvedValue({});
+      await resolveDomainLocations(['example.com'], {
+        enabled: true,
+        fetchImpl,
+        intervalMs: 0,
+        getCache: async () => ({}),
+        putEntries,
+      });
+      expect(putEntries).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'example.com': expect.objectContaining({ ok: false, lat: null }),
+        }),
+      );
     });
   });
 
@@ -373,14 +493,29 @@ describe('map-view', () => {
         /Clear location cache/,
       );
     });
+
+    test('dashboard Map chrome keeps visible text in accessible names (WCAG 2.5.3)', () => {
+      const html = fs.readFileSync(path.join(process.cwd(), 'src/dashboard/index.html'), 'utf8');
+      document.documentElement.innerHTML = html;
+      const clearBtn = document.getElementById('map-clear-cache');
+      expect(clearBtn.getAttribute('aria-label')).toBeNull();
+      expect(clearBtn.textContent).toMatch(/Clear location cache/);
+      const resetBtn = document.getElementById('map-zoom-reset');
+      expect(resetBtn.getAttribute('aria-label')).toBeNull();
+      expect(resetBtn.textContent).toMatch(/100%/);
+      const hintId = resetBtn.getAttribute('aria-describedby');
+      expect(hintId).toBe('map-zoom-reset-hint');
+      expect(document.getElementById(hintId).textContent).toMatch(/Reset map zoom/);
+    });
   });
 
   describe('optional permission helper', () => {
     test('requestGeoLookupPermission uses optional origins, not geolocation', async () => {
       const granted = await requestGeoLookupPermission();
       expect(granted).toBe(true);
+      expect(GEO_LOOKUP_ORIGINS).toEqual(['https://cloudflare-dns.com/*', 'https://ipwho.is/*']);
       expect(chrome.permissions.request).toHaveBeenCalledWith(
-        { origins: ['https://ipwho.is/*'] },
+        { origins: GEO_LOOKUP_ORIGINS },
         expect.any(Function),
       );
     });

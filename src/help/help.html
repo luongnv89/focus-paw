@@ -74,8 +74,9 @@
               <strong>No External Servers by Default</strong>
               <p>
                 Visit counts stay on your device. The Map view draws a bundled world atlas with no
-                street tiles. Optional website-location lookup (off by default) sends hostnames to
-                ipwho.is over HTTPS and caches results locally.
+                street tiles. Optional website-location lookup (off by default) resolves hostnames
+                with Cloudflare DNS-over-HTTPS, then looks up the IP on ipwho.is over HTTPS, and
+                caches results locally.
               </p>
             </div>
           </div>
@@ -380,9 +381,10 @@
               <p>
                 Website pins appear only if you turn on
                 <strong>Look up website locations</strong> in Settings. That option is off by
-                default. When on, FocusPaw sends tracked hostnames to
-                <strong>https://ipwho.is</strong> (HTTPS JSON) to estimate where a site is hosted,
-                then stores coordinates in local storage for about seven days. Use
+                default. When on, FocusPaw resolves tracked hostnames via
+                <strong>https://cloudflare-dns.com</strong> (DNS-over-HTTPS JSON) and then looks up
+                the IP at <strong>https://ipwho.is</strong> (HTTPS JSON) to estimate where a site is
+                hosted, then stores coordinates in local storage for about seven days. Use
                 <strong>Clear location cache</strong> on the Map view to delete those results.
               </p>
             </div>

@@ -6,7 +6,7 @@ FocusPaw issue #104 ships a **dashboard Map tab** that is intentionally **not** 
 
 - Interactive **D3-geo** atlas (`geoNaturalEarth1` + `geoPath`) using a **bundled world-110m GeoJSON** file (`src/dashboard/world-110m.geojson`, Natural Earth 110m countries via world-atlas, properties stripped).
 - Default path is **offline**: atlas + “location lookup is off” overlay. **Zero network** for tiles or geolocation until the user opts in.
-- Optional **HTTPS** hostname lookup to **ipwho.is** (`https://ipwho.is/{hostname}`), **off by default**, cached in `chrome.storage.local` (~7 day TTL, size cap), with **Clear location cache** on the Map chrome.
+- Optional **HTTPS** lookup: Cloudflare DoH (`application/dns-json`) then **ipwho.is** (`https://ipwho.is/{ip}`), **off by default**, cached in `chrome.storage.local` (~7 day TTL, size cap), with **Clear location cache** on the Map chrome.
 - Simple **grid clustering** of pins (pixel cells), not a marker-cluster plugin.
 - Obsidian design tokens only. Map lives on the **dashboard**; the popup stays radial-graph-only.
 
@@ -16,7 +16,7 @@ FocusPaw issue #104 ships a **dashboard Map tab** that is intentionally **not** 
 | --- | --- | --- |
 | Leaflet + OSM (or other) slippy map | No Leaflet, MapLibre, Carto, or OSM tiles | Keeps the default path local and avoids tile-network privacy cost (#53). |
 | Street/basemap tiles | D3-geo atlas, not street tiles | Same zero-network default; atlas is vendored GeoJSON. |
-| HTTP `ip-api` lookups | HTTPS JSON `ipwho.is` only, opt-in | Echo’s HTTP ip-api is not used; Chrome and privacy copy require TLS and a named origin. |
+| HTTP `ip-api` lookups | HTTPS Cloudflare DoH + `ipwho.is/{ip}`, opt-in | Echo’s HTTP ip-api is not used; Chrome and privacy copy require TLS and named origins. |
 | Always-on geolocation of domains | Settings toggle default **off** + overlay | Pins are not implied until the user understands the hostname leaves the device. |
 | Leaflet.markercluster | Grid clustering in projected pixel space | Enough for overlapping pins without a Leaflet stack. |
 | Echo theme / bipartite layout | Obsidian instrument panel; no bipartite graph | Map is a third view beside the existing radial graph, not a restyle of Echo. |

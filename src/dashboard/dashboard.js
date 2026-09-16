@@ -1168,7 +1168,7 @@ if (geoLookupToggle) {
       const granted = await requestGeoLookupPermission();
       if (!granted) {
         e.target.checked = false;
-        showToast('Location lookup needs permission for ipwho.is');
+        showToast('Location lookup needs permission for Cloudflare DNS and ipwho.is');
         return;
       }
     }
