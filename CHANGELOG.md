@@ -11,6 +11,12 @@
 - **All product surface updated** — manifest (name/description/author/default_title), extension pages (popup, dashboard, blocking, domain, blocked, help), source JS/CSS, scripts, landing page, README, docs, AGENTS.md, CLAUDE.md.
 - **Compatibility** — No storage-key or permission changes; existing installs upgrade in place. GitHub links still point to `luongnv89/focus-bear` (repo unchanged). Archived planning/spec docs (`phase-1-requirements/`, `specs/`) retain the legacy name for historical accuracy.
 
+### Map view
+
+- **Dashboard Map tab** — Bundled D3-geo world atlas (offline by default) so tracked activity can be explored geographically without OSM/Leaflet tiles.
+- **Opt-in location lookup** — Off by default. Cloudflare DNS-over-HTTPS then `ipwho.is/{ip}` over HTTPS; results cached locally (~7 days) with a Map cache-clear control. No `geolocation` permission.
+- **Privacy copy** — Help, landing-page policy, and README disclose the atlas vs optional named-origin lookups. EchoFootPrint parity gaps: `docs/map-view-parity.md`.
+
 ### UI Refresh
 
 - **Obsidian design tokens** — New token system in `src/common/theme.css`: layered near-black surfaces (`--bg-0..3`), hairline borders (`--line-1/2`), ink text ramp, green accent as signal-only color, soft variants for ok/warn/bad/info, plus a `body.light-mode` set. Shared shell in `src/common/shell.css`.

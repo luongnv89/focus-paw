@@ -24,7 +24,8 @@ FocusPaw helps you understand and improve your browsing habits by tracking how o
 
 ## Features
 
-- **Interactive Dashboard** — Beautiful D3.js radial graph showing your attention patterns
+- **Interactive Dashboard** — D3.js radial graph of attention patterns, plus a dashboard Map tab with a bundled world atlas
+- **Optional site locations** — Opt-in HTTPS lookup (off by default) to place tracked domains on the Map; default Map path is offline
 - **Focus Score** — Daily 0-100 score based on limit compliance, visit reduction, and streaks
 - **Streaks** — Track consecutive days of staying within your limits
 - **Site Limits** — Set daily visit limits for distracting websites
@@ -64,7 +65,7 @@ FocusPaw helps you understand and improve your browsing habits by tracking how o
 ## How It Works
 
 1. **Browse normally** — FocusPaw quietly tracks domain switches in the background
-2. **Open the dashboard** — Click the toolbar icon to see your attention map
+2. **Open the dashboard** — Click the toolbar icon for the radial graph, table, and Map tab
 3. **Set limits** — Configure daily limits for distracting sites
 4. **Build streaks** — Stay under limits to build consecutive day streaks
 5. **Improve focus** — Watch your focus score improve over time
@@ -79,15 +80,17 @@ FocusPaw helps you understand and improve your browsing habits by tracking how o
 
 ## Privacy
 
-**FocusPaw is 100% local-only.** Your data never leaves your device.
+**Visit tracking is 100% local.** Counts stay in Chrome storage on your device.
 
-- ✅ All data stored locally in Chrome's storage
-- ✅ No external servers or API calls
+- ✅ Visit data stored locally in Chrome's storage
 - ✅ No analytics, telemetry, or third-party favicons, fonts, or images
 - ✅ No account required
+- ✅ Map atlas is bundled (no tile servers); optional site-location lookup is **off by default**
 - ✅ Open source — verify yourself
 
-Read our full [Privacy Policy](PRIVACY.md).
+If you enable **Look up website locations** in Settings, the extension may use Cloudflare DNS-over-HTTPS and ipwho.is over HTTPS to estimate where a tracked site is hosted. Clear that cache from the Map view. Device GPS is not used. Details: Help in the extension, or the [hosted privacy policy](https://luongnv89.github.io/focus-paw/privacy/).
+
+Read the full [Privacy Policy](https://luongnv89.github.io/focus-paw/privacy/).
 
 ## Key Concepts
 
