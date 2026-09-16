@@ -1,4 +1,5 @@
 import { setupVisualizationPage } from '../src/common/visualization-page.js';
+import { getTodayKey } from '../src/common/date-utils.js';
 
 function makeChrome(visits = {}, limits = {}) {
   global.chrome = {
@@ -150,5 +151,25 @@ describe('visualization-page setup', () => {
     expect(document.getElementById('viz-tablist')).toBeNull();
     expect(document.getElementById('map-container')).toBeNull();
     expect(document.getElementById('loading').style.display).toBe('none');
+  });
+
+  test('quick-limits toggle reverts and shows toast when host permission is denied', async () => {
+    const todayKey = getTodayKey();
+    makeChrome(
+      { [todayKey]: { 'example.com': { count: 5, lastVisit: Date.now(), subpaths: {} } } },
+      {},
+    );
+    global.chrome.permissions = { contains: async () => false, request: async () => false };
+    await setupVisualizationPage({ defaultRange: 'today', fullPage: false });
+    const toggle = document.querySelector('#quick-limits-list input[data-action="quick-toggle"]');
+    expect(toggle).not.toBeNull();
+    toggle.click();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 20);
+    });
+    expect(toggle.checked).toBe(false);
+    expect(document.getElementById('settings-toast').textContent).toBe(
+      'Website access is required to enable blocking.',
+    );
   });
 });

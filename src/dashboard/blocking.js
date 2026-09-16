@@ -183,7 +183,11 @@ function setupForm() {
 
 async function toggleRule(domain, currentConfig) {
   const newConfig = { ...currentConfig, enabled: !currentConfig.enabled };
-  if (newConfig.enabled && !(await ensureBlockingHostPermission())) return;
+  if (newConfig.enabled && !(await ensureBlockingHostPermission())) {
+    const errorEl = document.getElementById('limit-error');
+    errorEl.textContent = 'Website access is required to enable blocking.';
+    return;
+  }
   await setLimitForDomain(domain, newConfig);
   await updateBlockingRules();
   await renderRulesList();

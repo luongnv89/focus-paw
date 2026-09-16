@@ -992,6 +992,7 @@ async function wireVisualizationActions(ctx, _options) {
           }
           if (desiredState && !(await ensureBlockingHostPermission())) {
             event.target.checked = false;
+            ctx.showSettingsToast('Website access is required to enable blocking.');
             return;
           }
           limitConfig.enabled = desiredState;
