@@ -4,6 +4,7 @@
  */
 
 import { getTodayKey, normalizeLimitConfig } from './storage.js';
+import { canonicalizeDomain } from '../common/domain-utils.js';
 
 // One rolling 5-hour window used for the per-window visit counter.
 const FIVE_HOURS_MS = 5 * 60 * 60 * 1000;
@@ -84,9 +85,11 @@ function getOldestTimestampInWindow(timestamps, windowMs) {
  *   limitType: string|null,
  *   fiveHourCount: number,
  *   dailyCount: number,
+ *   oldestTimestamp?: number|null,
  * }>}
  */
 export async function checkLimit(domain) {
+  const canonicalDomain = canonicalizeDomain(domain);
   return new Promise((resolve) => {
     chrome.storage.local.get(['visits', 'limits'], (data) => {
       const visits = data.visits || {};
@@ -94,11 +97,11 @@ export async function checkLimit(domain) {
 
       const todayKey = getTodayKey();
       const todayVisits = visits[todayKey] || {};
-      const domainVisits = todayVisits[domain];
+      const domainVisits = todayVisits[canonicalDomain] || todayVisits[domain];
       const dailyCount = domainVisits ? domainVisits.count : 0;
       const timestamps = domainVisits ? domainVisits.timestamps || [] : [];
 
-      let limitConfig = limits[domain];
+      let limitConfig = limits[canonicalDomain] || limits[`www.${canonicalDomain}`];
 
       // No limit set = unlimited
       if (!limitConfig) {
@@ -140,6 +143,7 @@ export async function checkLimit(domain) {
           limitType: 'fiveHour',
           fiveHourCount,
           dailyCount,
+          oldestTimestamp: getOldestTimestampInWindow(timestamps, FIVE_HOURS_MS),
         });
         return;
       }
@@ -242,8 +246,9 @@ export async function updateBlockingRules() {
     // Get all currently blocked domains
     const blockedDomains = [];
 
-    Object.entries(limits).forEach(([domain, limitConfig]) => {
-      const domainVisits = todayVisits[domain];
+    Object.entries(limits).forEach(([storedDomain, limitConfig]) => {
+      const domain = canonicalizeDomain(storedDomain);
+      const domainVisits = todayVisits[domain] || todayVisits[storedDomain];
       const dailyCount = domainVisits ? domainVisits.count : 0;
       const timestamps = domainVisits ? domainVisits.timestamps || [] : [];
 

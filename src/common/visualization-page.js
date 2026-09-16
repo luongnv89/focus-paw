@@ -17,6 +17,7 @@ import { updateBlockingRules } from '../background/limits.js';
 import { getTodayKey, aggregateVisitsInRange } from './date-utils.js';
 import { validateLimitConfig, validateDomain } from './limit-validation.js';
 import { csvRow } from './csv-escape.js';
+import { ensureBlockingHostPermission } from './blocking-permission.js';
 import { initMapViewTabs, bindMapChrome, updateMapView } from '../dashboard/map-view.js';
 
 // "Near limit" threshold: 80% of a configured limit triggers the near-limit warning.
@@ -380,6 +381,7 @@ function buildVisualizationContext(options) {
       settingsBtn: document.getElementById('settings-btn'),
       settingsBackBtn: document.getElementById('settings-back-btn'),
       settingsToast: document.getElementById('settings-toast'),
+      quickLimitsStatus: document.getElementById('quick-limits-status'),
       limitForm: document.getElementById('limit-form'),
       limitErrorEl: document.getElementById('limit-error'),
       limitList: document.getElementById('limit-list'),
@@ -747,6 +749,11 @@ function wireVisualizationSettings(ctx) {
           const limits = await getLimits();
           const limitConfig = normalizeLimitConfig(limits[domain]);
           const newEnabled = event.target.checked;
+          if (newEnabled && !(await ensureBlockingHostPermission())) {
+            event.target.checked = false;
+            showSettingsToast('Website access is required to enable blocking.');
+            return;
+          }
           limitConfig.enabled = newEnabled;
           await setLimitForDomain(domain, limitConfig);
           await updateBlockingRules();
@@ -874,6 +881,12 @@ function wireLimitFormAndReset({
             limit: dailyEnabled ? Number(dailyLimit) : 20,
           },
         };
+        if (limitConfig.enabled && !(await ensureBlockingHostPermission())) {
+          if (dom.limitErrorEl) {
+            dom.limitErrorEl.textContent = 'Website access is required to enable blocking.';
+          }
+          return;
+        }
         await setLimitForDomain(domainRes.normalized, limitConfig);
         await updateBlockingRules();
         dom.limitForm.reset();
@@ -962,7 +975,25 @@ async function wireVisualizationActions(ctx, _options) {
     });
   }
 
-  // Quick-limits panel interactions
+  // Quick-limits panel interactions. The panel lives in the main view, so its
+  // denial feedback is rendered inline there: #settings-toast sits inside the
+  // hidden #settings-view and would be neither visible nor announced.
+  const quickLimitsStatusEl = dom.quickLimitsStatus;
+  const clearQuickLimitsStatus = () => {
+    if (!quickLimitsStatusEl) return;
+    if (ctx.quickLimitsStatusTimeout) clearTimeout(ctx.quickLimitsStatusTimeout);
+    quickLimitsStatusEl.hidden = true;
+    quickLimitsStatusEl.textContent = '';
+  };
+  const showQuickLimitsStatus = (message) => {
+    if (!quickLimitsStatusEl) return;
+    // Unhide before writing so the aria-live region is displayable when the
+    // message lands (live regions inside display:none never announce).
+    quickLimitsStatusEl.hidden = false;
+    quickLimitsStatusEl.textContent = message;
+    if (ctx.quickLimitsStatusTimeout) clearTimeout(ctx.quickLimitsStatusTimeout);
+    ctx.quickLimitsStatusTimeout = setTimeout(clearQuickLimitsStatus, 3500);
+  };
   const quickLimitsList = document.getElementById('quick-limits-list');
   if (quickLimitsList) {
     quickLimitsList.addEventListener('click', async (event) => {
@@ -970,12 +1001,19 @@ async function wireVisualizationActions(ctx, _options) {
       if (!domain || !action) return;
       if (action === 'quick-toggle') {
         const desiredState = event.target.checked;
+        // Reset any earlier denial feedback before a fresh attempt.
+        clearQuickLimitsStatus();
         try {
           const limits = await getLimits();
           let limitConfig = limits[domain] ? normalizeLimitConfig(limits[domain]) : null;
           if (!limitConfig && desiredState) limitConfig = createDefaultLimitConfig();
           if (!limitConfig) {
             event.target.checked = false;
+            return;
+          }
+          if (desiredState && !(await ensureBlockingHostPermission())) {
+            event.target.checked = false;
+            showQuickLimitsStatus('Website access is required to enable blocking.');
             return;
           }
           limitConfig.enabled = desiredState;

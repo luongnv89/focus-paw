@@ -4,10 +4,11 @@
  */
 
 import { incrementVisit } from './storage.js';
-import { checkLimit } from './limits.js';
+import { checkLimit, getBlockedPageUrl } from './limits.js';
 import { updateVisitBadge } from './badge.js';
 import { checkLimitWarnings, showAchievementUnlocked } from './notifications.js';
 import { checkAchievements } from './achievements.js';
+import { canonicalizeDomain } from '../common/domain-utils.js';
 
 /**
  * Extract domain and subpath from URL
@@ -23,11 +24,7 @@ export function parseUrl(url) {
 
     const urlObj = new URL(url);
 
-    // Extract domain (remove www. prefix if present)
-    let domain = urlObj.hostname;
-    if (domain.startsWith('www.')) {
-      domain = domain.substring(4);
-    }
+    const domain = canonicalizeDomain(urlObj.hostname);
 
     // Skip localhost and 127.0.0.1
     if (domain === 'localhost' || domain === '127.0.0.1') {
@@ -69,8 +66,28 @@ async function trackTabFocus(tabId) {
     // Update visit counter badge
     await updateVisitBadge();
 
+    // DNR rules are installed after storage changes, so immediately redirect the
+    // threshold-triggering tab as well (including SPA navigations).
+    const limitStatus = await checkLimit(domain);
+    if (limitStatus.exceeded) {
+      const currentTab = await chrome.tabs.get(tabId);
+      const currentUrl = parseUrl(currentTab.url);
+      if (currentUrl?.domain === domain) {
+        await chrome.tabs.update(tabId, {
+          url: getBlockedPageUrl(
+            domain,
+            limitStatus.count,
+            limitStatus.limit,
+            limitStatus.limitType,
+            limitStatus.oldestTimestamp,
+          ),
+        });
+      }
+      return;
+    }
+
     // Check if this domain has a limit and show countdown toast
-    await showCountdownToastIfNeeded(tabId, domain);
+    await showCountdownToastIfNeeded(tabId, domain, limitStatus);
 
     // Check for limit warnings (when close to limit)
     await checkLimitWarnings(domain, newCount);
@@ -98,9 +115,9 @@ async function trackTabFocus(tabId) {
  * @param {string} domain - Domain name
  * @param {number} currentCount - Current visit count
  */
-async function showCountdownToastIfNeeded(tabId, domain) {
+async function showCountdownToastIfNeeded(tabId, domain, status = null) {
   try {
-    const limitStatus = await checkLimit(domain);
+    const limitStatus = status || (await checkLimit(domain));
 
     // Only show toast if domain has a limit
     if (!limitStatus.limit || !limitStatus.limitType) {

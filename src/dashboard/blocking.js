@@ -2,24 +2,7 @@ import { getLimits, setLimitForDomain, normalizeLimitConfig } from '../backgroun
 import { updateBlockingRules } from '../background/limits.js';
 import { validateDomain, validateLimitConfig } from '../common/limit-validation.js';
 import { svgIcon } from '../common/icons.js';
-
-/**
- * Ask the user for the optional <all_urls> host permission required for
- * declarativeNetRequest redirect-blocking. Tracking and toasts work without it.
- * Silent no-op if already granted, denied, or if the API is unavailable.
- * @returns {Promise<boolean>} whether the permission is now granted
- */
-async function ensureBlockingHostPermission() {
-  try {
-    if (!chrome.permissions || !chrome.permissions.contains) return true;
-    const already = await chrome.permissions.contains({ origins: ['<all_urls>'] });
-    if (already) return true;
-    return await chrome.permissions.request({ origins: ['<all_urls>'] });
-  } catch (error) {
-    console.debug('[Blocking] host permission request failed', error);
-    return false;
-  }
-}
+import { ensureBlockingHostPermission } from '../common/blocking-permission.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   await renderRulesList();
@@ -173,11 +156,12 @@ function setupForm() {
         },
       };
 
+      if (config.enabled && !(await ensureBlockingHostPermission())) {
+        errorEl.textContent = 'Website access is required to enable blocking.';
+        return;
+      }
+
       await setLimitForDomain(domain, config);
-      // First time a user adds a limit, prompt for the optional <all_urls> host
-      // permission so redirect-blocking actually works. Decline = tracking/toasts
-      // still work; only redirect blocking is disabled.
-      await ensureBlockingHostPermission();
       await updateBlockingRules();
 
       form.reset();
@@ -198,7 +182,15 @@ function setupForm() {
 }
 
 async function toggleRule(domain, currentConfig) {
+  // Reset any earlier denial feedback so a successful retry does not leave a
+  // stale error on screen (mirrors the limit form's submit handler).
+  const errorEl = document.getElementById('limit-error');
+  errorEl.textContent = '';
   const newConfig = { ...currentConfig, enabled: !currentConfig.enabled };
+  if (newConfig.enabled && !(await ensureBlockingHostPermission())) {
+    errorEl.textContent = 'Website access is required to enable blocking.';
+    return;
+  }
   await setLimitForDomain(domain, newConfig);
   await updateBlockingRules();
   await renderRulesList();

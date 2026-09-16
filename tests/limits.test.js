@@ -102,6 +102,23 @@ describe('Limits Module', () => {
       expect(result.limitType).toBe(null);
     });
 
+    test('matches a legacy www-prefixed limit to canonical visit data', async () => {
+      chrome.storage.local.data = {
+        visits: {
+          [todayKey()]: {
+            'x.com': { count: 3, lastVisit: Date.now(), subpaths: {}, timestamps: [] },
+          },
+        },
+        limits: {
+          'www.x.com': buildDailyLimit(3),
+        },
+      };
+
+      const result = await checkLimit('x.com');
+      expect(result.exceeded).toBe(true);
+      expect(result.count).toBe(3);
+    });
+
     test('returns countdown info when under daily limit', async () => {
       chrome.storage.local.data = {
         visits: {
@@ -227,6 +244,7 @@ describe('Limits Module', () => {
       expect(result.limitType).toBe('fiveHour');
       expect(result.limit).toBe(2);
       expect(result.count).toBe(2);
+      expect(result.oldestTimestamp).toBe(now - 60 * 60 * 1000);
     });
 
     test('returns countdown info for five-hour limit when under threshold', async () => {
@@ -343,6 +361,27 @@ describe('Limits Module', () => {
       expect(rules.length).toBeGreaterThan(0);
       const hasDomainRule = rules.some((r) => r.condition?.regexFilter);
       expect(hasDomainRule).toBe(true);
+    });
+
+    test('creates canonical rules for a legacy www-prefixed limit', async () => {
+      chrome.storage.local.data = {
+        visits: {
+          [todayKey()]: {
+            'x.com': { count: 3, lastVisit: Date.now(), subpaths: {}, timestamps: [] },
+          },
+        },
+        limits: {
+          'www.x.com': buildDailyLimit(3),
+        },
+      };
+
+      await updateBlockingRules();
+
+      const regexRule = chrome.declarativeNetRequest.dynamicRules.find(
+        (rule) => rule.condition.regexFilter,
+      );
+      expect(regexRule.condition.regexFilter).toContain('x\\.com');
+      expect(regexRule.condition.regexFilter).not.toContain('www\\.x\\.com');
     });
 
     test('creates regex rule that covers domain and subdomains', async () => {
