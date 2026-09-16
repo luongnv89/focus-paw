@@ -65,6 +65,8 @@ function Screenshots() {
                     <img
                       src={screenshot.src}
                       alt={screenshot.alt}
+                      width={screenshotGalleryContent.imageWidth}
+                      height={screenshotGalleryContent.imageHeight}
                       loading="lazy"
                       decoding="async"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"

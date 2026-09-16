@@ -88,9 +88,9 @@ FocusPaw helps you understand and improve your browsing habits by tracking how o
 - ✅ Map tiles load from OpenStreetMap when you open the Map tab; optional site-location lookup is **off by default**
 - ✅ Open source — verify yourself
 
-If you open the **Map** tab, the dashboard loads OpenStreetMap tiles. If you enable **Look up website locations** in Settings, the extension may use Cloudflare DNS-over-HTTPS and ipwho.is over HTTPS to estimate where a tracked site is hosted. Clear that cache from the Map view. Device GPS is not used. Details: Help in the extension, or the [hosted privacy policy](https://luongnv89.github.io/focus-paw/privacy/).
+If you open the **Map** tab, the dashboard loads OpenStreetMap tiles. If you enable **Look up website locations** in Settings, the extension may use Cloudflare DNS-over-HTTPS and ipwho.is over HTTPS to estimate where a tracked site is hosted. Clear that cache from the Map view. Device GPS is not used. Details: Help in the extension, or the [hosted privacy policy](https://focus-paw.luongnv.com/privacy).
 
-Read the full [Privacy Policy](https://luongnv89.github.io/focus-paw/privacy/).
+Read the full [Privacy Policy](https://focus-paw.luongnv.com/privacy).
 
 ## Key Concepts
 

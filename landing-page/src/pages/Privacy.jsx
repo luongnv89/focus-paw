@@ -153,9 +153,23 @@ function renderTable(content) {
 }
 
 function Privacy() {
-  // Scroll to top on mount
+  // Scroll to top on mount and give the route its own document head
   useEffect(() => {
     window.scrollTo(0, 0);
+    const previousTitle = document.title;
+    const meta = document.querySelector('meta[name="description"]');
+    const previousDescription = meta?.getAttribute('content');
+    document.title = 'Privacy Policy — FocusPaw';
+    meta?.setAttribute(
+      'content',
+      'FocusPaw privacy policy: all tracking data stays in local extension storage. No accounts, no telemetry, no cloud sync.'
+    );
+    return () => {
+      document.title = previousTitle;
+      if (meta && previousDescription) {
+        meta.setAttribute('content', previousDescription);
+      }
+    };
   }, []);
 
   return (

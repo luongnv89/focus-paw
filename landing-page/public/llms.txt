@@ -1,0 +1,17 @@
+# FocusPaw
+
+> FocusPaw is a free, open-source, privacy-first Chrome extension that tracks focus-switching habits. It counts visits per domain, draws an interactive radial focus graph, enforces per-site daily limits with a humorous block page, tracks streaks and focus scores, and offers a map view of tracked sites. All data stays in local extension storage — no accounts, no telemetry, no cloud sync.
+
+## Site
+
+- [Home](https://focus-paw.luongnv.com/): Product overview, feature list, screenshots, install link
+- [Privacy Policy](https://focus-paw.luongnv.com/privacy): Local-only data handling details
+
+## Resources
+
+- [Chrome Web Store](https://chromewebstore.google.com/detail/focusbear-focus-tracker/hlhhifmjlgekgchkaemeldfhcgcajcoe): Install the extension
+- [GitHub repository](https://github.com/luongnv89/focus-paw): Source code, issues, and documentation (MIT license)
+
+## Optional
+
+- [Privacy policy (repo)](https://github.com/luongnv89/focus-paw/blob/main/PRIVACY.md): Full privacy policy text

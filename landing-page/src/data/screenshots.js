@@ -2,6 +2,8 @@ export const screenshotGalleryContent = {
   sectionTitle: 'See FocusPaw in Action',
   sectionDescription:
     'Explore the intuitive interface designed to help you stay focused.',
+  imageWidth: 1280,
+  imageHeight: 800,
   screenshots: [
     {
       id: 'dashboard',
