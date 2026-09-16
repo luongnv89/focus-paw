@@ -228,6 +228,7 @@ describe('Tracking Module', () => {
         tabs: {
           query: jest.fn(),
           get: jest.fn(),
+          update: jest.fn().mockResolvedValue(),
           sendMessage: jest.fn(),
         },
         storage: {
@@ -252,6 +253,7 @@ describe('Tracking Module', () => {
         },
         runtime: {
           id: 'test-extension-id',
+          getURL: jest.fn((path) => `chrome-extension://test-extension-id/${path}`),
         },
       };
     });
@@ -348,6 +350,25 @@ describe('Tracking Module', () => {
       await trackCurrentTab();
 
       expect(chrome.storage.local.data.visits).toBeDefined();
+    });
+
+    test('redirects the current tab when its visit reaches the limit', async () => {
+      const mockTab = { id: 123, url: 'https://www.x.com/home', active: true };
+      chrome.storage.local.data.limits = {
+        'x.com': {
+          enabled: true,
+          fiveHour: { enabled: false, limit: 10 },
+          daily: { enabled: true, limit: 1 },
+        },
+      };
+      chrome.tabs.query.mockResolvedValue([mockTab]);
+      chrome.tabs.get.mockResolvedValue(mockTab);
+
+      await trackCurrentTab();
+
+      expect(chrome.tabs.update).toHaveBeenCalledWith(123, {
+        url: expect.stringContaining('src/blocked/blocked.html?domain=x.com'),
+      });
     });
   });
 });

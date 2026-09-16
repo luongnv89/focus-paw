@@ -17,6 +17,7 @@ import { updateBlockingRules } from '../background/limits.js';
 import { getTodayKey, aggregateVisitsInRange } from './date-utils.js';
 import { validateLimitConfig, validateDomain } from './limit-validation.js';
 import { csvRow } from './csv-escape.js';
+import { ensureBlockingHostPermission } from './blocking-permission.js';
 import { initMapViewTabs, bindMapChrome, updateMapView } from '../dashboard/map-view.js';
 
 // "Near limit" threshold: 80% of a configured limit triggers the near-limit warning.
@@ -747,6 +748,11 @@ function wireVisualizationSettings(ctx) {
           const limits = await getLimits();
           const limitConfig = normalizeLimitConfig(limits[domain]);
           const newEnabled = event.target.checked;
+          if (newEnabled && !(await ensureBlockingHostPermission())) {
+            event.target.checked = false;
+            showSettingsToast('Website access is required to enable blocking.');
+            return;
+          }
           limitConfig.enabled = newEnabled;
           await setLimitForDomain(domain, limitConfig);
           await updateBlockingRules();
@@ -874,6 +880,12 @@ function wireLimitFormAndReset({
             limit: dailyEnabled ? Number(dailyLimit) : 20,
           },
         };
+        if (limitConfig.enabled && !(await ensureBlockingHostPermission())) {
+          if (dom.limitErrorEl) {
+            dom.limitErrorEl.textContent = 'Website access is required to enable blocking.';
+          }
+          return;
+        }
         await setLimitForDomain(domainRes.normalized, limitConfig);
         await updateBlockingRules();
         dom.limitForm.reset();
@@ -975,6 +987,10 @@ async function wireVisualizationActions(ctx, _options) {
           let limitConfig = limits[domain] ? normalizeLimitConfig(limits[domain]) : null;
           if (!limitConfig && desiredState) limitConfig = createDefaultLimitConfig();
           if (!limitConfig) {
+            event.target.checked = false;
+            return;
+          }
+          if (desiredState && !(await ensureBlockingHostPermission())) {
             event.target.checked = false;
             return;
           }

@@ -8,6 +8,7 @@ import {
   deleteDomainData,
 } from '../background/storage.js';
 import { validateLimitConfig } from '../common/limit-validation.js';
+import { ensureBlockingHostPermission } from '../common/blocking-permission.js';
 
 let currentDomain = '';
 let currentLimitConfig = null;
@@ -151,6 +152,11 @@ function setupLimitFormListeners() {
           limit: dailyEnabled ? Number(dailyLimit) : 20,
         },
       };
+
+      if (config.enabled && !(await ensureBlockingHostPermission())) {
+        if (errorEl) errorEl.textContent = 'Website access is required to enable blocking.';
+        return;
+      }
 
       await setLimitForDomain(currentDomain, config);
       showToast('Limit saved.');

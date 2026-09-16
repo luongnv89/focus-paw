@@ -3,6 +3,8 @@
  * Single source of truth for all three limit forms.
  */
 
+import { canonicalizeDomain } from './domain-utils.js';
+
 export const LIMIT_MIN = 1;
 export const LIMIT_MAX = 1000;
 export const LIMIT_DOMAIN_REGEX = /^[a-z0-9.-]+$/;
@@ -32,11 +34,12 @@ export function validateLimitValue(rawValue) {
  * @returns {{valid: boolean, normalized?: string, error?: string}}
  */
 export function validateDomain(rawDomain) {
-  const normalized = rawDomain
-    .trim()
-    .replace(/^https?:\/\//i, '')
-    .split('/')[0]
-    .toLowerCase();
+  const normalized = canonicalizeDomain(
+    rawDomain
+      .trim()
+      .replace(/^https?:\/\//i, '')
+      .split('/')[0],
+  );
   if (!normalized || !LIMIT_DOMAIN_REGEX.test(normalized) || !normalized.includes('.')) {
     return { valid: false, error: 'Enter a valid domain like example.com' };
   }

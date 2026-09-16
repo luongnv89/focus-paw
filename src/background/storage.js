@@ -51,6 +51,7 @@ import {
   parseDateKey,
   aggregateVisitsInRange,
 } from '../common/date-utils.js';
+import { canonicalizeDomain } from '../common/domain-utils.js';
 
 const defaultSettings = {
   onboardingComplete: false,
@@ -363,14 +364,18 @@ export async function getLimitForDomain(domain) {
  * @returns {Promise<void>}
  */
 export async function setLimitForDomain(domain, limitConfig) {
+  const canonicalDomain = canonicalizeDomain(domain);
   return new Promise((resolve) => {
     chrome.storage.local.get(['limits'], (data) => {
       const limits = data.limits || {};
 
+      // Remove a legacy www-prefixed key whenever this rule is edited.
+      delete limits[domain];
+      delete limits[`www.${canonicalDomain}`];
       if (limitConfig === null) {
-        delete limits[domain];
+        delete limits[canonicalDomain];
       } else {
-        limits[domain] = createDefaultLimitConfig(limitConfig);
+        limits[canonicalDomain] = createDefaultLimitConfig(limitConfig);
       }
 
       chrome.storage.local.set({ limits }, resolve);

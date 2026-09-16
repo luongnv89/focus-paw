@@ -56,6 +56,13 @@ describe('limit-validation', () => {
       expect(r.normalized).toBe('example.com');
     });
 
+    test('uses the same www normalization as visit tracking', () => {
+      expect(validateDomain('https://www.X.com/home')).toEqual({
+        valid: true,
+        normalized: 'x.com',
+      });
+    });
+
     test('rejects invalid domains', () => {
       expect(validateDomain('').valid).toBe(false);
       expect(validateDomain('localhost').valid).toBe(false);
