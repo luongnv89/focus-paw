@@ -23,6 +23,7 @@ let mapInstance = null;
 let markersLayer = null;
 let tileLayer = null;
 let mapTheme = MAP_THEME_DARK;
+let lastDrawerInvoker = null;
 
 function leaflet() {
   return globalThis.L;
@@ -125,11 +126,15 @@ function setOverlay(kind, { progress } = {}) {
     const current = document.getElementById('map-geo-progress-current');
     const total = document.getElementById('map-geo-progress-total');
     const fill = document.getElementById('map-geo-progress-fill');
+    const bar = document.getElementById('map-geo-progress-bar');
     if (current) current.textContent = String(progress?.current || 0);
     if (total) total.textContent = String(progress?.total || 0);
+    const pct = progress?.total > 0 ? (progress.current / progress.total) * 100 : 0;
     if (fill) {
-      const pct = progress?.total > 0 ? (progress.current / progress.total) * 100 : 0;
       fill.style.width = `${pct}%`;
+    }
+    if (bar) {
+      bar.setAttribute('aria-valuenow', String(Math.round(pct)));
     }
   }
   if (kind === 'empty' && empty) empty.hidden = false;
@@ -229,12 +234,25 @@ function createLocationPopup(location) {
   return root;
 }
 
-function fillRegionDrawer(location) {
+function fillRegionDrawer(location, { focusOnOpen = true } = {}) {
   const drawer = document.getElementById('map-region-drawer');
   if (!drawer) return;
   if (!location) {
+    const wasOpen = !drawer.hidden;
     drawer.hidden = true;
+    if (wasOpen) {
+      if (lastDrawerInvoker?.isConnected) {
+        lastDrawerInvoker.focus?.();
+      } else {
+        // The invoking marker is often not focusable — fall back to the map.
+        document.getElementById('map-container')?.focus?.();
+      }
+    }
+    lastDrawerInvoker = null;
     return;
+  }
+  if (focusOnOpen && document.activeElement && document.activeElement !== document.body) {
+    lastDrawerInvoker = document.activeElement;
   }
   drawer.hidden = false;
   const title = document.getElementById('map-region-title');
@@ -258,6 +276,9 @@ function fillRegionDrawer(location) {
       row.append(dot, label);
       list.appendChild(row);
     });
+  }
+  if (focusOnOpen) {
+    document.getElementById('map-region-close')?.focus();
   }
 }
 
@@ -484,6 +505,15 @@ export function bindMapChrome() {
     closeDrawer.addEventListener('click', () => fillRegionDrawer(null));
   }
 
+  // Mirror the dashboard insights-banner Escape pattern: dismiss the open
+  // region drawer and return focus to the invoking context.
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    const drawer = document.getElementById('map-region-drawer');
+    if (!drawer || drawer.hidden) return;
+    fillRegionDrawer(null);
+  });
+
   const themeToggle = document.getElementById('map-theme-toggle');
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
@@ -507,4 +537,5 @@ export function resetMapViewForTests() {
   markersLayer = null;
   tileLayer = null;
   mapTheme = MAP_THEME_DARK;
+  lastDrawerInvoker = null;
 }

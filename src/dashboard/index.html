@@ -398,6 +398,7 @@
                   class="leaflet-map map-theme-dark"
                   role="region"
                   aria-label="Geographic tracking map"
+                  tabindex="-1"
                 ></div>
 
                 <aside
@@ -470,7 +471,15 @@
                     <span class="num tnum" id="map-geo-progress-total">0</span>
                     domains processed
                   </p>
-                  <div class="geo-progress-bar">
+                  <div
+                    class="geo-progress-bar"
+                    id="map-geo-progress-bar"
+                    role="progressbar"
+                    aria-label="Geolocation progress"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                  >
                     <div class="geo-progress-fill" id="map-geo-progress-fill"></div>
                   </div>
                 </div>

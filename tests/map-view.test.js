@@ -150,7 +150,7 @@ function mountMapDom() {
       <button type="button" id="map-clear-cache" aria-label="Clear location cache"></button>
       <span id="map-location-count">0</span>
       <span id="map-visit-count">0</span>
-      <div id="map-container" class="leaflet-map map-theme-dark"></div>
+      <div id="map-container" class="leaflet-map map-theme-dark" tabindex="-1"></div>
       <aside id="map-region-drawer" hidden>
         <h3 id="map-region-title">Region</h3>
         <span id="map-region-country"></span>
@@ -160,7 +160,12 @@ function mountMapDom() {
         <button type="button" id="map-region-close">Close</button>
       </aside>
       <div id="map-geo-overlay">Map geolocation is off by default.</div>
-      <div id="map-loading-overlay" hidden></div>
+      <div id="map-loading-overlay" role="status" aria-live="polite" hidden>
+        <span id="map-geo-progress-current">0</span>/<span id="map-geo-progress-total">0</span>
+        <div class="geo-progress-bar" id="map-geo-progress-bar" role="progressbar" aria-label="Geolocation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="geo-progress-fill" id="map-geo-progress-fill"></div>
+        </div>
+      </div>
       <div id="map-empty-overlay" hidden></div>
       <button type="button" id="map-open-settings">Open Settings</button>
       <button type="button" id="settings-btn"></button>
@@ -575,6 +580,58 @@ describe('map-view', () => {
       const openSettings = document.getElementById('map-open-settings');
       expect(openSettings.getAttribute('aria-label')).toBeNull();
       expect(openSettings.textContent).toMatch(/Open Settings/);
+    });
+  });
+
+  describe('review follow-ups (hit areas, progress semantics, drawer focus)', () => {
+    test('geolocation progress bar exposes determinate progressbar semantics', async () => {
+      mountMapDom();
+      mockLeaflet();
+      await renderMapView(document.getElementById('map-container'), {
+        data: { 'example.com': { count: 1 } },
+        geoLookupEnabled: true,
+        resolveLocations: jest.fn().mockResolvedValue({ locations: {}, fetched: 1 }),
+      });
+      const bar = document.getElementById('map-geo-progress-bar');
+      expect(bar.getAttribute('role')).toBe('progressbar');
+      expect(bar.getAttribute('aria-valuemin')).toBe('0');
+      expect(bar.getAttribute('aria-valuemax')).toBe('100');
+      expect(bar.getAttribute('aria-valuenow')).toBe('0');
+      expect(document.getElementById('map-geo-progress-fill').style.width).toBe('0%');
+    });
+
+    test('marker click focuses drawer close; Escape closes and returns focus', async () => {
+      mountMapDom();
+      const leaflet = mockLeaflet();
+      bindMapChrome();
+      const invoker = document.getElementById('map-clear-cache');
+      invoker.focus();
+      await renderMapView(document.getElementById('map-container'), {
+        data: { 'example.com': { count: 2 } },
+        geoLookupEnabled: true,
+        resolveLocations: jest.fn().mockResolvedValue({
+          locations: { 'example.com': { lat: 1, lon: 2, city: 'Paris', country: 'FR' } },
+          fetched: 1,
+        }),
+      });
+      const clickHandler = leaflet.marker.on.mock.calls.find(([evt]) => evt === 'click')?.[1];
+      expect(clickHandler).toBeDefined();
+      clickHandler();
+      const drawer = document.getElementById('map-region-drawer');
+      expect(drawer.hidden).toBe(false);
+      expect(document.activeElement).toBe(document.getElementById('map-region-close'));
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      expect(drawer.hidden).toBe(true);
+      expect(document.activeElement).toBe(invoker);
+    });
+
+    test('dashboard CSS gives tabs, map buttons and Leaflet zoom 44px hit areas', () => {
+      const css = fs.readFileSync(path.join(process.cwd(), 'src/dashboard/dashboard.css'), 'utf8');
+      expect(css).toMatch(/\.viz-tab\s*\{[^}]*min-height:\s*44px[^}]*min-width:\s*44px/);
+      expect(css).toMatch(
+        /\.map-controls \.btn-icon-only,[\s\S]*?#map-region-close\s*\{[^}]*min-width:\s*44px[^}]*min-height:\s*44px/,
+      );
+      expect(css).toMatch(/\.leaflet-control-zoom a\s*\{[^}]*width:\s*44px[^}]*height:\s*44px/);
     });
   });
 

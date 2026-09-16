@@ -505,8 +505,10 @@ body.dashboard-view .dashboard-main {
 .viz-tab {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  height: 28px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 0 12px;
   border: none;
   border-radius: var(--r-pill);
@@ -589,6 +591,16 @@ body.dashboard-view .dashboard-main {
   font-size: var(--fs-12);
   color: var(--ink-2);
   white-space: nowrap;
+}
+
+/* Map icon buttons keep the 32px glyph box visually but offer a 44px
+   touch target (scoped so the rest of the extension is untouched). */
+.map-controls .btn-icon-only,
+#map-region-close {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .map-stat-sep {
@@ -697,9 +709,11 @@ body.dashboard-view .dashboard-main {
 }
 
 .leaflet-control-zoom a {
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  line-height: 44px;
   background-color: var(--bg-2);
   color: var(--ink-2);
   border: none;
