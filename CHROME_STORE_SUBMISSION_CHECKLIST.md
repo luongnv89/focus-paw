@@ -45,24 +45,24 @@
 
 ### Promotional Images (Optional but Recommended)
 
-| Type             | Size     | Status              | Action                             |
-| ---------------- | -------- | ------------------- | ---------------------------------- |
-| Store Icon       | 128x128  | ✅ Use icon-128.png | Ready                              |
-| Small Promo Tile | 440x280  | ⚠️ Create           | `landing-page/public/screenshots/` |
-| Large Promo Tile | 920x680  | ⚠️ Create           | Dashboard screenshot               |
-| Marquee Promo    | 1400x560 | ⚠️ Create           | Feature showcase                   |
+| Type             | Size     | Status                  | Action                             |
+| ---------------- | -------- | ----------------------- | ---------------------------------- |
+| Store Icon       | 128x128  | ✅ Use icon-128.png     | Ready                              |
+| Small Promo Tile | 440x280  | ✅ Ready                | `cws-submission/promo/promo-small-440x280.png` |
+| Large Promo Tile | 920x680  | ⚠️ Create               | Dashboard screenshot               |
+| Marquee Promo    | 1400x560 | ✅ Ready                | `cws-submission/promo/promo-marquee-1400x560.png` |
 
 ### Screenshots (Required: 1-5 images)
 
-Use screenshots from `landing-page/public/screenshots/`:
+Use screenshots from `landing-page/public/screenshots/` (v1.0.1 refresh):
 
 | #   | Content                     | Source File            | Status   |
 | --- | --------------------------- | ---------------------- | -------- |
 | 1   | Dashboard with radial graph | `dashboard.png`        | ✅ Ready |
-| 2   | Website activity table      | `dashboard-reddit.png` | ✅ Ready |
-| 3   | Settings page               | `settings.png`         | ✅ Ready |
-| 4   | Block page                  | `set-block.png`        | ✅ Ready |
-| 5   | Help & FAQ                  | `Help-FAQ.png`         | ✅ Ready |
+| 2   | Map view with location pins | `dashboard-map.png`    | ✅ Ready |
+| 3   | Blocking rules              | `set-block-rules.png`  | ✅ Ready |
+| 4   | Settings page               | `settings.png`         | ✅ Ready |
+| 5   | Help & FAQ                  | `help-faq.png`         | ✅ Ready |
 
 **Screenshot dimensions:** All screenshots are ~1280x800, which meets the requirement.
 

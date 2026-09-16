@@ -10,22 +10,10 @@ export const screenshotGalleryContent = {
       caption: 'Dashboard with interactive focus graph',
     },
     {
-      id: 'dashboard-reddit',
-      src: '/screenshots/dashboard-reddit.png',
-      alt: 'FocusPaw dashboard showing Reddit usage tracking and time spent',
-      caption: 'Track time spent on specific sites',
-    },
-    {
-      id: 'settings',
-      src: '/screenshots/settings.png',
-      alt: 'Settings page for configuring FocusPaw preferences and options',
-      caption: 'Customize your focus tracking preferences',
-    },
-    {
-      id: 'set-block',
-      src: '/screenshots/set-block.png',
-      alt: 'Block page configuration interface for setting up site blocking',
-      caption: 'Set up blocking for distracting sites',
+      id: 'dashboard-map',
+      src: '/screenshots/dashboard-map.png',
+      alt: 'FocusPaw dashboard map view showing tracked sites on OpenStreetMap with location pins',
+      caption: 'Explore tracked sites on an interactive map',
     },
     {
       id: 'set-block-rules',
@@ -34,8 +22,14 @@ export const screenshotGalleryContent = {
       caption: 'Manage your site blocking rules',
     },
     {
+      id: 'settings',
+      src: '/screenshots/settings.png',
+      alt: 'Settings page for configuring FocusPaw preferences and options',
+      caption: 'Customize your focus tracking preferences',
+    },
+    {
       id: 'help-faq',
-      src: '/screenshots/Help-FAQ.png',
+      src: '/screenshots/help-faq.png',
       alt: 'Help and FAQ page explaining FocusPaw features and usage',
       caption: 'Comprehensive help documentation',
     },

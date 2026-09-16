@@ -68,14 +68,23 @@ https://github.com/luongnv89/focus-paw
 
 ## 2. Screenshots (1280×800 — 16:10 ratio)
 
+Refreshed for v1.0.1 — same files ship on the landing page gallery
+(`landing-page/public/screenshots/`).
+
 | # | File | Caption |
 |---|------|---------|
 | 1 | `screenshots/dashboard.png` | Dashboard with interactive focus graph |
-| 2 | `screenshots/dashboard-reddit.png` | Track time spent on specific sites |
-| 3 | `screenshots/settings.png` | Customize your focus tracking preferences |
-| 4 | `screenshots/set-block.png` | Set up blocking for distracting sites |
-| 5 | `screenshots/set-block-rules.png` | Manage your site blocking rules |
-| 6 | `screenshots/Help-FAQ.png` | Comprehensive help documentation |
+| 2 | `screenshots/dashboard-map.png` | Explore tracked sites on an interactive map |
+| 3 | `screenshots/set-block-rules.png` | Manage your site blocking rules |
+| 4 | `screenshots/settings.png` | Customize your focus tracking preferences |
+| 5 | `screenshots/help-faq.png` | Comprehensive help documentation |
+
+## 2b. Promo Tiles
+
+| Type | Size | File |
+|------|------|------|
+| Small Promo Tile | 440×280 | `promo/promo-small-440x280.png` |
+| Marquee Promo | 1400×560 | `promo/promo-marquee-1400x560.png` |
 
 ---
 

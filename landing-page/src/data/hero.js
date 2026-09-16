@@ -12,7 +12,7 @@ export const heroContent = {
   heroImage: {
     src: '/screenshots/dashboard.png',
     alt: 'FocusPaw dashboard showing focus tracking graph with interactive visualization',
-    width: 1920,
-    height: 1080,
+    width: 1280,
+    height: 800,
   },
 };
