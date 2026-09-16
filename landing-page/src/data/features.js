@@ -8,7 +8,7 @@ export const featuresContent = {
       icon: 'Shield',
       title: 'Privacy-First, Local-Only Data',
       description:
-        'All your data stays on your device. No cloud sync, no tracking, no external API calls. Your browsing habits are yours alone.',
+        'Visit counts stay on your device. No cloud sync and no analytics. Map location lookups are optional, off by default, and use a named HTTPS provider.',
     },
     {
       id: 'visual-dashboard',
@@ -16,6 +16,13 @@ export const featuresContent = {
       title: 'Visual Graph Dashboard',
       description:
         'Interactive D3.js visualization shows your focus patterns over time with beautiful, intuitive graphs that make data easy to understand.',
+    },
+    {
+      id: 'map-view',
+      icon: 'Globe',
+      title: 'Interactive Map View',
+      description:
+        'Open a Map tab on the dashboard to explore tracked sites on OpenStreetMap. Pins appear only after an optional HTTPS lookup; device GPS is never used.',
     },
     {
       id: 'site-limits',
@@ -36,7 +43,7 @@ export const featuresContent = {
       icon: 'Lock',
       title: 'Security & Privacy Hardened',
       description:
-        'Manifest V3 migration, XSS protection, CSV formula injection fixes, and zero external tracking. Your data never leaves your device — guaranteed.',
+        'Manifest V3 migration, XSS protection, CSV formula injection fixes, and no analytics. Visit data stays local; Map lookups are opt-in only.',
     },
   ],
 };

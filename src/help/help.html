@@ -71,10 +71,12 @@
               </svg>
             </span>
             <div>
-              <strong>No External Servers</strong>
+              <strong>Visit data stays local</strong>
               <p>
-                FocusPaw never connects to external servers. There are no analytics, no tracking,
-                and no cloud sync.
+                Visit counts stay on your device. Opening the Map tab loads OpenStreetMap tiles.
+                Optional website-location lookup (off by default) resolves hostnames with Cloudflare
+                DNS-over-HTTPS, then looks up the IP on ipwho.is over HTTPS, and caches results
+                locally.
               </p>
             </div>
           </div>
@@ -360,6 +362,31 @@
                 <li>Contribute to development</li>
                 <li>Fork and customize for your needs</li>
               </ul>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question" aria-expanded="false" aria-controls="faq-8">
+              <span>Does the Map view send data off this device?</span>
+              <svg class="faq-toggle icon" aria-hidden="true">
+                <use href="../../assets/icons.svg#i-chevron-down"></use>
+              </svg>
+            </button>
+            <div class="faq-answer" id="faq-8" hidden>
+              <p>
+                The Map tab is dashboard-only. Opening it loads OpenStreetMap map images
+                (<strong>tile.openstreetmap.org</strong>) so Leaflet can draw the world. Those
+                requests are ordinary HTTPS image fetches. Device GPS is not used.
+              </p>
+              <p>
+                Website pins appear only if you turn on
+                <strong>Look up website locations</strong> in Settings. That option is off by
+                default. When on, FocusPaw resolves tracked hostnames via
+                <strong>https://cloudflare-dns.com</strong> (DNS-over-HTTPS JSON) and then looks up
+                the IP at <strong>https://ipwho.is</strong> (HTTPS JSON) to estimate where a site is
+                hosted, then stores coordinates in local storage for about seven days. Use
+                <strong>Clear location cache</strong> on the Map view to delete those results.
+              </p>
             </div>
           </div>
         </div>

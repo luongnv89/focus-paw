@@ -15,6 +15,8 @@ import { getTodayFocusScore } from '../background/focus-score.js';
 import { categorizeDomain } from '../common/categories.js';
 import { getTodayKey, FIVE_HOUR_MS } from '../common/date-utils.js';
 import { svgIcon } from '../common/icons.js';
+import { requestGeoLookupPermission } from './geolocation.js';
+import { updateMapView } from './map-view.js';
 
 let currentTableData = [];
 let currentLimits = {};
@@ -1149,6 +1151,36 @@ if (highContrastToggle) {
     }
     document.body.classList.toggle('high-contrast', enabled);
     showToast(enabled ? 'High contrast enabled' : 'High contrast disabled');
+  });
+}
+
+const geoLookupToggle = document.getElementById('geo-lookup-toggle');
+if (geoLookupToggle) {
+  getSettings()
+    .then((settings) => {
+      geoLookupToggle.checked = settings.geoLookupEnabled === true;
+    })
+    .catch((err) => console.warn('Unable to load map lookup setting', err));
+
+  geoLookupToggle.addEventListener('change', async (e) => {
+    const enabled = e.target.checked;
+    if (enabled) {
+      const granted = await requestGeoLookupPermission();
+      if (!granted) {
+        e.target.checked = false;
+        showToast('Location lookup needs permission for Cloudflare DNS and ipwho.is');
+        return;
+      }
+    }
+    try {
+      await updateSettings({ geoLookupEnabled: enabled });
+      await updateMapView(null, { reuseLast: true });
+      showToast(enabled ? 'Website location lookup on' : 'Website location lookup off');
+    } catch (err) {
+      console.warn('Unable to save map lookup setting', err);
+      e.target.checked = !enabled;
+      showToast('Unable to save that setting');
+    }
   });
 }
 

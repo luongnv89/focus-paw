@@ -492,6 +492,412 @@ body.dashboard-view .dashboard-main {
   overflow: hidden;
 }
 
+.viz-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-pill);
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.viz-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 12px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.viz-tab:hover {
+  background: var(--bg-3);
+  color: var(--ink-1);
+}
+
+.viz-tab[aria-selected='true'] {
+  background: var(--bg-3);
+  color: var(--ink-1);
+  box-shadow: var(--shadow-1);
+}
+
+.viz-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.viz-tab .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.map-stage {
+  position: relative;
+  flex: 1;
+  min-height: 360px;
+  overflow: hidden;
+  background: var(--bg-0);
+}
+
+.map-view-container {
+  width: 100%;
+  height: 100%;
+}
+
+.topology-panel #map-container,
+.leaflet-map {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  margin: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.leaflet-container {
+  background-color: var(--bg-0);
+  font-family: var(--font-sans);
+}
+
+.map-controls {
+  position: absolute;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 4px;
+}
+
+.map-info {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-2);
+  font-size: var(--fs-12);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+/* Map icon buttons keep the 32px glyph box visually but offer a 44px
+   touch target (scoped so the rest of the extension is untouched). */
+.map-controls .btn-icon-only,
+#map-region-close {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.map-stat-sep {
+  color: var(--ink-3);
+}
+
+.marker-cluster {
+  background: transparent;
+}
+
+.marker-cluster div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--bg-1) 90%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+}
+
+.marker-cluster span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  border-radius: var(--r-pill);
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-11);
+  font-weight: 600;
+}
+
+.marker-cluster-medium div {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.marker-cluster-large div {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.leaflet-popup-content-wrapper {
+  background-color: var(--bg-2) !important;
+  color: var(--ink-1);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-2);
+  padding: 0;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px;
+  font-size: var(--fs-12);
+  line-height: var(--lh-body);
+}
+
+.leaflet-popup-tip {
+  background-color: var(--bg-2);
+  box-shadow: var(--shadow-2);
+}
+
+.leaflet-popup-close-button {
+  color: var(--ink-2) !important;
+}
+
+.map-popup h3 {
+  font-size: var(--fs-14);
+  font-weight: 600;
+  color: var(--ink-1);
+  margin: 0 0 var(--sp-1);
+}
+
+.map-popup .location-info {
+  font-size: var(--fs-12);
+  color: var(--ink-2);
+  margin: 0 0 var(--sp-2);
+}
+
+.map-popup .domains-list strong {
+  display: block;
+  font-size: var(--fs-11);
+  font-weight: 600;
+  color: var(--ink-3);
+  margin-bottom: var(--sp-1);
+}
+
+.map-popup .domains-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.map-popup .domains-list li {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  color: var(--ink-2);
+  padding: 2px 0;
+  word-break: break-all;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: var(--shadow-2);
+}
+
+.leaflet-control-zoom a {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  line-height: 44px;
+  background-color: var(--bg-2);
+  color: var(--ink-2);
+  border: none;
+  border-bottom: 1px solid var(--line-1);
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: var(--bg-3);
+  color: var(--ink-1);
+}
+
+.leaflet-control-zoom a.leaflet-disabled {
+  background-color: var(--bg-2);
+  color: var(--ink-3);
+}
+
+/* Dark theme: keyless OSM tiles inverted on the tile pane only (markers stay normal). */
+.leaflet-map.map-theme-dark .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(0.92) contrast(0.88);
+}
+
+.leaflet-control-attribution {
+  background: color-mix(in srgb, var(--bg-0) 70%, transparent);
+  color: var(--ink-3);
+  font-size: 10px;
+  padding: 1px 6px;
+}
+
+.leaflet-control-attribution a {
+  color: var(--ink-2);
+}
+
+.region-detail-drawer {
+  position: absolute;
+  bottom: var(--sp-4);
+  left: var(--sp-4);
+  width: 320px;
+  padding: 0;
+  z-index: 500;
+  overflow: hidden;
+  max-height: calc(100% - 32px);
+  display: flex;
+  flex-direction: column;
+}
+
+.region-detail-drawer[hidden] {
+  display: none !important;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line-1);
+  flex-shrink: 0;
+}
+
+.drawer-header h3 {
+  font-size: var(--fs-14);
+  font-weight: 600;
+  color: var(--ink-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  margin: 0;
+}
+
+.drawer-body {
+  padding: 8px 14px 12px;
+  overflow-y: auto;
+}
+
+.region-detail-drawer .kv-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 6px 0;
+  font-size: var(--fs-12);
+}
+
+.region-detail-drawer .kv-label {
+  color: var(--ink-3);
+}
+
+.region-detail-drawer .kv-value {
+  color: var(--ink-1);
+  text-align: right;
+  word-break: break-word;
+}
+
+.domains-detail-list {
+  margin-top: var(--sp-2);
+}
+
+.domain-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 4px 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  color: var(--ink-2);
+  word-break: break-all;
+}
+
+.domain-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-pill);
+  flex-shrink: 0;
+  background: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink-1) 18%, transparent);
+}
+
+.map-overlay-message {
+  position: absolute;
+  bottom: var(--sp-4);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  max-width: 420px;
+  text-align: center;
+  padding: var(--sp-4) var(--sp-5);
+  pointer-events: none;
+}
+
+.map-overlay-message[hidden] {
+  display: none !important;
+}
+
+.map-overlay-message p {
+  margin: 0;
+  font-size: var(--fs-13);
+  color: var(--ink-2);
+  line-height: var(--lh-body);
+}
+
+.map-overlay-message .btn {
+  pointer-events: auto;
+  margin-top: var(--sp-3);
+}
+
+.geo-progress-bar {
+  width: 100%;
+  height: 3px;
+  background-color: var(--bg-3);
+  border-radius: var(--r-pill);
+  margin-top: var(--sp-3);
+  overflow: hidden;
+}
+
+.geo-progress-fill {
+  height: 100%;
+  width: 0;
+  background-color: var(--accent);
+  border-radius: var(--r-pill);
+}
+
+@media (max-width: 768px) {
+  .map-controls {
+    top: var(--sp-2);
+    right: var(--sp-2);
+  }
+
+  .map-info {
+    display: none;
+  }
+
+  .region-detail-drawer {
+    left: var(--sp-2);
+    right: var(--sp-2);
+    bottom: var(--sp-2);
+    width: auto;
+  }
+
+  .map-overlay-message {
+    max-width: calc(100% - 48px);
+    padding: var(--sp-4);
+  }
+}
+
 /* D3 wipes #graph-container's innerHTML — overlays must be siblings.
    ID selector also outranks popup.css `body.dashboard-view .graph-container`
    (min-height:600px card styling) which would otherwise break the stage. */

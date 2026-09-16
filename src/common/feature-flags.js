@@ -4,10 +4,12 @@
  * Only flags actually consulted by source are listed here.
  * Consumer map:
  * - RADIAL_GRAPH: src/common/visualization-page.js (isFeatureEnabled('RADIAL_GRAPH'))
+ * - MAP_VIEW: src/dashboard/map-view.js + visualization-page.js (dashboard Map tab)
  */
 
 export const FEATURES = {
   RADIAL_GRAPH: true,
+  MAP_VIEW: true,
 };
 
 /**

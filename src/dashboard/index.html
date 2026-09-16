@@ -8,7 +8,12 @@
     <link rel="stylesheet" href="../popup/popup.css" />
     <link rel="stylesheet" href="../common/shell.css" />
     <link rel="stylesheet" href="./dashboard.css" />
+    <link rel="stylesheet" href="../vendor/leaflet.css" />
+    <link rel="stylesheet" href="../vendor/MarkerCluster.css" />
+    <link rel="stylesheet" href="../vendor/MarkerCluster.Default.css" />
     <script src="../vendor/d3.min.js"></script>
+    <script src="../vendor/leaflet.js"></script>
+    <script src="../vendor/leaflet.markercluster.js"></script>
   </head>
 
   <body class="dashboard-view dashboard-home">
@@ -254,9 +259,39 @@
             <!-- Topology Panel -->
             <div class="topology-panel" id="topology-panel">
               <div class="panel-header">
-                <h3>My Attention Map</h3>
+                <h3 id="topology-title">My Attention Map</h3>
+                <div class="viz-tabs" id="viz-tablist" role="tablist" aria-label="Visualization">
+                  <button
+                    type="button"
+                    class="viz-tab"
+                    role="tab"
+                    id="tab-graph"
+                    aria-controls="graph-panel"
+                    aria-selected="true"
+                    tabindex="0"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-chart-bar"></use>
+                    </svg>
+                    Graph
+                  </button>
+                  <button
+                    type="button"
+                    class="viz-tab"
+                    role="tab"
+                    id="tab-map"
+                    aria-controls="map-panel"
+                    aria-selected="false"
+                    tabindex="-1"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-globe"></use>
+                    </svg>
+                    Map
+                  </button>
+                </div>
               </div>
-              <div class="graph-stage">
+              <div class="graph-stage" id="graph-panel" role="tabpanel" aria-labelledby="tab-graph">
                 <div id="graph-container" class="graph-container" role="region"></div>
 
                 <!-- Overlays are siblings of #graph-container: D3 wipes its innerHTML -->
@@ -309,6 +344,158 @@
                       <use href="../../assets/icons.svg#i-zoom-in"></use>
                     </svg>
                   </button>
+                </div>
+              </div>
+
+              <div
+                class="map-stage map-view-container"
+                id="map-panel"
+                role="tabpanel"
+                aria-labelledby="tab-map"
+                hidden
+              >
+                <div class="map-controls panel">
+                  <button
+                    type="button"
+                    id="map-theme-toggle"
+                    class="btn btn-ghost btn-icon-only"
+                    aria-label="Switch to light map tiles"
+                    title="Switch to light map tiles"
+                  >
+                    <svg class="icon" data-map-theme="sun" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-sun"></use>
+                    </svg>
+                    <svg class="icon" data-map-theme="moon" hidden aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-moon"></use>
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    id="map-clear-cache"
+                    class="btn btn-ghost btn-icon-only"
+                    aria-label="Clear location cache"
+                    title="Clear cached geolocation data and reload"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-trash"></use>
+                    </svg>
+                  </button>
+                  <div class="map-info">
+                    <span class="map-stat">
+                      <span class="num tnum" id="map-location-count">0</span>
+                      locations
+                    </span>
+                    <span class="map-stat-sep">·</span>
+                    <span class="map-stat">
+                      <span class="num tnum" id="map-visit-count">0</span>
+                      visits
+                    </span>
+                  </div>
+                </div>
+
+                <div
+                  id="map-container"
+                  class="leaflet-map map-theme-dark"
+                  role="region"
+                  aria-label="Geographic tracking map"
+                  tabindex="-1"
+                ></div>
+
+                <aside
+                  id="map-region-drawer"
+                  class="region-detail-drawer panel"
+                  hidden
+                  aria-label="Region details"
+                >
+                  <div class="drawer-header">
+                    <h3 id="map-region-title">Region</h3>
+                    <button
+                      type="button"
+                      id="map-region-close"
+                      class="btn btn-ghost btn-icon-only"
+                      aria-label="Close region details"
+                    >
+                      <svg class="icon" aria-hidden="true">
+                        <use href="../../assets/icons.svg#i-x"></use>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="drawer-body">
+                    <div class="kv">
+                      <div class="kv-row">
+                        <span class="kv-label">Country</span>
+                        <span class="kv-value" id="map-region-country">—</span>
+                      </div>
+                      <div class="kv-row">
+                        <span class="kv-label">Region</span>
+                        <span class="kv-value" id="map-region-region">—</span>
+                      </div>
+                      <div class="kv-row">
+                        <span class="kv-label">Sites</span>
+                        <span class="kv-value num tnum" id="map-region-count">0</span>
+                      </div>
+                    </div>
+                    <div class="domains-detail-list" id="map-region-domains"></div>
+                  </div>
+                </aside>
+
+                <div
+                  class="map-overlay-message panel"
+                  id="map-geo-overlay"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <p>
+                    Map geolocation is off by default.
+                    <br />
+                    Enable it in Settings to resolve website locations. Opening Map loads
+                    OpenStreetMap tiles. Device GPS is not used.
+                  </p>
+                  <button type="button" id="map-open-settings" class="btn btn-primary">
+                    Open Settings
+                  </button>
+                </div>
+
+                <div
+                  class="map-overlay-message panel"
+                  id="map-loading-overlay"
+                  role="status"
+                  aria-live="polite"
+                  hidden
+                >
+                  <p>
+                    Fetching geolocation data for tracked domains…
+                    <br />
+                    <span class="num tnum" id="map-geo-progress-current">0</span>
+                    /
+                    <span class="num tnum" id="map-geo-progress-total">0</span>
+                    domains processed
+                  </p>
+                  <div
+                    class="geo-progress-bar"
+                    id="map-geo-progress-bar"
+                    role="progressbar"
+                    aria-label="Geolocation progress"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                  >
+                    <div class="geo-progress-fill" id="map-geo-progress-fill"></div>
+                  </div>
+                </div>
+
+                <div
+                  class="map-overlay-message panel"
+                  id="map-empty-overlay"
+                  role="status"
+                  aria-live="polite"
+                  hidden
+                >
+                  <p>
+                    No domain locations to plot yet.
+                    <br />
+                    Use the cache-clear control to retry, or check Settings if lookups are blocked.
+                  </p>
                 </div>
               </div>
 
@@ -514,6 +701,39 @@
                 </div>
                 <label class="toggle-switch">
                   <input type="checkbox" id="dark-mode" checked />
+                  <span class="toggle-slider-round"></span>
+                </label>
+              </div>
+            </div>
+          </article>
+
+          <article class="settings-card" id="map-privacy-card">
+            <div class="card-header">
+              <div class="card-icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="../../assets/icons.svg#i-globe"></use>
+                </svg>
+              </div>
+              <div>
+                <h3>Map location lookup</h3>
+                <p class="card-subtitle">
+                  Optional. Off by default. Opening Map loads OpenStreetMap tiles; pins still need
+                  this toggle.
+                </p>
+              </div>
+            </div>
+            <div class="settings-items">
+              <div class="settings-item">
+                <div class="settings-item-info">
+                  <label for="geo-lookup-toggle">Look up website locations</label>
+                  <p class="settings-item-desc">
+                    Resolve tracked hostnames with Cloudflare DNS-over-HTTPS, then look up the IP on
+                    ipwho.is over HTTPS so Map can place pins. Results stay in local cache for about
+                    7 days. Device GPS is not used.
+                  </p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="geo-lookup-toggle" />
                   <span class="toggle-slider-round"></span>
                 </label>
               </div>

@@ -40,6 +40,11 @@ function makeChrome(visits = {}) {
 }
 
 describe('visualization-page', () => {
+  test('exports remain available after Map view wiring', () => {
+    expect(typeof generateWeeklyInsights).toBe('function');
+    expect(typeof loadAggregatedStats).toBe('function');
+  });
+
   describe('generateWeeklyInsights', () => {
     test('returns empty for no data', () => {
       expect(generateWeeklyInsights({}, {})).toEqual([]);
