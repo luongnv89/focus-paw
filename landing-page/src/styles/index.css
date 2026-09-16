@@ -53,6 +53,12 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
 }
 
 /* Screen reader only utility */
@@ -126,6 +132,18 @@ body {
   }
 
   /* Single orchestrated entrance: staggered reveals on page load */
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .reveal {
     opacity: 0;
     animation: slideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
