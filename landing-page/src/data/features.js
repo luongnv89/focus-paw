@@ -20,9 +20,9 @@ export const featuresContent = {
     {
       id: 'map-view',
       icon: 'Globe',
-      title: 'Local Map Atlas',
+      title: 'Interactive Map View',
       description:
-        'Open a Map tab on the dashboard to explore tracked sites on a bundled world outline. Street tiles are never loaded. Pins appear only after an optional HTTPS lookup.',
+        'Open a Map tab on the dashboard to explore tracked sites on OpenStreetMap. Pins appear only after an optional HTTPS lookup; device GPS is never used.',
     },
     {
       id: 'site-limits',

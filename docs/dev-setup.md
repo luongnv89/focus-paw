@@ -130,7 +130,7 @@ src/
     focus-score.js     # 0–100 score, compliance & streak helpers
     achievements.js    # streak/badge logic (survives dead-code removal 3.4)
     badge.js           # toolbar badge text
-  dashboard/           # full-page dashboard (index.html + dashboard.js/css, blocking, domain)
+  dashboard/           # full-page dashboard + Map tab (Leaflet/OSM, map-view.js, geolocation.js)
   popup/               # popup + graph.js (D3 radial graph)
   blocked/             # block page
   help/                # help/FAQ

@@ -77,7 +77,7 @@ export function parseDnsJsonARecord(payload) {
 
 /**
  * @param {Object|null} payload
- * @returns {{lat:number,lon:number,country:string}|null}
+ * @returns {{lat:number,lon:number,country:string,region:string,city:string}|null}
  */
 export function parseIpwhoResponse(payload) {
   if (!payload || payload.success === false) return null;
@@ -86,7 +86,15 @@ export function parseIpwhoResponse(payload) {
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
   if (Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
   const country = typeof payload.country === 'string' ? payload.country : '';
-  return { lat, lon, country };
+  const region = typeof payload.region === 'string' ? payload.region : '';
+  const city = typeof payload.city === 'string' ? payload.city : '';
+  return {
+    lat,
+    lon,
+    country,
+    region,
+    city,
+  };
 }
 
 function emptyLookupResult() {
@@ -98,7 +106,10 @@ function emptyLookupResult() {
  * HTTP 404 is a 7-day negative only when the ipwho query was a well-formed IP.
  * @param {string} domain
  * @param {Object} [options]
- * @returns {Promise<{location:{lat:number,lon:number,country:string}|null, cacheNegative:boolean}>}
+ * @returns {Promise<{
+ *   location: {lat:number,lon:number,country:string,region:string,city:string}|null,
+ *   cacheNegative: boolean
+ * }>}
  */
 export async function lookupDomainLocation(
   domain,
@@ -217,6 +228,8 @@ export async function resolveDomainLocations(
         lat: result.location.lat,
         lon: result.location.lon,
         country: result.location.country,
+        region: result.location.region,
+        city: result.location.city,
         fetchedAt,
         ok: true,
       };
@@ -227,6 +240,8 @@ export async function resolveDomainLocations(
         lat: null,
         lon: null,
         country: '',
+        region: '',
+        city: '',
         fetchedAt,
         ok: false,
       };

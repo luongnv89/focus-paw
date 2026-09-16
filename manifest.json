@@ -51,7 +51,7 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://*.tile.openstreetmap.org data: blob:; connect-src 'self' https://cloudflare-dns.com https://ipwho.is"
   },
   "offline_enabled": true,
   "minimum_chrome_version": "100"

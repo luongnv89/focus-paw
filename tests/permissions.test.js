@@ -84,4 +84,15 @@ describe('manifest.json permission set (4.5 least-privilege review)', () => {
     const overlap = declared.filter((p) => FORBIDDEN.includes(p));
     expect(overlap).toEqual([]);
   });
+
+  test('Map CSP allows OSM tiles and HTTPS lookups, not ip-api or unpkg', () => {
+    const csp = manifest.content_security_policy?.extension_pages || '';
+    expect(csp).toMatch(/img-src[^;]*https:\/\/\*\.tile\.openstreetmap\.org/);
+    expect(csp).toMatch(/img-src[^;]*data:/);
+    expect(csp).toMatch(/connect-src[^;]*https:\/\/cloudflare-dns\.com/);
+    expect(csp).toMatch(/connect-src[^;]*https:\/\/ipwho\.is/);
+    expect(csp).not.toMatch(/ip-api/i);
+    expect(csp).not.toMatch(/unpkg/i);
+    expect(csp).not.toMatch(/cartocdn/i);
+  });
 });

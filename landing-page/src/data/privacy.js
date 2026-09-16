@@ -37,7 +37,7 @@ export const privacyPolicyContent = {
 - Visit counts and settings never leave your device
 - No cloud sync or backup services are used
 - No third-party analytics or tracking
-- The Map view's world atlas is bundled with the extension (no tile servers)
+- The Map view loads OpenStreetMap tiles when you open the Map tab
 - Optional hostname geolocation (off by default) is described under Third-Party Services`,
     },
     {
@@ -82,7 +82,9 @@ export const privacyPolicyContent = {
     {
       id: 'third-party',
       title: 'Third-Party Services',
-      content: `FocusPaw does not use analytics or advertising networks. The Map view draws a bundled Natural Earth–style GeoJSON atlas and does **not** load OpenStreetMap, Carto, MapLibre, or other street tiles.
+      content: `FocusPaw does not use analytics or advertising networks.
+
+**Map tiles:** when you open the Map tab, the dashboard loads standard map images from the OpenStreetMap tile service (\`tile.openstreetmap.org\`) so Leaflet can render the world. These are ordinary HTTPS image fetches (your IP is visible to the tile servers, as with any map on the web). No visit counts or domain lists are sent with tile requests. Attribution is shown on the map per the OpenStreetMap tile usage policy.
 
 **Optional location lookup (off by default):** if you enable "Look up website locations" in Settings, the extension may request optional host access to resolve tracked hostnames via Cloudflare DNS-over-HTTPS (\`https://cloudflare-dns.com/dns-query\`, \`application/dns-json\`) and then look up the resulting IP at \`https://ipwho.is/{ip}\` over HTTPS to estimate where a site is hosted. Hostnames are never sent as the ipwho.is path. Responses are cached locally for about 7 days, with a size cap. You can clear that cache from the Map view. Device GPS / the Chrome \`geolocation\` permission are not used.`,
     },
@@ -119,7 +121,7 @@ export const privacyPolicyContent = {
       {
         question: 'Do you send data to servers?',
         answer:
-          'Only if you opt in to Map location lookup (Cloudflare DNS + ipwho.is, HTTPS)',
+          'OSM map tiles when you open Map; Cloudflare DNS + ipwho.is only if you opt in',
       },
       { question: 'Do you use analytics?', answer: 'No' },
       { question: 'Do you sell data?', answer: 'No' },

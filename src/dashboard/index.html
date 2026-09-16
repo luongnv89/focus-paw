@@ -8,7 +8,12 @@
     <link rel="stylesheet" href="../popup/popup.css" />
     <link rel="stylesheet" href="../common/shell.css" />
     <link rel="stylesheet" href="./dashboard.css" />
+    <link rel="stylesheet" href="../vendor/leaflet.css" />
+    <link rel="stylesheet" href="../vendor/MarkerCluster.css" />
+    <link rel="stylesheet" href="../vendor/MarkerCluster.Default.css" />
     <script src="../vendor/d3.min.js"></script>
+    <script src="../vendor/leaflet.js"></script>
+    <script src="../vendor/leaflet.markercluster.js"></script>
   </head>
 
   <body class="dashboard-view dashboard-home">
@@ -343,77 +348,145 @@
               </div>
 
               <div
-                class="map-stage"
+                class="map-stage map-view-container"
                 id="map-panel"
                 role="tabpanel"
                 aria-labelledby="tab-map"
                 hidden
               >
+                <div class="map-controls panel">
+                  <button
+                    type="button"
+                    id="map-theme-toggle"
+                    class="btn btn-ghost btn-icon-only"
+                    aria-label="Switch to light map tiles"
+                    title="Switch to light map tiles"
+                  >
+                    <svg class="icon" data-map-theme="sun" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-sun"></use>
+                    </svg>
+                    <svg class="icon" data-map-theme="moon" hidden aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-moon"></use>
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    id="map-clear-cache"
+                    class="btn btn-ghost btn-icon-only"
+                    aria-label="Clear location cache"
+                    title="Clear cached geolocation data and reload"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="../../assets/icons.svg#i-trash"></use>
+                    </svg>
+                  </button>
+                  <div class="map-info">
+                    <span class="map-stat">
+                      <span class="num tnum" id="map-location-count">0</span>
+                      locations
+                    </span>
+                    <span class="map-stat-sep">·</span>
+                    <span class="map-stat">
+                      <span class="num tnum" id="map-visit-count">0</span>
+                      visits
+                    </span>
+                  </div>
+                </div>
+
                 <div
                   id="map-container"
-                  class="map-container"
+                  class="leaflet-map map-theme-dark"
                   role="region"
-                  aria-label="World map of tracked websites"
+                  aria-label="Geographic tracking map"
                 ></div>
 
-                <div class="map-geo-overlay" id="map-geo-overlay" role="status" aria-live="polite">
-                  <h4 class="map-overlay-title">Location lookup is off</h4>
-                  <p class="map-overlay-copy">
-                    This world outline is stored on your device. Website pins appear only after you
-                    turn on location lookup in Settings. That resolves hostnames with Cloudflare
-                    DNS-over-HTTPS, then looks up the IP on ipwho.is over HTTPS. Off by default. No
-                    street maps. No GPS.
+                <aside
+                  id="map-region-drawer"
+                  class="region-detail-drawer panel"
+                  hidden
+                  aria-label="Region details"
+                >
+                  <div class="drawer-header">
+                    <h3 id="map-region-title">Region</h3>
+                    <button
+                      type="button"
+                      id="map-region-close"
+                      class="btn btn-ghost btn-icon-only"
+                      aria-label="Close region details"
+                    >
+                      <svg class="icon" aria-hidden="true">
+                        <use href="../../assets/icons.svg#i-x"></use>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="drawer-body">
+                    <div class="kv">
+                      <div class="kv-row">
+                        <span class="kv-label">Country</span>
+                        <span class="kv-value" id="map-region-country">—</span>
+                      </div>
+                      <div class="kv-row">
+                        <span class="kv-label">Region</span>
+                        <span class="kv-value" id="map-region-region">—</span>
+                      </div>
+                      <div class="kv-row">
+                        <span class="kv-label">Sites</span>
+                        <span class="kv-value num tnum" id="map-region-count">0</span>
+                      </div>
+                    </div>
+                    <div class="domains-detail-list" id="map-region-domains"></div>
+                  </div>
+                </aside>
+
+                <div
+                  class="map-overlay-message panel"
+                  id="map-geo-overlay"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <p>
+                    Map geolocation is off by default.
+                    <br />
+                    Enable it in Settings to resolve website locations. Opening Map loads
+                    OpenStreetMap tiles. Device GPS is not used.
                   </p>
                   <button type="button" id="map-open-settings" class="btn btn-primary">
                     Open Settings
                   </button>
                 </div>
 
-                <div class="map-chrome">
-                  <p class="map-status" id="map-status" aria-live="polite">
-                    Local world outline. Location lookup is off.
+                <div
+                  class="map-overlay-message panel"
+                  id="map-loading-overlay"
+                  role="status"
+                  aria-live="polite"
+                  hidden
+                >
+                  <p>
+                    Fetching geolocation data for tracked domains…
+                    <br />
+                    <span class="num tnum" id="map-geo-progress-current">0</span>
+                    /
+                    <span class="num tnum" id="map-geo-progress-total">0</span>
+                    domains processed
                   </p>
-                  <button
-                    type="button"
-                    id="map-clear-cache"
-                    class="btn btn-ghost"
-                    title="Clear location cache"
-                  >
-                    <svg class="icon" aria-hidden="true">
-                      <use href="../../assets/icons.svg#i-trash"></use>
-                    </svg>
-                    Clear location cache
-                  </button>
+                  <div class="geo-progress-bar">
+                    <div class="geo-progress-fill" id="map-geo-progress-fill"></div>
+                  </div>
                 </div>
 
-                <div class="graph-zoom map-zoom">
-                  <button
-                    id="map-zoom-out"
-                    class="btn btn-ghost btn-icon-only"
-                    aria-label="Zoom map out"
-                  >
-                    <svg class="icon" aria-hidden="true">
-                      <use href="../../assets/icons.svg#i-zoom-out"></use>
-                    </svg>
-                  </button>
-                  <button
-                    id="map-zoom-reset"
-                    class="btn btn-ghost"
-                    title="Reset map zoom"
-                    aria-describedby="map-zoom-reset-hint"
-                  >
-                    <span id="map-zoom-level" class="tnum">100%</span>
-                  </button>
-                  <span id="map-zoom-reset-hint" hidden>Reset map zoom</span>
-                  <button
-                    id="map-zoom-in"
-                    class="btn btn-ghost btn-icon-only"
-                    aria-label="Zoom map in"
-                  >
-                    <svg class="icon" aria-hidden="true">
-                      <use href="../../assets/icons.svg#i-zoom-in"></use>
-                    </svg>
-                  </button>
+                <div
+                  class="map-overlay-message panel"
+                  id="map-empty-overlay"
+                  role="status"
+                  aria-live="polite"
+                  hidden
+                >
+                  <p>
+                    No domain locations to plot yet.
+                    <br />
+                    Use the cache-clear control to retry, or check Settings if lookups are blocked.
+                  </p>
                 </div>
               </div>
 
@@ -635,7 +708,8 @@
               <div>
                 <h3>Map location lookup</h3>
                 <p class="card-subtitle">
-                  Optional. Off by default. The Map atlas never needs the network.
+                  Optional. Off by default. Opening Map loads OpenStreetMap tiles; pins still need
+                  this toggle.
                 </p>
               </div>
             </div>
@@ -646,7 +720,7 @@
                   <p class="settings-item-desc">
                     Resolve tracked hostnames with Cloudflare DNS-over-HTTPS, then look up the IP on
                     ipwho.is over HTTPS so Map can place pins. Results stay in local cache for about
-                    7 days. No OpenStreetMap tiles. No device GPS.
+                    7 days. Device GPS is not used.
                   </p>
                 </div>
                 <label class="toggle-switch">

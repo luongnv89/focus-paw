@@ -40,9 +40,14 @@ describe('Smoke: popup load', () => {
     expect(document.getElementById('map-geo-overlay')).not.toBeNull();
     expect(document.getElementById('map-clear-cache')).not.toBeNull();
     expect(document.getElementById('geo-lookup-toggle')).not.toBeNull();
-    expect(document.getElementById('map-clear-cache').getAttribute('aria-label')).toBeNull();
-    expect(document.getElementById('map-zoom-reset').getAttribute('aria-label')).toBeNull();
-    expect(document.getElementById('map-zoom-reset').textContent).toMatch(/100%/);
+    expect(document.getElementById('map-clear-cache').getAttribute('aria-label')).toMatch(
+      /clear location cache/i,
+    );
+    expect(document.getElementById('map-theme-toggle')).not.toBeNull();
+    expect(document.getElementById('map-region-drawer')).not.toBeNull();
+    expect(html).toMatch(/vendor\/leaflet\.js/);
+    expect(html).toMatch(/vendor\/leaflet\.markercluster\.js/);
+    expect(document.getElementById('map-zoom-reset')).toBeNull();
   });
 
   test('popup.html stays radial-graph only (no Map tab)', () => {
@@ -51,6 +56,7 @@ describe('Smoke: popup load', () => {
     expect(html).not.toMatch(/id="map-container"/);
     expect(html).not.toMatch(/id="viz-tablist"/);
     expect(html).not.toMatch(/ipwho\.is/);
+    expect(html).not.toMatch(/leaflet/i);
   });
 });
 

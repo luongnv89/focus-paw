@@ -13,9 +13,9 @@
 
 ### Map view
 
-- **Dashboard Map tab** — Bundled D3-geo world atlas (offline by default) so tracked activity can be explored geographically without OSM/Leaflet tiles.
+- **Dashboard Map tab** — Leaflet + OpenStreetMap tiles (EchoFootPrint-style clustering, region drawer, dark/light tile invert). Vendored Leaflet 1.9.4 and markercluster 1.5.3.
 - **Opt-in location lookup** — Off by default. Cloudflare DNS-over-HTTPS then `ipwho.is/{ip}` over HTTPS; results cached locally (~7 days) with a Map cache-clear control. No `geolocation` permission.
-- **Privacy copy** — Help, landing-page policy, and README disclose the atlas vs optional named-origin lookups. EchoFootPrint parity gaps: `docs/map-view-parity.md`.
+- **Privacy copy** — Help, landing-page policy, and README disclose OSM tiles vs optional named-origin lookups. Remaining Echo gaps: `docs/map-view-parity.md`.
 
 ### UI Refresh
 

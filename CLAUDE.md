@@ -86,6 +86,9 @@ Block Page
   - `index.html` - Dashboard page structure
   - `dashboard.js` - Dashboard logic and interactions
   - `dashboard.css` - Dashboard styles
+  - `map-view.js` - Leaflet Map tab (OSM tiles, markercluster, region drawer)
+  - `map-tiles.js` - Keyless OSM tile URL + attribution
+  - `geolocation.js` - Opt-in Cloudflare DoH + ipwho.is lookups
   - `blocking.html/js/css` - Blocking rules management page
   - `domain.html/js/css` - Domain detail view
 - **`popup/`** - Popup UI (compact view)
@@ -123,9 +126,9 @@ Block Page
 
 ### Key Architectural Principles
 
-1. **Privacy-First:** No external APIs, no telemetry, no cloud sync - all data stays local
+1. **Privacy-First:** Visit tracking is local-only (no telemetry, no cloud sync). Opening Map loads OSM tiles; hostname geolocation is opt-in HTTPS (Cloudflare DoH + ipwho.is).
 2. **Single Responsibility:** Clear separation between tracking, storage, display, and enforcement
-3. **Minimal Dependencies:** Vanilla JS for popup (size), D3.js only for visualization
+3. **Minimal Dependencies:** Vanilla JS for popup (size), D3.js for the radial graph, vendored Leaflet for the dashboard Map
 4. **Chrome MV3 Compliance:** Use Service Worker (not background page), respect permission model
 5. **Performance:** Popup load < 300ms, graph render < 1s for 100 domains
 
@@ -183,7 +186,7 @@ npm run icons:generate          # sharp-based icon generation (Task 2.9)
 - **Atomic visit mutation:** after Task 3.1, `incrementVisit` is a serialized, bounded writer (check `chrome.runtime.lastError`, cap timestamp retention, no read-modify-write races). Before 3.1, direct `storage.get`+`set` races lose counts.
 - **Limit enforcement:** `src/background/limits.js` + `src/background/notifications.js` + `src/background/focus-score.js` share a single normalization boundary for legacy numeric limits (`{ "example.com": 10 }` → `{ daily: 10, fiveHours: … }`) — fixed in 0.2. The shared date-key utility (Task 3.3) is the only correct `YYYY-MM-DD` source (local-tz aware); inline `toISOString().split('T')[0]` is legacy.
 - **MV3 service worker:** `src/background/index.js` registers `tabs.onActivated`/`onUpdated`/`onInstalled`/`storage.onChanged` listeners **top-level only** — never inside `onInstalled` (double-registration bug fixed in 0.2). Requires `tabs`, `storage`, `notifications`, `declarativeNetRequest*`, `<all_urls>`.
-- **Module layout:** `background/` (tracking/storage/limits/focus-score/achievements/badge) · `popup/` + `popup/graph.js` (D3 radial graph) · `dashboard/` (full-page dashboard, blocking, domain) · `blocked/` · `help/` · `content/countdown-toast.js` · `common/visualization-page.js` (shared helpers) · `landing-page/` (Vite/React second package) — see `docs/dev-setup.md` for the full tree.
+- **Module layout:** `background/` (tracking/storage/limits/focus-score/achievements/badge) · `popup/` + `popup/graph.js` (D3 radial graph) · `dashboard/` (full-page dashboard, Map/Leaflet, blocking, domain) · `blocked/` · `help/` · `content/countdown-toast.js` · `common/visualization-page.js` (shared helpers) · `landing-page/` (Vite/React second package) — see `docs/dev-setup.md` for the full tree.
 
 Load unpacked for manual testing:
 

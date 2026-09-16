@@ -24,8 +24,8 @@ FocusPaw helps you understand and improve your browsing habits by tracking how o
 
 ## Features
 
-- **Interactive Dashboard** — D3.js radial graph of attention patterns, plus a dashboard Map tab with a bundled world atlas
-- **Optional site locations** — Opt-in HTTPS lookup (off by default) to place tracked domains on the Map; default Map path is offline
+- **Interactive Dashboard** — D3.js radial graph of attention patterns, plus a dashboard Map tab with OpenStreetMap tiles
+- **Optional site locations** — Opt-in HTTPS lookup (off by default) to place tracked domains on the Map; OSM tiles load when you open Map
 - **Focus Score** — Daily 0-100 score based on limit compliance, visit reduction, and streaks
 - **Streaks** — Track consecutive days of staying within your limits
 - **Site Limits** — Set daily visit limits for distracting websites
@@ -85,10 +85,10 @@ FocusPaw helps you understand and improve your browsing habits by tracking how o
 - ✅ Visit data stored locally in Chrome's storage
 - ✅ No analytics, telemetry, or third-party favicons, fonts, or images
 - ✅ No account required
-- ✅ Map atlas is bundled (no tile servers); optional site-location lookup is **off by default**
+- ✅ Map tiles load from OpenStreetMap when you open the Map tab; optional site-location lookup is **off by default**
 - ✅ Open source — verify yourself
 
-If you enable **Look up website locations** in Settings, the extension may use Cloudflare DNS-over-HTTPS and ipwho.is over HTTPS to estimate where a tracked site is hosted. Clear that cache from the Map view. Device GPS is not used. Details: Help in the extension, or the [hosted privacy policy](https://luongnv89.github.io/focus-paw/privacy/).
+If you open the **Map** tab, the dashboard loads OpenStreetMap tiles. If you enable **Look up website locations** in Settings, the extension may use Cloudflare DNS-over-HTTPS and ipwho.is over HTTPS to estimate where a tracked site is hosted. Clear that cache from the Map view. Device GPS is not used. Details: Help in the extension, or the [hosted privacy policy](https://luongnv89.github.io/focus-paw/privacy/).
 
 Read the full [Privacy Policy](https://luongnv89.github.io/focus-paw/privacy/).
 

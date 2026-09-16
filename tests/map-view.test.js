@@ -1,5 +1,5 @@
 /**
- * Map view: local atlas, geo-off overlay, opt-in lookups, cache, clustering.
+ * Map view: Leaflet + OSM tiles, marker clusters, geo-off overlay, opt-in lookups.
  */
 
 import fs from 'fs';
@@ -29,10 +29,12 @@ import {
   LOOKUP_MAX_PER_PASS,
 } from '../src/dashboard/geolocation.js';
 import {
-  clusterMarkers,
-  getAtlasUrl,
-  isRemoteAtlasUrl,
-  loadWorldAtlas,
+  OSM_TILE_URL,
+  OSM_TILE_ATTRIBUTION,
+  osmTileLayerOptions,
+} from '../src/dashboard/map-tiles.js';
+import {
+  groupLocations,
   renderMapView,
   initMapViewTabs,
   selectVizTab,
@@ -40,32 +42,9 @@ import {
   applyMapFeatureFlag,
   bindMapChrome,
   resetMapViewForTests,
-  MAP_ATLAS_PATH,
   VIZ_TAB_MAP,
   VIZ_TAB_GRAPH,
 } from '../src/dashboard/map-view.js';
-
-const MINI_ATLAS = {
-  type: 'FeatureCollection',
-  features: [
-    {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [-10, -10],
-            [10, -10],
-            [10, 10],
-            [-10, 10],
-            [-10, -10],
-          ],
-        ],
-      },
-    },
-  ],
-};
 
 function mockChrome({ settings = {}, geoLookupCache = {}, grantPermission = true } = {}) {
   global.chrome = {
@@ -98,7 +77,7 @@ function mockChrome({ settings = {}, geoLookupCache = {}, grantPermission = true
 
 function mockLookupFetch({
   ip = '93.184.216.34',
-  geo = { success: true, latitude: 5, longitude: 6, country: 'FR' },
+  geo = { success: true, latitude: 5, longitude: 6, country: 'FR', region: 'IDF', city: 'Paris' },
   dohOk = true,
   dohStatus = 200,
   ipwhoOk = true,
@@ -127,6 +106,35 @@ function mockLookupFetch({
   });
 }
 
+function mockLeaflet() {
+  const markers = {
+    addLayer: jest.fn(),
+    getBounds: jest.fn(() => ({ isValid: () => false })),
+  };
+  const tile = { addTo: jest.fn() };
+  const map = {
+    invalidateSize: jest.fn(),
+    removeLayer: jest.fn(),
+    addLayer: jest.fn(),
+    fitBounds: jest.fn(),
+    remove: jest.fn(),
+  };
+  const marker = {
+    bindPopup: jest.fn(),
+    on: jest.fn(),
+  };
+  global.L = {
+    map: jest.fn(() => map),
+    tileLayer: jest.fn(() => tile),
+    markerClusterGroup: jest.fn(() => markers),
+    marker: jest.fn(() => marker),
+    icon: jest.fn(() => ({})),
+    divIcon: jest.fn(() => ({})),
+    point: jest.fn((x, y) => ({ x, y })),
+  };
+  return { map, tile, markers, marker };
+}
+
 function mountMapDom() {
   document.body.innerHTML = `
     <div id="viz-tablist" role="tablist">
@@ -135,10 +143,25 @@ function mountMapDom() {
     </div>
     <div id="graph-panel"></div>
     <div id="map-panel" hidden>
-      <div id="map-container"></div>
-      <div id="map-geo-overlay">Location lookup is off</div>
-      <p id="map-status"></p>
-      <button type="button" id="map-clear-cache">Clear location cache</button>
+      <button type="button" id="map-theme-toggle" aria-label="Switch to light map tiles">
+        <svg data-map-theme="sun"></svg>
+        <svg data-map-theme="moon" hidden></svg>
+      </button>
+      <button type="button" id="map-clear-cache" aria-label="Clear location cache"></button>
+      <span id="map-location-count">0</span>
+      <span id="map-visit-count">0</span>
+      <div id="map-container" class="leaflet-map map-theme-dark"></div>
+      <aside id="map-region-drawer" hidden>
+        <h3 id="map-region-title">Region</h3>
+        <span id="map-region-country"></span>
+        <span id="map-region-region"></span>
+        <span id="map-region-count"></span>
+        <div id="map-region-domains"></div>
+        <button type="button" id="map-region-close">Close</button>
+      </aside>
+      <div id="map-geo-overlay">Map geolocation is off by default.</div>
+      <div id="map-loading-overlay" hidden></div>
+      <div id="map-empty-overlay" hidden></div>
       <button type="button" id="map-open-settings">Open Settings</button>
       <button type="button" id="settings-btn"></button>
       <input type="checkbox" id="geo-lookup-toggle" />
@@ -152,7 +175,7 @@ describe('map-view', () => {
     resetGeoCacheQueueForTests();
     mockChrome();
     document.body.innerHTML = '';
-    delete window.d3;
+    delete global.L;
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
@@ -160,7 +183,7 @@ describe('map-view', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     document.body.innerHTML = '';
-    delete window.d3;
+    delete global.L;
     FEATURES.MAP_VIEW = true;
   });
 
@@ -181,70 +204,66 @@ describe('map-view', () => {
     });
   });
 
-  describe('atlas', () => {
+  describe('leaflet stack', () => {
     test('map-view.js never uses innerHTML for domain or geo payloads', () => {
       const src = fs.readFileSync(path.join(process.cwd(), 'src/dashboard/map-view.js'), 'utf8');
       expect(src).not.toMatch(/innerHTML/);
+      expect(src).toMatch(/bindPopup\(createLocationPopup\(/);
+      expect(src).toMatch(/html: `<div><span>\$\{Number\(count\)\}<\/span><\/div>`/);
     });
 
-    test('atlas SVG is not role=img while pin groups stay focusable', () => {
-      const src = fs.readFileSync(path.join(process.cwd(), 'src/dashboard/map-view.js'), 'utf8');
-      const svgStart = src.indexOf(".append('svg')");
-      const svgEnd = src.indexOf("classed('map-svg'");
-      expect(svgStart).toBeGreaterThan(-1);
-      expect(svgEnd).toBeGreaterThan(svgStart);
-      const svgSetup = src.slice(svgStart, svgEnd);
-      expect(svgSetup).not.toMatch(/\.attr\(['"]role['"],\s*['"]img['"]\)/);
-      expect(src).toMatch(/\.attr\('tabindex',\s*'0'\)/);
+    test('OSM tiles are keyless raster URLs with attribution', () => {
+      expect(OSM_TILE_URL).toBe('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+      expect(OSM_TILE_ATTRIBUTION).toMatch(/openstreetmap\.org\/copyright/i);
+      expect(osmTileLayerOptions()).toEqual(
+        expect.objectContaining({
+          attribution: OSM_TILE_ATTRIBUTION,
+          subdomains: 'abc',
+          maxZoom: 19,
+        }),
+      );
+      expect(OSM_TILE_URL).not.toMatch(/carto|mapbox|unpkg|ip-api/i);
     });
 
-    test('bundled GeoJSON is a compact FeatureCollection', () => {
-      const atlasPath = path.join(process.cwd(), 'src/dashboard/world-110m.geojson');
-      const raw = fs.readFileSync(atlasPath, 'utf8');
-      const atlas = JSON.parse(raw);
-      expect(atlas.type).toBe('FeatureCollection');
-      expect(atlas.features.length).toBeGreaterThan(100);
-      expect(Buffer.byteLength(raw, 'utf8')).toBeLessThan(200000);
-    });
-
-    test('atlas URL is packaged, not a remote tile or gazetteer fetch', () => {
-      const url = getAtlasUrl();
-      expect(url).toContain(MAP_ATLAS_PATH);
-      expect(isRemoteAtlasUrl(url)).toBe(false);
-      expect(url).not.toMatch(/openstreetmap|tile|ip-api/i);
-    });
-
-    test('loadWorldAtlas refuses http(s) atlas URLs', async () => {
-      global.chrome.runtime.getURL = () => 'https://example.com/world.geojson';
-      await expect(loadWorldAtlas(jest.fn())).rejects.toThrow(/bundled/);
-    });
-
-    test('loadWorldAtlas uses the packaged file via fetchImpl', async () => {
-      const fetchImpl = jest.fn().mockResolvedValue({
-        ok: true,
-        json: async () => MINI_ATLAS,
-      });
-      const atlas = await loadWorldAtlas(fetchImpl);
-      expect(atlas.features).toHaveLength(1);
-      expect(fetchImpl.mock.calls[0][0]).toContain(MAP_ATLAS_PATH);
-      expect(isRemoteAtlasUrl(fetchImpl.mock.calls[0][0])).toBe(false);
+    test('no bundled GeoJSON atlas remains', () => {
+      expect(fs.existsSync(path.join(process.cwd(), 'src/dashboard/world-110m.geojson'))).toBe(
+        false,
+      );
     });
   });
 
-  describe('clustering', () => {
-    test('nearby projected points merge; distant points stay separate', () => {
-      const clustered = clusterMarkers(
-        [
-          { domain: 'a.com', x: 10, y: 10, count: 2 },
-          { domain: 'b.com', x: 12, y: 11, count: 3 },
-          { domain: 'c.com', x: 400, y: 400, count: 1 },
-        ],
-        28,
+  describe('grouping', () => {
+    test('same coordinates merge domains; distinct coordinates stay separate', () => {
+      const grouped = groupLocations(
+        {
+          'a.com': { count: 2 },
+          'b.com': { count: 3 },
+          'c.com': { count: 1 },
+        },
+        {
+          'a.com': { lat: 10, lon: 20, country: 'FR', region: 'IDF', city: 'Paris' },
+          'b.com': { lat: 10, lon: 20, country: 'FR', region: 'IDF', city: 'Paris' },
+          'c.com': { lat: 40, lon: -74, country: 'US', region: 'NY', city: 'New York' },
+        },
       );
-      expect(clustered).toHaveLength(2);
-      const nearby = clustered.find((c) => c.domains.includes('a.com'));
-      expect(nearby.domains).toEqual(expect.arrayContaining(['a.com', 'b.com']));
-      expect(nearby.count).toBe(5);
+      expect(Object.keys(grouped)).toHaveLength(2);
+      const paris = grouped['10,20'];
+      expect(paris.domains).toEqual(expect.arrayContaining(['a.com', 'b.com']));
+      expect(paris.visits).toBe(5);
+      expect(paris.city).toBe('Paris');
+      expect(grouped['40,-74'].domains).toEqual(['c.com']);
+    });
+
+    test('skips localhost and incomplete geo rows', () => {
+      const grouped = groupLocations(
+        { localhost: { count: 9 }, 'ok.com': { count: 1 }, 'bad.com': { count: 1 } },
+        {
+          localhost: { lat: 0, lon: 0 },
+          'ok.com': { lat: 1, lon: 2 },
+          'bad.com': { lat: 'x', lon: 2 },
+        },
+      );
+      expect(Object.keys(grouped)).toEqual(['1,2']);
     });
   });
 
@@ -282,13 +301,22 @@ describe('map-view', () => {
       expect(parseDnsJsonARecord({ Status: 3, Answer: [] })).toBeNull();
     });
 
-    test('parseIpwhoResponse requires finite coordinates', () => {
+    test('parseIpwhoResponse requires finite coordinates and keeps city/region', () => {
       expect(
-        parseIpwhoResponse({ success: true, latitude: 1.2, longitude: 3.4, country: 'US' }),
+        parseIpwhoResponse({
+          success: true,
+          latitude: 1.2,
+          longitude: 3.4,
+          country: 'US',
+          region: 'CA',
+          city: 'LA',
+        }),
       ).toEqual({
         lat: 1.2,
         lon: 3.4,
         country: 'US',
+        region: 'CA',
+        city: 'LA',
       });
       expect(parseIpwhoResponse({ success: false, latitude: 1, longitude: 2 })).toBeNull();
       expect(parseIpwhoResponse({ success: true, latitude: 'x', longitude: 2 })).toBeNull();
@@ -345,6 +373,7 @@ describe('map-view', () => {
       });
       expect(fetchImpl).toHaveBeenCalledTimes(2);
       expect(result.locations['example.com'].lat).toBe(5);
+      expect(result.locations['example.com'].city).toBe('Paris');
       expect(putEntries).toHaveBeenCalled();
     });
 
@@ -421,39 +450,69 @@ describe('map-view', () => {
   });
 
   describe('renderMapView default path', () => {
-    test('never blank: fallback basemap + overlay when geo is off, no lookup fetch', async () => {
+    test('loads OSM tiles and shows geo-off overlay without lookups', async () => {
       mountMapDom();
-      const container = document.getElementById('map-container');
+      const leaflet = mockLeaflet();
       const resolveLocations = jest.fn();
-      const result = await renderMapView(container, {
+      const result = await renderMapView(document.getElementById('map-container'), {
         data: { 'example.com': { count: 4 } },
         geoLookupEnabled: false,
-        atlas: MINI_ATLAS,
         resolveLocations,
       });
       expect(resolveLocations).not.toHaveBeenCalled();
       expect(result.overlay).toBe(true);
+      expect(result.usedFallback).toBe(false);
       expect(document.getElementById('map-geo-overlay').hidden).toBe(false);
-      expect(container.querySelector('.map-basemap-fallback')).not.toBeNull();
-      expect(document.getElementById('map-status').textContent).toMatch(/lookup is off/i);
+      expect(global.L.map).toHaveBeenCalled();
+      expect(global.L.tileLayer).toHaveBeenCalledWith(OSM_TILE_URL, expect.any(Object));
+      expect(leaflet.tile.addTo).toHaveBeenCalled();
+      expect(document.getElementById('map-location-count').textContent).toBe('0');
     });
 
-    test('opt-in calls resolveLocations and hides the geo-off overlay', async () => {
+    test('falls back without Leaflet but still shows the geo-off overlay', async () => {
       mountMapDom();
+      const result = await renderMapView(document.getElementById('map-container'), {
+        data: { 'example.com': { count: 1 } },
+        geoLookupEnabled: false,
+        resolveLocations: jest.fn(),
+      });
+      expect(result.usedFallback).toBe(true);
+      expect(document.getElementById('map-geo-overlay').hidden).toBe(false);
+    });
+
+    test('opt-in calls resolveLocations, plots markers, and hides the geo-off overlay', async () => {
+      mountMapDom();
+      const leaflet = mockLeaflet();
       const resolveLocations = jest.fn().mockResolvedValue({
-        locations: { 'example.com': { lat: 1, lon: 2, ok: true } },
+        locations: { 'example.com': { lat: 1, lon: 2, city: 'Paris', country: 'FR', ok: true } },
         fetched: 1,
         fromCache: 0,
       });
       const result = await renderMapView(document.getElementById('map-container'), {
         data: { 'example.com': { count: 2 } },
         geoLookupEnabled: true,
-        atlas: MINI_ATLAS,
         resolveLocations,
       });
       expect(resolveLocations).toHaveBeenCalled();
       expect(document.getElementById('map-geo-overlay').hidden).toBe(true);
       expect(result.overlay).toBe(false);
+      expect(result.pins).toBe(1);
+      expect(leaflet.markers.addLayer).toHaveBeenCalled();
+      expect(leaflet.marker.bindPopup).toHaveBeenCalled();
+      expect(document.getElementById('map-location-count').textContent).toBe('1');
+      expect(document.getElementById('map-visit-count').textContent).toBe('2');
+    });
+
+    test('opt-in with no pins shows the empty overlay', async () => {
+      mountMapDom();
+      mockLeaflet();
+      await renderMapView(document.getElementById('map-container'), {
+        data: { 'example.com': { count: 2 } },
+        geoLookupEnabled: true,
+        resolveLocations: jest.fn().mockResolvedValue({ locations: {}, fetched: 1 }),
+      });
+      expect(document.getElementById('map-empty-overlay').hidden).toBe(false);
+      expect(document.getElementById('map-geo-overlay').hidden).toBe(true);
     });
   });
 
@@ -477,11 +536,12 @@ describe('map-view', () => {
       });
     });
 
-    test('Clear location cache empties storage and is labeled in the Map chrome', async () => {
+    test('Clear location cache empties storage after confirm', async () => {
       mountMapDom();
       mockChrome({
         geoLookupCache: { 'example.com': { lat: 1, lon: 2, ok: true, fetchedAt: Date.now() } },
       });
+      global.confirm = jest.fn(() => true);
       bindMapChrome();
       document.getElementById('map-clear-cache').click();
       await new Promise((resolve) => {
@@ -489,23 +549,32 @@ describe('map-view', () => {
       });
       const cache = await getGeoLookupCache();
       expect(cache).toEqual({});
-      expect(document.getElementById('map-clear-cache').textContent).toMatch(
-        /Clear location cache/,
-      );
+      expect(global.confirm).toHaveBeenCalled();
     });
 
-    test('dashboard Map chrome keeps visible text in accessible names (WCAG 2.5.3)', () => {
+    test('theme toggle flips tile pane class and accessible name', () => {
+      mountMapDom();
+      bindMapChrome();
+      const toggle = document.getElementById('map-theme-toggle');
+      const container = document.getElementById('map-container');
+      expect(container.classList.contains('map-theme-dark')).toBe(true);
+      toggle.click();
+      expect(container.classList.contains('map-theme-light')).toBe(true);
+      expect(toggle.getAttribute('aria-label')).toMatch(/dark map tiles/i);
+    });
+
+    test('dashboard Map chrome uses icon-only names without contradicting visible text', () => {
       const html = fs.readFileSync(path.join(process.cwd(), 'src/dashboard/index.html'), 'utf8');
       document.documentElement.innerHTML = html;
       const clearBtn = document.getElementById('map-clear-cache');
-      expect(clearBtn.getAttribute('aria-label')).toBeNull();
-      expect(clearBtn.textContent).toMatch(/Clear location cache/);
-      const resetBtn = document.getElementById('map-zoom-reset');
-      expect(resetBtn.getAttribute('aria-label')).toBeNull();
-      expect(resetBtn.textContent).toMatch(/100%/);
-      const hintId = resetBtn.getAttribute('aria-describedby');
-      expect(hintId).toBe('map-zoom-reset-hint');
-      expect(document.getElementById(hintId).textContent).toMatch(/Reset map zoom/);
+      expect(clearBtn.getAttribute('aria-label')).toMatch(/clear location cache/i);
+      expect(document.getElementById('map-theme-toggle').getAttribute('aria-label')).toMatch(
+        /map tiles/i,
+      );
+      expect(document.getElementById('map-zoom-reset')).toBeNull();
+      const openSettings = document.getElementById('map-open-settings');
+      expect(openSettings.getAttribute('aria-label')).toBeNull();
+      expect(openSettings.textContent).toMatch(/Open Settings/);
     });
   });
 
