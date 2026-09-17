@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "focuspaw-site-guide",
+      "type": "skill-md",
+      "description": "Discover FocusPaw's machine-readable resources — ARD manifest, A2A agent card, MCP server card, API catalog and llms.txt — and the rules for using them.",
+      "url": "https://focus-paw.luongnv.com/.well-known/agent-skills/focuspaw-site-guide/SKILL.md",
+      "digest": "sha256:bdd6ab121bfb12947bfc03fee49807819e3c8b67ad409842b16de9344f472440"
+    }
+  ]
+}

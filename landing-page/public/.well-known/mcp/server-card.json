@@ -1,0 +1,40 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+  "name": "com.luongnv.focuspaw/site",
+  "version": "1.0.0",
+  "title": "FocusPaw Site Resources",
+  "description": "Descriptive card for focus-paw.luongnv.com agent resources (static site).",
+  "websiteUrl": "https://focus-paw.luongnv.com/",
+  "serverInfo": {
+    "name": "com.luongnv.focuspaw/site",
+    "title": "FocusPaw Site Resources",
+    "version": "1.0.0"
+  },
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "https://focus-paw.luongnv.com/mcp"
+  },
+  "endpoint": "https://focus-paw.luongnv.com/mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://focus-paw.luongnv.com/mcp"
+    }
+  ],
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    },
+    "resources": {
+      "listChanged": false,
+      "subscribe": false
+    },
+    "prompts": {
+      "listChanged": false
+    }
+  },
+  "repository": {
+    "url": "https://github.com/luongnv89/focus-paw",
+    "source": "github"
+  }
+}

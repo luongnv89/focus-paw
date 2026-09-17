@@ -1,0 +1,47 @@
+{
+  "name": "FocusPaw Site Agent",
+  "version": "1.0.0",
+  "description": "Discovery metadata agent for focus-paw.luongnv.com, the FocusPaw landing site. It publishes the site's agentic resources — skills index, MCP server card, API catalog and ARD manifest — for agent-to-agent discovery. FocusPaw is a privacy-first Chrome extension that tracks focus-switching habits; all tracking data stays in local extension storage.",
+  "protocolVersion": "0.3.0",
+  "preferredTransport": "HTTP+JSON",
+  "provider": {
+    "organization": "FocusPaw",
+    "url": "https://focus-paw.luongnv.com/"
+  },
+  "supportedInterfaces": [
+    {
+      "url": "https://focus-paw.luongnv.com/",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "defaultInputModes": ["application/json", "text/plain"],
+  "defaultOutputModes": ["application/json", "text/html"],
+  "skills": [
+    {
+      "id": "site-discovery",
+      "name": "Site Discovery",
+      "description": "Enumerate the agent-readable resources FocusPaw publishes via the ARD manifest at /.well-known/ai-catalog.json.",
+      "tags": ["discovery", "ard"],
+      "examples": [
+        "List the agent-readable resources published by focus-paw.luongnv.com",
+        "Where is the FocusPaw ARD manifest?"
+      ]
+    },
+    {
+      "id": "agent-skills",
+      "name": "Agent Skills Index",
+      "description": "Read the skills discovery index at /.well-known/agent-skills/index.json and retrieve the referenced SKILL.md artifacts.",
+      "tags": ["skills", "discovery"],
+      "examples": [
+        "What skills does focus-paw.luongnv.com publish?",
+        "Fetch the FocusPaw skills index"
+      ]
+    }
+  ]
+}

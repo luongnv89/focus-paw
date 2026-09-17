@@ -1,0 +1,19 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://focus-paw.luongnv.com/",
+      "service-desc": [
+        {
+          "href": "https://focus-paw.luongnv.com/.well-known/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://focus-paw.luongnv.com/llms.txt",
+          "type": "text/plain"
+        }
+      ]
+    }
+  ]
+}
