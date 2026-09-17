@@ -19,6 +19,37 @@
     <!-- Agentic Resource Discovery manifest -->
     <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
 
+    <!--
+      Agent discovery links — HTML equivalents of the RFC 8288 Link response
+      headers recommended for agent discovery. GitHub Pages emits a fixed
+      header set and cannot send real Link: headers; the same relations are
+      also declared in public/_headers and netlify.toml so they become real
+      headers automatically if the site ever moves to Netlify/Cloudflare.
+    -->
+    <link
+      rel="api-catalog"
+      type="application/linkset+json"
+      href="/.well-known/api-catalog"
+    />
+    <link
+      rel="service-desc"
+      type="application/vnd.oai.openapi+json"
+      href="/.well-known/openapi.json"
+    />
+    <link rel="service-doc" type="text/plain" href="/llms.txt" />
+    <link
+      rel="describedby"
+      type="application/json"
+      href="/.well-known/ai-catalog.json"
+    />
+
+    <!--
+      Markdown alternates — static equivalent of Accept: text/markdown
+      content negotiation ("Markdown for Agents"). The privacy page's copy of
+      this tag is rewritten to /privacy/index.md by scripts/postbuild.js.
+    -->
+    <link rel="alternate" type="text/markdown" href="/index.md" />
+
     <!-- Editorial type: Fraunces (display) + Instrument Sans (body) + IBM Plex Mono (labels) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
