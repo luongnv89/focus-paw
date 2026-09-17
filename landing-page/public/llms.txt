@@ -15,3 +15,5 @@
 ## Optional
 
 - [Privacy policy (repo)](https://github.com/luongnv89/focus-paw/blob/main/PRIVACY.md): Full privacy policy text
+- [Landing page (markdown)](https://focus-paw.luongnv.com/index.md): Markdown alternate of the homepage
+- [Privacy policy (markdown)](https://focus-paw.luongnv.com/privacy/index.md): Markdown alternate of the privacy page

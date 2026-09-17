@@ -6,7 +6,7 @@
       "type": "skill-md",
       "description": "Discover FocusPaw's machine-readable resources — ARD manifest, A2A agent card, MCP server card, API catalog, OAuth/OIDC discovery docs, auth.md and llms.txt — and the rules for using them.",
       "url": "https://focus-paw.luongnv.com/.well-known/agent-skills/focuspaw-site-guide/SKILL.md",
-      "digest": "sha256:fc8227b6f5e13ff822be3db6dfcc3b178c03e0c83a4cb4a4de540fec2daed5f5"
+      "digest": "sha256:e40c281d592bba41ab3589cb37e6ad0d1057bf379b5d688c55afd6d3ced087f5"
     }
   ]
 }

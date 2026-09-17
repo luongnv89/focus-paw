@@ -26,6 +26,12 @@ authenticated APIs and collects no telemetry.
 | Agent registration guide | /auth.md                                |
 | llms.txt                 | /llms.txt                               |
 | Sitemap                  | /sitemap.xml                            |
+| Markdown mirrors         | /index.md, /privacy/index.md            |
+
+Every HTML page also advertises its markdown alternate with
+`<link rel="alternate" type="text/markdown" href="...">`, and the discovery
+relations above appear as RFC 8288 `<link>` tags in the homepage `<head>`
+(HTTP `Link:` header equivalents live in `/_headers` for edge hosts).
 
 ## Usage
 

@@ -16,6 +16,12 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    # RFC 8288 Link headers for agent discovery + the markdown alternate.
+    # Inert while the site is on GitHub Pages (which emits its own fixed
+    # header set); kept in sync with public/_headers and the <link> tags in
+    # index.html — guarded by tests/link-headers.test.js.
+    Link = '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", </.well-known/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json", </llms.txt>; rel="service-doc"; type="text/plain", </.well-known/ai-catalog.json>; rel="describedby"; type="application/json", </index.md>; rel="alternate"; type="text/markdown"'
+    Vary = "Accept"
 
 # Cache Static Assets (1 year) - hashed filenames
 [[headers]]
