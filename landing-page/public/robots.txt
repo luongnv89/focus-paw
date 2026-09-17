@@ -64,4 +64,5 @@ Allow: /
 User-agent: MistralAI-User
 Allow: /
 
+Agentmap: https://focus-paw.luongnv.com/.well-known/ai-catalog.json
 Sitemap: https://focus-paw.luongnv.com/sitemap.xml

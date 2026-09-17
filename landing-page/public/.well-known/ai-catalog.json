@@ -1,0 +1,50 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "FocusPaw",
+    "identifier": "did:web:focus-paw.luongnv.com"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:focus-paw.luongnv.com:agent-card:focuspaw-site-agent",
+      "displayName": "FocusPaw Site Agent Card",
+      "type": "application/a2a-agent-card+json",
+      "url": "https://focus-paw.luongnv.com/.well-known/agent-card.json",
+      "representativeQueries": [
+        "what is the FocusPaw agent card",
+        "how do agents discover focus-paw.luongnv.com",
+        "show FocusPaw's A2A capabilities and skills"
+      ]
+    },
+    {
+      "identifier": "urn:air:focus-paw.luongnv.com:mcp:site",
+      "displayName": "FocusPaw MCP Server Card",
+      "type": "application/mcp-server-card+json",
+      "url": "https://focus-paw.luongnv.com/.well-known/mcp/server-card.json",
+      "representativeQueries": [
+        "does FocusPaw expose an MCP server",
+        "what transport endpoint does the FocusPaw MCP server card declare"
+      ]
+    },
+    {
+      "identifier": "urn:air:focus-paw.luongnv.com:skills:agent-skills-index",
+      "displayName": "FocusPaw Agent Skills Index",
+      "type": "application/agentskills-index+json",
+      "url": "https://focus-paw.luongnv.com/.well-known/agent-skills/index.json",
+      "representativeQueries": [
+        "what skills does focus-paw.luongnv.com publish",
+        "list FocusPaw agent skills with digests"
+      ]
+    },
+    {
+      "identifier": "urn:air:focus-paw.luongnv.com:api-catalog:site",
+      "displayName": "FocusPaw API Catalog",
+      "type": "application/linkset+json",
+      "url": "https://focus-paw.luongnv.com/.well-known/api-catalog",
+      "representativeQueries": [
+        "what APIs does focus-paw.luongnv.com expose",
+        "where is the FocusPaw OpenAPI description"
+      ]
+    }
+  ]
+}

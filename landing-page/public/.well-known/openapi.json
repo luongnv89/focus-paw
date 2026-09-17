@@ -1,0 +1,84 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FocusPaw Site Resources",
+    "version": "1.0.0",
+    "description": "Machine-readable resources published by focus-paw.luongnv.com. The site is static; all endpoints are anonymous HTTPS GET. FocusPaw itself is a privacy-first Chrome extension with no remote API.",
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/luongnv89/focus-paw/blob/main/LICENSE"
+    }
+  },
+  "paths": {
+    "/.well-known/ai-catalog.json": {
+      "get": {
+        "summary": "ARD manifest (Agentic Resource Discovery)",
+        "responses": {
+          "200": {
+            "description": "ARD manifest listing this origin's agentic resources"
+          }
+        }
+      }
+    },
+    "/.well-known/agent-card.json": {
+      "get": {
+        "summary": "A2A agent card",
+        "responses": {
+          "200": {
+            "description": "A2A protocol agent card"
+          }
+        }
+      }
+    },
+    "/.well-known/agent-skills/index.json": {
+      "get": {
+        "summary": "Agent skills discovery index",
+        "responses": {
+          "200": {
+            "description": "Skills index with names, types, descriptions, URLs and digests"
+          }
+        }
+      }
+    },
+    "/.well-known/mcp/server-card.json": {
+      "get": {
+        "summary": "MCP server card",
+        "responses": {
+          "200": {
+            "description": "SEP-1649 MCP server card"
+          }
+        }
+      }
+    },
+    "/.well-known/api-catalog": {
+      "get": {
+        "summary": "RFC 9727 API catalog",
+        "responses": {
+          "200": {
+            "description": "Linkset API catalog"
+          }
+        }
+      }
+    },
+    "/llms.txt": {
+      "get": {
+        "summary": "LLM-oriented site summary",
+        "responses": {
+          "200": {
+            "description": "llms.txt site summary"
+          }
+        }
+      }
+    },
+    "/sitemap.xml": {
+      "get": {
+        "summary": "XML sitemap",
+        "responses": {
+          "200": {
+            "description": "Sitemap index of public pages"
+          }
+        }
+      }
+    }
+  }
+}
