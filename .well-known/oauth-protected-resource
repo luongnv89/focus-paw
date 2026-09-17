@@ -1,0 +1,9 @@
+{
+  "resource": "https://focus-paw.luongnv.com/",
+  "resource_name": "FocusPaw",
+  "resource_logo_uri": "https://focus-paw.luongnv.com/apple-touch-icon.png",
+  "authorization_servers": ["https://focus-paw.luongnv.com"],
+  "scopes_supported": ["site.read"],
+  "bearer_methods_supported": ["header"],
+  "resource_documentation": "https://focus-paw.luongnv.com/auth.md"
+}

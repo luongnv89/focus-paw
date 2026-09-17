@@ -1,0 +1,28 @@
+# FocusPaw — portable HTTP headers (Netlify `_headers` / Cloudflare Pages).
+#
+# INERT ON GITHUB PAGES: the site is deployed to GitHub Pages (gh-pages branch
+# via peaceiris/actions-gh-pages), which ignores this file and emits its own
+# fixed header set. These rules take effect automatically if the site is ever
+# served by Netlify or Cloudflare Pages.
+#
+# The Link relations below are the RFC 8288 equivalents of the HTML <link>
+# tags in index.html (issues #109, #110). x-markdown-tokens is the approximate
+# token count of the markdown body (bytes / 4); the jest suite
+# (tests/markdown-negotiation.test.js, tests/link-headers.test.js) pins the
+# values so they stay honest.
+
+/
+  Link: </.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", </.well-known/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json", </llms.txt>; rel="service-doc"; type="text/plain", </.well-known/ai-catalog.json>; rel="describedby"; type="application/json", </index.md>; rel="alternate"; type="text/markdown"
+  Vary: Accept
+
+/index.md
+  Content-Type: text/markdown; charset=utf-8
+  x-markdown-tokens: 871
+
+/privacy
+  Link: </.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", </.well-known/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json", </llms.txt>; rel="service-doc"; type="text/plain", </.well-known/ai-catalog.json>; rel="describedby"; type="application/json", </privacy/index.md>; rel="alternate"; type="text/markdown"
+  Vary: Accept
+
+/privacy/index.md
+  Content-Type: text/markdown; charset=utf-8
+  x-markdown-tokens: 1403

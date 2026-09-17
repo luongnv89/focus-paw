@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FocusPaw - Track Your Focus-Switching Habits</title>
+    <meta
+      name="description"
+      content="Privacy-first Chrome extension that helps you track focus-switching habits through interactive visualizations. Stay focused, achieve more."
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://focus-paw.luongnv.com/" />
+
+    <!-- Agentic Resource Discovery manifest -->
+    <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
+
+    <!--
+      Agent discovery links — HTML equivalents of the RFC 8288 Link response
+      headers recommended for agent discovery. GitHub Pages emits a fixed
+      header set and cannot send real Link: headers; the same relations are
+      also declared in public/_headers and netlify.toml so they become real
+      headers automatically if the site ever moves to Netlify/Cloudflare.
+    -->
+    <link
+      rel="api-catalog"
+      type="application/linkset+json"
+      href="/.well-known/api-catalog"
+    />
+    <link
+      rel="service-desc"
+      type="application/vnd.oai.openapi+json"
+      href="/.well-known/openapi.json"
+    />
+    <link rel="service-doc" type="text/plain" href="/llms.txt" />
+    <link
+      rel="describedby"
+      type="application/json"
+      href="/.well-known/ai-catalog.json"
+    />
+
+    <!--
+      Markdown alternates — static equivalent of Accept: text/markdown
+      content negotiation ("Markdown for Agents"). The privacy page's copy of
+      this tag is rewritten to /privacy/index.md by scripts/postbuild.js.
+    -->
+    <link rel="alternate" type="text/markdown" href="/index.md" />
+
+    <!-- Editorial type: Fraunces (display) + Instrument Sans (body) + IBM Plex Mono (labels) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Open Graph Meta Tags -->
+    <meta
+      property="og:title"
+      content="FocusPaw - Track Your Focus-Switching Habits"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://focus-paw.luongnv.com/og-image.jpg"
+    />
+    <meta property="og:url" content="https://focus-paw.luongnv.com/" />
+    <meta
+      property="og:description"
+      content="Privacy-first Chrome extension that helps you track focus-switching habits through interactive visualizations. Stay focused, achieve more."
+    />
+    <meta property="og:site_name" content="FocusPaw" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="FocusPaw extension dashboard showing focus tracking visualization"
+    />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="FocusPaw - Track Your Focus-Switching Habits"
+    />
+    <meta
+      name="twitter:description"
+      content="Privacy-first Chrome extension for focus tracking."
+    />
+    <meta
+      name="twitter:image"
+      content="https://focus-paw.luongnv.com/og-image.jpg"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="FocusPaw extension dashboard showing focus tracking visualization"
+    />
+
+    <!-- Theme color for mobile browsers -->
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://focus-paw.luongnv.com/#org",
+            "name": "FocusPaw",
+            "url": "https://focus-paw.luongnv.com/",
+            "logo": "https://focus-paw.luongnv.com/apple-touch-icon.png",
+            "sameAs": ["https://github.com/luongnv89/focus-paw"]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "FocusPaw",
+            "url": "https://focus-paw.luongnv.com/",
+            "applicationCategory": "BrowserApplication",
+            "operatingSystem": "Google Chrome",
+            "description": "Privacy-first Chrome extension that helps you track focus-switching habits through interactive visualizations. All data stays on your device.",
+            "image": "https://focus-paw.luongnv.com/og-image.jpg",
+            "screenshot": "https://focus-paw.luongnv.com/screenshots/dashboard.png",
+            "downloadUrl": "https://chromewebstore.google.com/detail/focusbear-focus-tracker/hlhhifmjlgekgchkaemeldfhcgcajcoe",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "author": { "@id": "https://focus-paw.luongnv.com/#org" }
+          }
+        ]
+      }
+    </script>
+    <script type="module" crossorigin src="/assets/js/index-B0PPvcz5.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/js/vendor-BD464zUK.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-D0wsEQdc.js">
+    <link rel="stylesheet" crossorigin href="/assets/css/react-vendor-UQE43I9n.css">
+    <link rel="stylesheet" crossorigin href="/assets/css/index-CY_Ds0wT.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <h1>FocusPaw — Track your focus, master your time</h1>
+      <p>
+        FocusPaw is a privacy-first Chrome extension that tracks
+        focus-switching habits through interactive visualizations. Per-domain
+        visit counts, daily site limits, streaks, and a map view — all stored
+        locally on your device. No accounts, no telemetry, no cloud sync. Free
+        and open source.
+      </p>
+      <p>
+        <a
+          href="https://chromewebstore.google.com/detail/focusbear-focus-tracker/hlhhifmjlgekgchkaemeldfhcgcajcoe"
+          >Install from the Chrome Web Store</a
+        >
+        · <a href="/privacy">Privacy policy</a> ·
+        <a href="https://github.com/luongnv89/focus-paw">Source code</a>
+      </p>
+    </noscript>
+  </body>
+</html>
