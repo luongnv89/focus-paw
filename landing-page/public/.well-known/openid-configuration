@@ -1,0 +1,12 @@
+{
+  "issuer": "https://focus-paw.luongnv.com",
+  "authorization_endpoint": "https://focus-paw.luongnv.com/oauth2/authorize",
+  "token_endpoint": "https://focus-paw.luongnv.com/oauth2/token",
+  "jwks_uri": "https://focus-paw.luongnv.com/.well-known/jwks.json",
+  "response_types_supported": ["id_token", "token id_token"],
+  "grant_types_supported": ["implicit"],
+  "subject_types_supported": ["public"],
+  "id_token_signing_alg_values_supported": ["none"],
+  "scopes_supported": ["openid"],
+  "claims_supported": ["sub", "iss", "aud", "exp", "iat"]
+}

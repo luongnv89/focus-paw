@@ -60,6 +60,56 @@
         }
       }
     },
+    "/.well-known/oauth-authorization-server": {
+      "get": {
+        "summary": "OAuth authorization server metadata (RFC 8414)",
+        "responses": {
+          "200": {
+            "description": "AS metadata including the agent_auth registration block"
+          }
+        }
+      }
+    },
+    "/.well-known/openid-configuration": {
+      "get": {
+        "summary": "OpenID Connect discovery metadata",
+        "responses": {
+          "200": {
+            "description": "OIDC provider configuration"
+          }
+        }
+      }
+    },
+    "/.well-known/oauth-protected-resource": {
+      "get": {
+        "summary": "OAuth protected resource metadata (RFC 9728)",
+        "responses": {
+          "200": {
+            "description": "PRM document naming resource identifier and authorization_servers"
+          }
+        }
+      }
+    },
+    "/.well-known/jwks.json": {
+      "get": {
+        "summary": "JSON Web Key Set",
+        "responses": {
+          "200": {
+            "description": "JWKS document behind jwks_uri"
+          }
+        }
+      }
+    },
+    "/auth.md": {
+      "get": {
+        "summary": "Agent registration documentation (auth.md)",
+        "responses": {
+          "200": {
+            "description": "Markdown guide describing agent registration methods"
+          }
+        }
+      }
+    },
     "/llms.txt": {
       "get": {
         "summary": "LLM-oriented site summary",
