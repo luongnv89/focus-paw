@@ -12,6 +12,11 @@
  *   /.well-known/ai-catalog.json          ARD manifest              (#115)
  *   /.well-known/mcp/server-card.json     MCP server card (SEP-1649)(#117)
  *   /.well-known/openapi.json             OpenAPI description       (supports #114)
+ *   /.well-known/oauth-authorization-server  RFC 8414 AS metadata  (#118)
+ *   /.well-known/openid-configuration     OIDC discovery doc        (#118)
+ *   /.well-known/oauth-protected-resource RFC 9728 PRM document     (#119)
+ *   /.well-known/jwks.json                empty JWKS behind jwks_uri
+ *   /auth.md                              auth.md agent registration(#116)
  *   /.nojekyll                            keeps dot-directories served on GH Pages
  */
 
@@ -229,6 +234,101 @@ describe('MCP server card (#117)', () => {
       expect(['streamable-http', 'sse']).toContain(remote.type);
       expect(remote.url).toMatch(/^https:\/\//);
     }
+  });
+});
+
+describe('OAuth authorization server metadata (#118)', () => {
+  const as = readJson('oauth-authorization-server');
+
+  test('declares RFC 8414 issuer and endpoints', () => {
+    expect(as.issuer).toBe(SITE.replace(/\/$/, ''));
+    expect(as.authorization_endpoint).toMatch(/^https:\/\//);
+    expect(as.token_endpoint).toMatch(/^https:\/\//);
+    expect(as.jwks_uri).toMatch(/^https:\/\//);
+  });
+
+  test('lists grant types and response types', () => {
+    expect(Array.isArray(as.grant_types_supported)).toBe(true);
+    expect(as.grant_types_supported.length).toBeGreaterThanOrEqual(1);
+    expect(Array.isArray(as.response_types_supported)).toBe(true);
+    expect(as.response_types_supported.length).toBeGreaterThanOrEqual(1);
+  });
+
+  test('advertised jwks_uri resolves to a published JWKS document', () => {
+    const urlPath = new URL(as.jwks_uri).pathname;
+    const jwks = JSON.parse(
+      fs.readFileSync(path.join(publicDir, urlPath), 'utf8'),
+    );
+    expect(Array.isArray(jwks.keys)).toBe(true);
+  });
+
+  test('publishes an OIDC openid-configuration companion document', () => {
+    const oidc = readJson('openid-configuration');
+    expect(oidc.issuer).toBe(as.issuer);
+    expect(oidc.authorization_endpoint).toMatch(/^https:\/\//);
+    expect(oidc.jwks_uri).toBe(as.jwks_uri);
+    expect(Array.isArray(oidc.response_types_supported)).toBe(true);
+    expect(Array.isArray(oidc.subject_types_supported)).toBe(true);
+    expect(Array.isArray(oidc.id_token_signing_alg_values_supported)).toBe(true);
+  });
+});
+
+describe('OAuth protected resource metadata (#119)', () => {
+  const prm = readJson('oauth-protected-resource');
+  const as = readJson('oauth-authorization-server');
+
+  test('declares resource identifier and authorization_servers', () => {
+    expect(prm.resource).toMatch(/^https:\/\//);
+    expect(Array.isArray(prm.authorization_servers)).toBe(true);
+    expect(prm.authorization_servers.length).toBeGreaterThanOrEqual(1);
+  });
+
+  test('advertised authorization server matches the AS metadata issuer', () => {
+    expect(prm.authorization_servers).toContain(as.issuer);
+  });
+
+  test('declares scopes and header bearer method per auth.md guide', () => {
+    expect(Array.isArray(prm.scopes_supported)).toBe(true);
+    expect(prm.bearer_methods_supported).toContain('header');
+  });
+});
+
+describe('auth.md agent registration (#116)', () => {
+  const authMd = fs.readFileSync(path.join(publicDir, 'auth.md'), 'utf8');
+  const as = readJson('oauth-authorization-server');
+  const prm = readJson('oauth-protected-resource');
+
+  test('is served from the site root with an auth.md H1 heading', () => {
+    expect(authMd).toMatch(/^# .*auth\.md/m);
+  });
+
+  test('identifies the agent audience and supported registration method', () => {
+    expect(authMd).toMatch(/agent/i);
+    expect(authMd).toMatch(/anonymous/i);
+  });
+
+  test('points agents at the PRM and AS metadata documents', () => {
+    expect(authMd).toContain('/.well-known/oauth-protected-resource');
+    expect(authMd).toContain('/.well-known/oauth-authorization-server');
+  });
+
+  test('AS metadata carries an agent_auth block with skill and register_uri', () => {
+    const agentAuth = as.agent_auth;
+    expect(agentAuth).toEqual(expect.any(Object));
+    expect(agentAuth.skill).toBe(`${SITE}/auth.md`);
+    expect(agentAuth.register_uri).toMatch(/^https:\/\//);
+  });
+
+  test('agent_auth declares at least one complete registration method', () => {
+    const agentAuth = as.agent_auth;
+    expect(Array.isArray(agentAuth.identity_types_supported)).toBe(true);
+    expect(agentAuth.identity_types_supported).toContain('anonymous');
+    expect(agentAuth.anonymous).toEqual(expect.any(Object));
+    expect(agentAuth.claim_uri).toMatch(/^https:\/\//);
+  });
+
+  test('AS issuer matches the issuer advertised in the PRM document', () => {
+    expect(prm.authorization_servers).toContain(as.issuer);
   });
 });
 

@@ -1,6 +1,6 @@
 ---
 name: focuspaw-site-guide
-description: Discover FocusPaw's machine-readable resources — ARD manifest, A2A agent card, MCP server card, API catalog and llms.txt — and the rules for using them.
+description: Discover FocusPaw's machine-readable resources — ARD manifest, A2A agent card, MCP server card, API catalog, OAuth/OIDC discovery docs, auth.md and llms.txt — and the rules for using them.
 license: MIT
 ---
 
@@ -20,6 +20,10 @@ authenticated APIs and collects no telemetry.
 | MCP server card          | /.well-known/mcp/server-card.json       |
 | API catalog (RFC 9727)   | /.well-known/api-catalog                |
 | OpenAPI description      | /.well-known/openapi.json               |
+| OAuth AS metadata        | /.well-known/oauth-authorization-server |
+| OIDC configuration       | /.well-known/openid-configuration       |
+| Protected resource (PRM) | /.well-known/oauth-protected-resource   |
+| Agent registration guide | /auth.md                                |
 | llms.txt                 | /llms.txt                               |
 | Sitemap                  | /sitemap.xml                            |
 
